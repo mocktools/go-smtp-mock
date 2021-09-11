@@ -19,6 +19,8 @@ type sessionInterface interface {
 	clearError()
 	discardBufin()
 	readBytes() ([]byte, error)
+	isErrorFound() bool
+	finish()
 }
 
 // session interfaces

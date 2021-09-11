@@ -12,7 +12,7 @@ const (
 	DefaultInvalidCmdHeloArgMsg          = "501 HELO requires domain address"
 	DefaultInvalidCmdMailfromArgMsg      = "501 MAIL FROM requires valid email address"
 	DefaultInvalidCmdRcpttoArgMsg        = "501 RCPT TO requires valid email address"
-	DefaultInvalidCmdMsg                 = "502 Command unrecognized. Available commands: HELO, EHLO, MAIL FROM:, RCPT TO:, DATA"
+	DefaultInvalidCmdMsg                 = "502 Command unrecognized. Available commands: HELO, EHLO, MAIL FROM:, RCPT TO:, DATA, QUIT"
 	DefaultInvalidCmdHeloSequenceMsg     = "503 Bad sequence of commands. HELO should be the first"
 	DefaultInvalidCmdMailfromSequenceMsg = "503 Bad sequence of commands. MAIL FROM should be used after HELO"
 	DefaultInvalidCmdRcpttoSequenceMsg   = "503 Bad sequence of commands. RCPT TO should be used after MAIL FROM"
@@ -29,7 +29,7 @@ const (
 
 	// Session
 
-	SessionStartMsg      = "New SMTP session started"
+	SessionStartMsg      = "SMTP session started"
 	SessionRequestMsg    = "SMTP request: "
 	SessionResponseMsg   = "SMTP response: "
 	SessionEndMsg        = "SMTP session finished"
@@ -37,14 +37,15 @@ const (
 
 	// Server
 
-	NetworkProtocol               = "tcp"
-	DefaultHostAddress            = "0.0.0.0"
-	DefaultPortNuber              = 2525
-	DefaultMessageSizeLimit       = 10485760 // in bytes (10MB)
-	DefaultSessionTimeout         = 30       // in seconds
-	ServerStartMsg                = "SMTP mock server started on port"
-	ServerErrorMsg                = "Failed to start SMTP mock server on port"
-	ServerNotAcceptNewConnections = "SMTP mock server is in the shutdown mode and won't accept new connections"
+	NetworkProtocol                  = "tcp"
+	DefaultHostAddress               = "0.0.0.0"
+	DefaultPortNuber                 = 2525
+	DefaultMessageSizeLimit          = 10485760 // in bytes (10MB)
+	DefaultSessionTimeout            = 30       // in seconds
+	ServerStartMsg                   = "SMTP mock server started on port"
+	ServerErrorMsg                   = "Failed to start SMTP mock server on port"
+	ServerNotAcceptNewConnectionsMsg = "SMTP mock server is in the shutdown mode and won't accept new connections"
+	ServerStopMsg                    = "SMTP mock server was stopped successfully"
 
 	// Regex patterns
 
