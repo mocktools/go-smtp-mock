@@ -1,0 +1,5 @@
+package smtpmock
+
+const (
+	EmptyString = ""
+)
