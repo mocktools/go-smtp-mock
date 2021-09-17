@@ -10,6 +10,18 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
+func TestSessionIsErrorFound(t *testing.T) {
+	t.Run("when error exists", func(t *testing.T) {
+		session := &session{err: errors.New("some error messsage")}
+
+		assert.True(t, session.isErrorFound())
+	})
+
+	t.Run("when error not exists", func(t *testing.T) {
+		assert.False(t, new(session).isErrorFound())
+	})
+}
+
 func TestNewSession(t *testing.T) {
 	t.Run("creates new SMTP session", func(t *testing.T) {
 		connectionAddress := "127.0.0.1:25"
@@ -32,9 +44,11 @@ func TestSessionReadRequest(t *testing.T) {
 		binaryData := strings.NewReader(stringContext)
 		bufin := bufio.NewReader(binaryData)
 		session := &session{bufin: bufin}
+		request, err := session.readRequest()
 
-		assert.Equal(t, capturedStringContext, session.readRequest())
-		assert.NoError(t, session.readError)
+		assert.Equal(t, capturedStringContext, request)
+		assert.NoError(t, err)
+		assert.NoError(t, session.err)
 	})
 
 	t.Run("extracts string from bufin with error", func(t *testing.T) {
@@ -42,9 +56,11 @@ func TestSessionReadRequest(t *testing.T) {
 		binaryData := bytes.NewBufferString(capturedStringContext)
 		bufin := bufio.NewReader(binaryData)
 		session := &session{bufin: bufin}
+		request, err := session.readRequest()
 
-		assert.Equal(t, capturedStringContext, session.readRequest())
-		assert.Error(t, session.readError)
+		assert.Equal(t, capturedStringContext, request)
+		assert.Error(t, err)
+		assert.Same(t, session.err, err)
 	})
 }
 
@@ -57,7 +73,7 @@ func TestSessionWriteResponse(t *testing.T) {
 		session.writeResponse(response)
 
 		assert.Equal(t, response+"\r\n", binaryData.String())
-		assert.NoError(t, session.writeError)
+		assert.NoError(t, session.err)
 	})
 
 	t.Run("writes server response to bufout with error", func(t *testing.T) {
@@ -69,7 +85,7 @@ func TestSessionWriteResponse(t *testing.T) {
 		bufout.On("Flush").Once().Return(err)
 		session.writeResponse(response)
 
-		assert.EqualError(t, session.writeError, errorMessage)
+		assert.EqualError(t, session.err, errorMessage)
 	})
 }
 
@@ -80,7 +96,7 @@ func TestSessionFinish(t *testing.T) {
 		session := &session{connection: connection}
 		session.finish()
 
-		assert.NoError(t, session.connectionError)
+		assert.NoError(t, session.err)
 	})
 
 	t.Run("closes session connection with error", func(t *testing.T) {
@@ -90,6 +106,6 @@ func TestSessionFinish(t *testing.T) {
 		session := &session{connection: connection}
 		session.finish()
 
-		assert.EqualError(t, session.connectionError, errorMessage)
+		assert.EqualError(t, session.err, errorMessage)
 	})
 }

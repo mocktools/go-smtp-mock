@@ -18,14 +18,14 @@ type bufout interface {
 
 // SMTP client-server session
 type session struct {
-	connection                             net.Conn
-	address                                string
-	bufin                                  bufin
-	bufout                                 bufout
-	readError, writeError, connectionError error
+	connection net.Conn
+	address    string
+	bufin      bufin
+	bufout     bufout
+	err        error
 }
 
-// SMTP session builder
+// SMTP session builder. Creates new session
 func newSession(connection net.Conn) *session {
 	return &session{
 		connection: connection,
@@ -37,30 +37,35 @@ func newSession(connection net.Conn) *session {
 
 // SMTP session methods
 
-// Reades client request from the session. When error case happened writes it to readError
-func (session *session) readRequest() string {
-	request, err := session.bufin.ReadString('\n')
-	if err != nil {
-		session.readError = err
-	}
-
-	return request
+// Returns true if session error exists, otherwise returns false
+func (session *session) isErrorFound() bool {
+	return session.err != nil
 }
 
-// Writes server response to the client session. When error case happened writes it to writeError
+// Reades client request from the session. When error case happened writes it to session.err
+func (session *session) readRequest() (string, error) {
+	request, err := session.bufin.ReadString('\n')
+	if err != nil {
+		session.err = err
+	}
+
+	return request, err
+}
+
+// Writes server response to the client session. When error case happened writes it to session.err
 func (session *session) writeResponse(response string) {
 	bufout := session.bufout
 	_, err := bufout.WriteString(response + "\r\n")
 	if err != nil {
-		session.writeError = err
+		session.err = err
 	}
 	bufout.Flush()
 }
 
-// Finishes SMTP session. When error case happened writes it to connectionError
+// Finishes SMTP session. When error case happened writes it to session.err
 func (session *session) finish() {
 	err := session.connection.Close()
 	if err != nil {
-		session.connectionError = err
+		session.err = err
 	}
 }
