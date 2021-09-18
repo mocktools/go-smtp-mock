@@ -69,6 +69,16 @@ func (connection netConnectionMock) Close() error {
 	return args.Error(0)
 }
 
+// bufio.Reader mock
+type bufioReaderMock struct {
+	mock.Mock
+}
+
+func (buf bufioReaderMock) ReadString(delim byte) (string, error) {
+	args := buf.Called(delim)
+	return args.String(0), args.Error(1)
+}
+
 // bufio.Writer mock
 type bufioWriterMock struct {
 	mock.Mock
@@ -82,4 +92,21 @@ func (buf bufioWriterMock) WriteString(s string) (int, error) {
 func (buf bufioWriterMock) Flush() error {
 	args := buf.Called()
 	return args.Error(0)
+}
+
+// logger mock
+type loggerMock struct {
+	mock.Mock
+}
+
+func (logger *loggerMock) info(message string) {
+	logger.Called(message)
+}
+
+func (logger *loggerMock) warning(message string) {
+	logger.Called(message)
+}
+
+func (logger *loggerMock) error(message string) {
+	logger.Called(message)
 }
