@@ -3,6 +3,7 @@ package smtpmock
 import (
 	"bufio"
 	"net"
+	"strings"
 )
 
 // session interfaces
@@ -23,15 +24,17 @@ type session struct {
 	bufin      bufin
 	bufout     bufout
 	err        error
+	logger     logger
 }
 
 // SMTP session builder. Creates new session
-func newSession(connection net.Conn) *session {
+func newSession(connection net.Conn, logger logger) *session {
 	return &session{
 		connection: connection,
 		address:    connection.RemoteAddr().String(),
 		bufin:      bufio.NewReader(connection),
 		bufout:     bufio.NewWriter(connection),
+		logger:     logger,
 	}
 }
 
@@ -42,30 +45,32 @@ func (session *session) isErrorFound() bool {
 	return session.err != nil
 }
 
-// Reades client request from the session. When error case happened writes it to session.err
+// Reades client request from the session, returns trimmed string.
+// When error case happened writes it to session.err and triggers logger with error level
 func (session *session) readRequest() (string, error) {
 	request, err := session.bufin.ReadString('\n')
-	if err != nil {
-		session.err = err
+	if err == nil {
+		return strings.TrimSpace(request), err
 	}
 
-	return request, err
+	session.err = err
+	session.logger.error(err.Error())
+	return EmptyString, err
 }
 
-// Writes server response to the client session. When error case happened writes it to session.err
+// Writes server response to the client session. When error case happened triggers
+// logger with warning level
 func (session *session) writeResponse(response string) {
 	bufout := session.bufout
-	_, err := bufout.WriteString(response + "\r\n")
-	if err != nil {
-		session.err = err
+	if _, err := bufout.WriteString(response + "\r\n"); err != nil {
+		session.logger.warning(err.Error())
 	}
 	bufout.Flush()
 }
 
-// Finishes SMTP session. When error case happened writes it to session.err
+// Finishes SMTP session. When error case happened triggers logger with warning level
 func (session *session) finish() {
-	err := session.connection.Close()
-	if err != nil {
-		session.err = err
+	if err := session.connection.Close(); err != nil {
+		session.logger.warning(err.Error())
 	}
 }
