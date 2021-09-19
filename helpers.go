@@ -17,11 +17,14 @@ func matchRegex(strContext, regexPattern string) bool {
 	return regex.MatchString(strContext)
 }
 
-// Returns string by regex pattern capture group index
-func regexCaptureGroup(str string, regexPattern string, captureGroup int) string {
-	regex, _ := newRegex(regexPattern)
-
-	return regex.FindStringSubmatch(str)[captureGroup]
+// Returns string by regex pattern capture group index. For cases when regex not matched or
+// capture group not found returns empty string
+func regexCaptureGroup(str string, regexPattern string, captureGroup int) (capturedString string) {
+	var regex *regexp.Regexp
+	defer func() { _ = recover() }()
+	regex, _ = newRegex(regexPattern)
+	capturedString = regex.FindStringSubmatch(str)[captureGroup]
+	return capturedString
 }
 
 // Returns true if the given string is present in slice, otherwise returns false

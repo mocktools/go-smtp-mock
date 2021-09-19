@@ -10,7 +10,7 @@ type configuration struct {
 	msgInvalidCmd             string
 	msgInvalidCmdHeloSequence string
 	msgQuit                   string
-	invalidHeloDomains        []string
+	blacklistedHeloDomains    []string
 }
 
 // New configuration builder. Returns pointer to valid new configuration structure
@@ -26,7 +26,7 @@ func NewConfiguration(config ConfigurationAttr) *configuration {
 		msgInvalidCmd:             config.msgInvalidCmd,
 		msgInvalidCmdHeloSequence: config.msgInvalidCmdHeloSequence,
 		msgQuit:                   config.msgQuit,
-		invalidHeloDomains:        config.invalidHeloDomains,
+		blacklistedHeloDomains:    config.blacklistedHeloDomains,
 	}
 }
 
@@ -40,7 +40,7 @@ type ConfigurationAttr struct {
 	msgInvalidCmd             string
 	msgInvalidCmdHeloSequence string
 	msgQuit                   string
-	invalidHeloDomains        []string
+	blacklistedHeloDomains    []string
 }
 
 // ConfigurationAttr methods

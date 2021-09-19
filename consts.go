@@ -19,6 +19,13 @@ const (
 	ErrorLogLevel   = "ERROR"
 	LogFlag         = log.Ldate | log.Ltime
 
+	// Regex patterns
+
+	AvailableCmdsRegexPattern = `(?i)helo|ehlo|mail from:|rcpt to:`
+	ValidHeloCmdsRegexPattern = `(?i)helo|ehlo`
+	DomainRegexPattern        = `(?i)([\p{L}0-9]+([\-.]{1}[\p{L}0-9]+)*\.\p{L}{2,63})`
+	ValidHeloCmdRegexPattern  = `^(?i)(helo|ehlo) ` + DomainRegexPattern + `$`
+
 	// Helpers
 
 	EmptyString = ""

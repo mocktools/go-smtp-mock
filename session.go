@@ -6,6 +6,14 @@ import (
 	"strings"
 )
 
+// SMTP client-server session interface
+type sessionInterface interface {
+	readRequest() (string, error)
+	writeResponse(string)
+	addError(error)
+	clearError()
+}
+
 // session interfaces
 
 type bufin interface {
@@ -43,6 +51,16 @@ func newSession(connection net.Conn, logger logger) *session {
 // Returns true if session error exists, otherwise returns false
 func (session *session) isErrorFound() bool {
 	return session.err != nil
+}
+
+// session.err setter
+func (session *session) addError(err error) {
+	session.err = err
+}
+
+// Sets session.err = nil
+func (session *session) clearError() {
+	session.err = nil
 }
 
 // Reades client request from the session, returns trimmed string.

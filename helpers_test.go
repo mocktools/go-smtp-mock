@@ -46,8 +46,12 @@ func TestRegexCaptureGroup(t *testing.T) {
 		assert.Equal(t, "bb", regexCaptureGroup(str, regexPattern, 2))
 	})
 
-	t.Run("panics when regex capture group not found", func(t *testing.T) {
-		assert.Panics(t, func() { regexCaptureGroup(str, regexPattern, 3) })
+	t.Run("returns empty string when regex not matched", func(t *testing.T) {
+		assert.Equal(t, EmptyString, regexCaptureGroup("xyz", regexPattern, 2))
+	})
+
+	t.Run("returns empty string when regex capture group not found", func(t *testing.T) {
+		assert.Equal(t, EmptyString, regexCaptureGroup(str, regexPattern, 3))
 	})
 }
 
