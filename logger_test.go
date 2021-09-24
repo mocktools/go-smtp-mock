@@ -2,6 +2,7 @@ package smtpmock
 
 import (
 	"bytes"
+	"os"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
@@ -14,6 +15,8 @@ func TestNewLogger(t *testing.T) {
 			logToStdout:       isLogToStdoutEnabled,
 			logServerActivity: logServerActivity,
 			flag:              LogFlag,
+			stdout:            os.Stdout,
+			stderr:            os.Stderr,
 		}
 
 		assert.EqualValues(t, logger, newLogger(isLogToStdoutEnabled, logServerActivity))
@@ -21,7 +24,11 @@ func TestNewLogger(t *testing.T) {
 
 	t.Run("when log to stdout, server activity disabled", func(t *testing.T) {
 		isLogToStdoutEnabled, logServerActivity := false, false
-		logger := &eventLogger{logToStdout: isLogToStdoutEnabled, flag: LogFlag}
+		logger := &eventLogger{
+			flag:   LogFlag,
+			stdout: os.Stdout,
+			stderr: os.Stderr,
+		}
 
 		assert.EqualValues(t, logger, newLogger(isLogToStdoutEnabled, logServerActivity))
 	})

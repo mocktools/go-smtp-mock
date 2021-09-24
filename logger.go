@@ -3,6 +3,7 @@ package smtpmock
 import (
 	"io"
 	"log"
+	"os"
 )
 
 // Logger interface
@@ -24,9 +25,11 @@ type eventLogger struct {
 // Logger builder. Returns pointer to builded new logger structure
 func newLogger(logToStdout, logServerActivity bool) *eventLogger {
 	return &eventLogger{
-		logToStdout:       logToStdout, // TODO: add stdout target
+		logToStdout:       logToStdout,
 		logServerActivity: logServerActivity,
 		flag:              LogFlag,
+		stdout:            os.Stdout,
+		stderr:            os.Stderr,
 	}
 }
 
