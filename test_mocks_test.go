@@ -99,6 +99,10 @@ type loggerMock struct {
 	mock.Mock
 }
 
+func (logger *loggerMock) infoActivity(message string) {
+	logger.Called(message)
+}
+
 func (logger *loggerMock) info(message string) {
 	logger.Called(message)
 }
