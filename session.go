@@ -95,5 +95,5 @@ func (session *session) finish() {
 		session.logger.warning(err.Error())
 	}
 
-	session.logger.infoActivity(SessionEnd)
+	session.logger.infoActivity(SessionEndMsg)
 }

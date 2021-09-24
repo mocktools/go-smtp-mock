@@ -21,18 +21,18 @@ const (
 
 	// Session
 
+	SessionStartMsg    = "New SMTP session started"
 	SessionRequestMsg  = "SMTP request: "
 	SessionResponseMsg = "SMTP response: "
-	SessionEnd         = "SMTP session finished"
+	SessionEndMsg      = "SMTP session finished"
 
 	// Server
 
 	NetworkProtocol = "tcp"
 	HostAddress     = "0.0.0.0"
 	PortNuber       = 2525
-	ServerMsg       = " to start SMTP mock server on port:"
-	ServerStartMsg  = "Trying" + ServerMsg
-	ServerErrorMsg  = "Failed" + ServerMsg
+	ServerStartMsg  = "SMTP mock server started on port"
+	ServerErrorMsg  = "Failed to start SMTP mock server on port"
 
 	// Regex patterns
 

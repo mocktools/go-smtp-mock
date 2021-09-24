@@ -117,7 +117,7 @@ func TestSessionFinish(t *testing.T) {
 	t.Run("closes session connection without error", func(t *testing.T) {
 		connection, logger := netConnectionMock{}, new(loggerMock)
 		connection.On("Close").Once().Return(nil)
-		logger.On("infoActivity", SessionEnd).Once().Return(nil)
+		logger.On("infoActivity", SessionEndMsg).Once().Return(nil)
 		session := &session{connection: connection, logger: logger}
 		session.finish()
 
@@ -129,7 +129,7 @@ func TestSessionFinish(t *testing.T) {
 		connection, logger, err := netConnectionMock{}, new(loggerMock), errors.New(errorMessage)
 		connection.On("Close").Once().Return(err)
 		logger.On("warning", errorMessage).Once().Return(nil)
-		logger.On("infoActivity", SessionEnd).Once().Return(nil)
+		logger.On("infoActivity", SessionEndMsg).Once().Return(nil)
 		session := &session{connection: connection, logger: logger}
 		session.finish()
 
