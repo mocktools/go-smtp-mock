@@ -22,6 +22,24 @@ func TestSessionIsErrorFound(t *testing.T) {
 	})
 }
 
+func TestSessionAddError(t *testing.T) {
+	t.Run("assigns error to session.err", func(t *testing.T) {
+		err, session := errors.New("some error messsage"), new(session)
+		session.addError(err)
+
+		assert.Error(t, err, session.err)
+	})
+}
+
+func TestSessionClearError(t *testing.T) {
+	t.Run("clears session.err", func(t *testing.T) {
+		session := &session{err: errors.New("some error messsage")}
+		session.clearError()
+
+		assert.NoError(t, session.err)
+	})
+}
+
 func TestNewSession(t *testing.T) {
 	t.Run("creates new SMTP session", func(t *testing.T) {
 		connectionAddress := "127.0.0.1:25"

@@ -18,7 +18,7 @@ func TestNewConfiguration(t *testing.T) {
 		assert.Equal(t, DefaultInvalidCmdMsg, buildedConfiguration.msgInvalidCmd)
 		assert.Equal(t, DefaultInvalidCmdHeloSequenceMsg, buildedConfiguration.msgInvalidCmdHeloSequence)
 		assert.Equal(t, DefaultQuitMsg, buildedConfiguration.msgQuit)
-		assert.Empty(t, buildedConfiguration.invalidHeloDomains)
+		assert.Empty(t, buildedConfiguration.blacklistedHeloDomains)
 	})
 
 	t.Run("creates new configuration with custom settings", func(t *testing.T) {
@@ -31,7 +31,7 @@ func TestNewConfiguration(t *testing.T) {
 			msgInvalidCmd:             "d",
 			msgInvalidCmdHeloSequence: "e",
 			msgQuit:                   "f",
-			invalidHeloDomains:        []string{},
+			blacklistedHeloDomains:    []string{},
 		}
 		buildedConfiguration := NewConfiguration(configAttr)
 
@@ -43,7 +43,7 @@ func TestNewConfiguration(t *testing.T) {
 		assert.Equal(t, configAttr.msgInvalidCmd, buildedConfiguration.msgInvalidCmd)
 		assert.Equal(t, configAttr.msgInvalidCmdHeloSequence, buildedConfiguration.msgInvalidCmdHeloSequence)
 		assert.Equal(t, configAttr.msgQuit, buildedConfiguration.msgQuit)
-		assert.Equal(t, configAttr.invalidHeloDomains, buildedConfiguration.invalidHeloDomains)
+		assert.Equal(t, configAttr.blacklistedHeloDomains, buildedConfiguration.blacklistedHeloDomains)
 	})
 }
 

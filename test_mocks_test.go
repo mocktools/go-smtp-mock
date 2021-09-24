@@ -110,3 +110,25 @@ func (logger *loggerMock) warning(message string) {
 func (logger *loggerMock) error(message string) {
 	logger.Called(message)
 }
+
+// session mock
+type sessionMock struct {
+	mock.Mock
+}
+
+func (session *sessionMock) readRequest() (string, error) {
+	args := session.Called()
+	return args.String(0), args.Error(1)
+}
+
+func (session *sessionMock) writeResponse(response string) {
+	session.Called(response)
+}
+
+func (session *sessionMock) addError(err error) {
+	session.Called(err)
+}
+
+func (session *sessionMock) clearError() {
+	session.Called()
+}
