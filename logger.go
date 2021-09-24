@@ -7,6 +7,7 @@ import (
 
 // Logger interface
 type logger interface {
+	infoActivity(string)
 	info(string)
 	warning(string)
 	error(string)
@@ -15,20 +16,33 @@ type logger interface {
 // Custom logger that supports 3 different log levels (info, warning, error)
 type eventLogger struct {
 	eventInfo, eventWarning, eventError *log.Logger
-	logToStdout                         bool
+	logToStdout, logServerActivity      bool
 	flag                                int
 	stdout, stderr                      io.Writer
 }
 
 // Logger builder. Returns pointer to builded new logger structure
-func newLogger(logToStdout bool) *eventLogger {
+func newLogger(logToStdout, logServerActivity bool) *eventLogger {
 	return &eventLogger{
-		logToStdout: logToStdout,
-		flag:        LogFlag,
+		logToStdout:       logToStdout, // TODO: add stdout target
+		logServerActivity: logServerActivity,
+		flag:              LogFlag,
 	}
 }
 
 // logger methods
+
+// Provides INFO log level for server activities. Writes to stdout for case when
+// logger.logToStdout and logger.logServerActivity are enabled, suppressed otherwise
+func (logger *eventLogger) infoActivity(message string) {
+	if logger.logToStdout && logger.logServerActivity {
+		if logger.eventInfo == nil {
+			logger.eventInfo = log.New(logger.stdout, InfoLogLevel+": ", logger.flag)
+		}
+
+		logger.eventInfo.Println(message)
+	}
+}
 
 // Provides INFO log level. Writes to stdout for case when logger.logToStdout is enabled,
 // suppressed otherwise

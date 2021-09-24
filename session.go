@@ -68,7 +68,9 @@ func (session *session) clearError() {
 func (session *session) readRequest() (string, error) {
 	request, err := session.bufin.ReadString('\n')
 	if err == nil {
-		return strings.TrimSpace(request), err
+		trimmedRequest := strings.TrimSpace(request)
+		session.logger.infoActivity(SessionRequestMsg + trimmedRequest)
+		return trimmedRequest, err
 	}
 
 	session.err = err
@@ -84,6 +86,7 @@ func (session *session) writeResponse(response string) {
 		session.logger.warning(err.Error())
 	}
 	bufout.Flush()
+	session.logger.infoActivity(SessionResponseMsg + response)
 }
 
 // Finishes SMTP session. When error case happened triggers logger with warning level
@@ -91,4 +94,6 @@ func (session *session) finish() {
 	if err := session.connection.Close(); err != nil {
 		session.logger.warning(err.Error())
 	}
+
+	session.logger.infoActivity(SessionEnd)
 }
