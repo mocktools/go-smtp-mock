@@ -1,17 +1,13 @@
 package smtpmock
 
-import "errors"
-
 // HELO command handler
 type handlerHelo struct {
-	session       sessionInterface
-	message       *message
-	configuration *configuration
+	*handler
 }
 
 // HELO command handler builder. Returns pointer to new handlerHelo structure
 func newHandlerHelo(session sessionInterface, message *message, configuration *configuration) *handlerHelo {
-	return &handlerHelo{session: session, message: message, configuration: configuration}
+	return &handlerHelo{&handler{session: session, message: message, configuration: configuration}}
 }
 
 // HELO handler methods
@@ -54,28 +50,6 @@ func (handler *handlerHelo) run() {
 	}
 
 	handler.writeResult(true, requestSnapshot, configuration.msgHeloReceived)
-}
-
-// Writes hadled HELO result to session, message. Always returns true
-func (handler *handlerHelo) writeResult(isSuccessful bool, request, response string) bool {
-	session, message := handler.session, handler.message
-	if !isSuccessful {
-		session.addError(errors.New(response))
-	}
-
-	message.heloRequest, message.heloResponse, message.helo = request, response, isSuccessful
-	session.writeResponse(response)
-	return true
-}
-
-// Invalid SMTP command predicate. Returns true and writes result for case when command is invalid,
-// otherwise returns false.
-func (handler *handlerHelo) isInvalidCmd(request string) bool {
-	if !matchRegex(request, AvailableCmdsRegexPattern) {
-		return handler.writeResult(false, request, handler.configuration.msgInvalidCmd)
-	}
-
-	return false
 }
 
 // Invalid HELO command sequence predicate. Returns true and writes result for case when HELO command
