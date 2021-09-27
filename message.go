@@ -4,11 +4,11 @@ import "sync"
 
 // Structure for storing the result of SMTP client-server interaction
 type message struct {
-	heloRequest, heloResponse string
-	helo                      bool
-	// mailfromRequest, mailfromResponse string
+	heloRequest, heloResponse         string
+	mailfromRequest, mailfromResponse string
+	helo, mailfrom                    bool
 	// rcpttoRequest, rcpttoResponse     string
-	// mailfrom, rcptto            bool
+	// rcptto            bool
 }
 
 // Concurrent type that can be safely shared between goroutines

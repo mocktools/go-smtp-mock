@@ -1,5 +1,7 @@
 package smtpmock
 
+import "errors"
+
 // HELO command handler
 type handlerHelo struct {
 	*handler
@@ -15,10 +17,9 @@ func newHandlerHelo(session sessionInterface, message *message, configuration *c
 // Main HELO handler runner
 func (handler *handlerHelo) run() {
 	var requestSnapshot string
-	configuration, session := handler.configuration, handler.session
-	failFastScenario := configuration.isCmdFailFast
+	session := handler.session
 
-	if failFastScenario {
+	if handler.isFailFastScenario() {
 		request, err := session.readRequest()
 		if err != nil {
 			return
@@ -30,7 +31,7 @@ func (handler *handlerHelo) run() {
 		requestSnapshot = request
 	}
 
-	if !failFastScenario {
+	if !handler.isFailFastScenario() {
 		for {
 			session.clearError()
 			request, err := session.readRequest()
@@ -49,7 +50,29 @@ func (handler *handlerHelo) run() {
 		return
 	}
 
-	handler.writeResult(true, requestSnapshot, configuration.msgHeloReceived)
+	handler.writeResult(true, requestSnapshot, handler.configuration.msgHeloReceived)
+}
+
+// Writes hadled HELO result to session, message. Always returns true
+func (handler *handlerHelo) writeResult(isSuccessful bool, request, response string) bool {
+	session, message := handler.session, handler.message
+	if !isSuccessful {
+		session.addError(errors.New(response))
+	}
+
+	message.heloRequest, message.heloResponse, message.helo = request, response, isSuccessful
+	session.writeResponse(response)
+	return true
+}
+
+// Invalid SMTP command predicate. Returns true and writes result for case when command is invalid,
+// otherwise returns false.
+func (handler *handlerHelo) isInvalidCmd(request string) bool {
+	if !matchRegex(request, AvailableCmdsRegexPattern) {
+		return handler.writeResult(false, request, handler.configuration.msgInvalidCmd)
+	}
+
+	return false
 }
 
 // Invalid HELO command sequence predicate. Returns true and writes result for case when HELO command
@@ -80,7 +103,7 @@ func (handler *handlerHelo) isInvalidRequest(request string) bool {
 
 // Returns domain from HELO request
 func (handler *handlerHelo) heloDomain(request string) string {
-	return regexCaptureGroup(request, DomainRegexPattern, 0)
+	return regexCaptureGroup(request, ValidHeloCmdRegexPattern, 2)
 }
 
 // Custom behaviour for HELO domain predicate. Returns true and writes result for case when HELO domain
@@ -91,5 +114,5 @@ func (handler *handlerHelo) isBlacklistedDomain(request string) bool {
 		return false
 	}
 
-	return handler.writeResult(false, request, configuration.msgQuit)
+	return handler.writeResult(false, request, configuration.msgHeloBlacklistedDomain)
 }
