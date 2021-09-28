@@ -9,6 +9,7 @@ type configuration struct {
 	isCmdFailFast                 bool
 	msgGreeting                   string
 	msgInvalidCmd                 string
+	msgQuitCmd                    string
 	msgInvalidCmdHeloSequence     string
 	msgInvalidCmdHeloArg          string
 	msgHeloBlacklistedDomain      string
@@ -17,9 +18,16 @@ type configuration struct {
 	msgInvalidCmdMailfromArg      string
 	msgMailfromBlacklistedEmail   string
 	msgMailfromReceived           string
-	msgQuit                       string
+	msgInvalidCmdRcpttoSequence   string
+	msgInvalidCmdRcpttoArg        string
+	msgRcpttoNotRegistredEmail    string
+	msgRcpttoBlacklistedEmail     string
+	msgRcpttoReceived             string
 	blacklistedHeloDomains        []string
 	blacklistedMailfromEmails     []string
+	registredRcpttoEmails         []string
+	blacklistedRcpttoEmails       []string
+	// TODO: add ability to send 221 response before end of the session
 }
 
 // New configuration builder. Returns pointer to valid new configuration structure
@@ -42,9 +50,16 @@ func NewConfiguration(config ConfigurationAttr) *configuration {
 		msgInvalidCmdMailfromArg:      config.msgInvalidCmdMailfromArg,
 		msgMailfromBlacklistedEmail:   config.msgMailfromBlacklistedEmail,
 		msgMailfromReceived:           config.msgMailfromReceived,
-		msgQuit:                       config.msgQuit,
+		msgInvalidCmdRcpttoSequence:   config.msgInvalidCmdRcpttoSequence,
+		msgInvalidCmdRcpttoArg:        config.msgInvalidCmdRcpttoArg,
+		msgRcpttoNotRegistredEmail:    config.msgRcpttoNotRegistredEmail,
+		msgRcpttoBlacklistedEmail:     config.msgRcpttoBlacklistedEmail,
+		msgRcpttoReceived:             config.msgRcpttoReceived,
+		msgQuitCmd:                    config.msgQuitCmd,
 		blacklistedHeloDomains:        config.blacklistedHeloDomains,
 		blacklistedMailfromEmails:     config.blacklistedMailfromEmails,
+		registredRcpttoEmails:         config.registredRcpttoEmails,
+		blacklistedRcpttoEmails:       config.blacklistedRcpttoEmails,
 	}
 }
 
@@ -57,6 +72,7 @@ type ConfigurationAttr struct {
 	isCmdFailFast                 bool
 	msgGreeting                   string
 	msgInvalidCmd                 string
+	msgQuitCmd                    string
 	msgInvalidCmdHeloSequence     string
 	msgInvalidCmdHeloArg          string
 	msgHeloBlacklistedDomain      string
@@ -65,9 +81,15 @@ type ConfigurationAttr struct {
 	msgInvalidCmdMailfromArg      string
 	msgMailfromBlacklistedEmail   string
 	msgMailfromReceived           string
-	msgQuit                       string
+	msgInvalidCmdRcpttoSequence   string
+	msgInvalidCmdRcpttoArg        string
+	msgRcpttoNotRegistredEmail    string
+	msgRcpttoBlacklistedEmail     string
+	msgRcpttoReceived             string
 	blacklistedHeloDomains        []string
 	blacklistedMailfromEmails     []string
+	registredRcpttoEmails         []string
+	blacklistedRcpttoEmails       []string
 }
 
 // ConfigurationAttr methods
@@ -86,6 +108,11 @@ func (config *ConfigurationAttr) assignDefaultValues() {
 	if config.msgInvalidCmd == EmptyString {
 		config.msgInvalidCmd = DefaultInvalidCmdMsg
 	}
+	if config.msgQuitCmd == EmptyString {
+		config.msgQuitCmd = DefaultQuitMsg
+	}
+
+	// HELO defaults
 	if config.msgInvalidCmdHeloSequence == EmptyString {
 		config.msgInvalidCmdHeloSequence = DefaultInvalidCmdHeloSequenceMsg
 	}
@@ -98,6 +125,8 @@ func (config *ConfigurationAttr) assignDefaultValues() {
 	if config.msgHeloReceived == EmptyString {
 		config.msgHeloReceived = DefaultReceivedMsg
 	}
+
+	// MAIL FROM defaults
 	if config.msgInvalidCmdMailfromSequence == EmptyString {
 		config.msgInvalidCmdMailfromSequence = DefaultInvalidCmdMailfromSequenceMsg
 	}
@@ -110,7 +139,21 @@ func (config *ConfigurationAttr) assignDefaultValues() {
 	if config.msgMailfromReceived == EmptyString {
 		config.msgMailfromReceived = DefaultReceivedMsg
 	}
-	if config.msgQuit == EmptyString {
-		config.msgQuit = DefaultQuitMsg
+
+	// RCPT TO defaults
+	if config.msgInvalidCmdRcpttoSequence == EmptyString {
+		config.msgInvalidCmdRcpttoSequence = DefaultInvalidCmdRcpttoSequenceMsg
+	}
+	if config.msgInvalidCmdRcpttoArg == EmptyString {
+		config.msgInvalidCmdRcpttoArg = DefaultInvalidCmdRcpttoArgMsg
+	}
+	if config.msgRcpttoNotRegistredEmail == EmptyString {
+		config.msgRcpttoNotRegistredEmail = DefaultNotRegistredRcpttoEmailMsg
+	}
+	if config.msgRcpttoBlacklistedEmail == EmptyString {
+		config.msgRcpttoBlacklistedEmail = DefaultQuitMsg
+	}
+	if config.msgRcpttoReceived == EmptyString {
+		config.msgRcpttoReceived = DefaultReceivedMsg
 	}
 }
