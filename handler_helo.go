@@ -46,10 +46,6 @@ func (handler *handlerHelo) run() {
 		}
 	}
 
-	if handler.isBlacklistedDomain(requestSnapshot) {
-		return
-	}
-
 	handler.writeResult(true, requestSnapshot, handler.configuration.msgHeloReceived)
 }
 
@@ -95,12 +91,6 @@ func (handler *handlerHelo) isInvalidCmdArg(request string) bool {
 	return false
 }
 
-// Invalid HELO command request complex predicate. Returns true for case when one
-// of the chain checks returns true, otherwise returns false
-func (handler *handlerHelo) isInvalidRequest(request string) bool {
-	return handler.isInvalidCmd(request) || handler.isInvalidCmdSequence(request) || handler.isInvalidCmdArg(request)
-}
-
 // Returns domain from HELO request
 func (handler *handlerHelo) heloDomain(request string) string {
 	return regexCaptureGroup(request, ValidHeloCmdRegexPattern, 2)
@@ -115,4 +105,13 @@ func (handler *handlerHelo) isBlacklistedDomain(request string) bool {
 	}
 
 	return handler.writeResult(false, request, configuration.msgHeloBlacklistedDomain)
+}
+
+// Invalid HELO command request complex predicate. Returns true for case when one
+// of the chain checks returns true, otherwise returns false
+func (handler *handlerHelo) isInvalidRequest(request string) bool {
+	return handler.isInvalidCmd(request) ||
+		handler.isInvalidCmdSequence(request) ||
+		handler.isInvalidCmdArg(request) ||
+		handler.isBlacklistedDomain(request)
 }

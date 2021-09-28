@@ -46,10 +46,6 @@ func (handler *handlerMailfrom) run() {
 		}
 	}
 
-	if handler.isBlacklistedEmail(requestSnapshot) {
-		return
-	}
-
 	handler.writeResult(true, requestSnapshot, handler.configuration.msgMailfromReceived)
 }
 
@@ -95,12 +91,6 @@ func (handler *handlerMailfrom) isInvalidCmdArg(request string) bool {
 	return false
 }
 
-// Invalid MAILFROM command request complex predicate. Returns true for case when one
-// of the chain checks returns true, otherwise returns false
-func (handler *handlerMailfrom) isInvalidRequest(request string) bool {
-	return handler.isInvalidCmd(request) || handler.isInvalidCmdSequence(request) || handler.isInvalidCmdArg(request)
-}
-
 // Returns domain from HELO request
 func (handler *handlerMailfrom) mailfromEmail(request string) string {
 	return regexCaptureGroup(request, ValidMaifromCmdRegexPattern, 3)
@@ -115,4 +105,13 @@ func (handler *handlerMailfrom) isBlacklistedEmail(request string) bool {
 	}
 
 	return handler.writeResult(false, request, configuration.msgMailfromBlacklistedEmail)
+}
+
+// Invalid MAILFROM command request complex predicate. Returns true for case when one
+// of the chain checks returns true, otherwise returns false
+func (handler *handlerMailfrom) isInvalidRequest(request string) bool {
+	return handler.isInvalidCmd(request) ||
+		handler.isInvalidCmdSequence(request) ||
+		handler.isInvalidCmdArg(request) ||
+		handler.isBlacklistedEmail(request)
 }
