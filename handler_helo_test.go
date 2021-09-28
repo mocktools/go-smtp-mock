@@ -153,27 +153,32 @@ func TestHandlerHeloRun(t *testing.T) {
 		assert.Equal(t, receivedMessage, message.heloResponse)
 	})
 
-	t.Run("when fail fast scenario disabled, request includes blacklisted HELO domain", func(t *testing.T) {
+	t.Run("when fail fast scenario disabled, 1 failured blacklisted HELO domain request, 1 successful request", func(t *testing.T) {
 		domainName := "example.com"
-		request := "EHLO " + domainName
+		request, anotherRequest := "EHLO "+domainName, "HELO another.com"
 		session, message, configuration := new(sessionMock), new(message), createConfiguration()
 		configuration.blacklistedHeloDomains = []string{domainName}
-		errorMessage := configuration.msgHeloBlacklistedDomain
-		handler, err := newHandlerHelo(session, message, configuration), errors.New(errorMessage)
-		session.On("clearError").Once().Return(nil)
+		handler := newHandlerHelo(session, message, configuration)
+
+		errorMsgHeloBlacklistedDomain := configuration.msgHeloBlacklistedDomain
 		session.On("readRequest").Once().Return(request, nil)
-		session.On("addError", err).Once().Return(nil)
-		session.On("writeResponse", errorMessage).Once().Return(nil)
+		session.On("addError", errors.New(errorMsgHeloBlacklistedDomain)).Once().Return(nil)
+		session.On("writeResponse", errorMsgHeloBlacklistedDomain).Once().Return(nil)
+
+		receivedMessage := configuration.msgHeloReceived
+		session.On("clearError").Times(2).Return(nil)
+		session.On("readRequest").Once().Return(anotherRequest, nil)
+		session.On("writeResponse", receivedMessage).Once().Return(nil)
 		handler.run()
 
-		assert.False(t, message.helo)
-		assert.Equal(t, request, message.heloRequest)
-		assert.Equal(t, errorMessage, message.heloResponse)
+		assert.True(t, message.helo)
+		assert.Equal(t, anotherRequest, message.heloRequest)
+		assert.Equal(t, receivedMessage, message.heloResponse)
 	})
 
-	t.Run("when fail fast scenario disabled, no read request errors, 4 failured HELO requests", func(t *testing.T) {
+	t.Run("when fail fast scenario disabled, no read request errors, 4 failured, 1 successful HELO requests", func(t *testing.T) {
 		domainName := "example.com"
-		requestWithBlacklistedHeloDomain := "EHLO " + domainName
+		requestWithBlacklistedHeloDomain, anotherRequest := "EHLO "+domainName, "HELO another.com"
 		session, message, configuration := new(sessionMock), new(message), createConfiguration()
 		configuration.blacklistedHeloDomains = []string{domainName}
 		handler := newHandlerHelo(session, message, configuration)
@@ -198,11 +203,16 @@ func TestHandlerHeloRun(t *testing.T) {
 		session.On("readRequest").Once().Return(requestWithBlacklistedHeloDomain, nil)
 		session.On("addError", errors.New(errorMsgHeloBlacklistedDomain)).Once().Return(nil)
 		session.On("writeResponse", errorMsgHeloBlacklistedDomain).Once().Return(nil)
+
+		receivedMessage := configuration.msgHeloReceived
+		session.On("clearError").Times(5).Return(nil)
+		session.On("readRequest").Once().Return(anotherRequest, nil)
+		session.On("writeResponse", receivedMessage).Once().Return(nil)
 		handler.run()
 
-		assert.False(t, message.helo)
-		assert.Equal(t, requestWithBlacklistedHeloDomain, message.heloRequest)
-		assert.Equal(t, errorMsgHeloBlacklistedDomain, message.heloResponse)
+		assert.True(t, message.helo)
+		assert.Equal(t, anotherRequest, message.heloRequest)
+		assert.Equal(t, receivedMessage, message.heloResponse)
 	})
 
 	t.Run("when fail fast scenario disabled, successful HELO request", func(t *testing.T) {
@@ -327,6 +337,51 @@ func TestHandlerHeloIsInvalidCmdArg(t *testing.T) {
 	})
 }
 
+func TestHandlerHeloHeloDomain(t *testing.T) {
+	handler := new(handlerHelo)
+
+	t.Run("when request includes valid domain name", func(t *testing.T) {
+		validDomainName := "example.com"
+
+		assert.Equal(t, validDomainName, handler.heloDomain("HELO "+validDomainName))
+	})
+
+	t.Run("when request not includes valid domain name", func(t *testing.T) {
+		invalidDomainName := "name.42"
+
+		assert.Equal(t, EmptyString, handler.heloDomain("HELO "+invalidDomainName))
+	})
+}
+
+func TestHandlerHeloIsBlacklistedDomain(t *testing.T) {
+	domainName := "example.com"
+	request := "EHLO " + domainName
+
+	t.Run("when request includes blacklisted domain name", func(t *testing.T) {
+		session, message, configuration := new(sessionMock), new(message), createConfiguration()
+		configuration.blacklistedHeloDomains = []string{domainName}
+		errorMessage := configuration.msgQuitCmd
+		handler, err := newHandlerHelo(session, message, configuration), errors.New(errorMessage)
+		session.On("addError", err).Once().Return(nil)
+		session.On("writeResponse", errorMessage).Once().Return(nil)
+
+		assert.True(t, handler.isBlacklistedDomain(request))
+		assert.False(t, message.helo)
+		assert.Equal(t, request, message.heloRequest)
+		assert.Equal(t, errorMessage, message.heloResponse)
+	})
+
+	t.Run("when request not includes blacklisted domain name", func(t *testing.T) {
+		session, message, configuration := new(sessionMock), new(message), createConfiguration()
+		handler := newHandlerHelo(session, message, configuration)
+
+		assert.False(t, handler.isBlacklistedDomain(request))
+		assert.False(t, message.helo)
+		assert.Empty(t, message.heloRequest)
+		assert.Empty(t, message.heloResponse)
+	})
+}
+
 func TestHandlerHeloIsInvalidRequest(t *testing.T) {
 	configuration := createConfiguration()
 
@@ -369,57 +424,27 @@ func TestHandlerHeloIsInvalidRequest(t *testing.T) {
 		assert.Equal(t, errorMessage, message.heloResponse)
 	})
 
+	t.Run("when request includes blacklisted HELO domain", func(t *testing.T) {
+		configuration, blacklistedDomain := createConfiguration(), "example.com"
+		request := "HELO " + blacklistedDomain
+		session, message, errorMessage := new(sessionMock), new(message), configuration.msgHeloBlacklistedDomain
+		configuration.blacklistedHeloDomains = []string{blacklistedDomain}
+		handler, err := newHandlerHelo(session, message, configuration), errors.New(errorMessage)
+		session.On("addError", err).Once().Return(nil)
+		session.On("writeResponse", errorMessage).Once().Return(nil)
+
+		assert.True(t, handler.isInvalidRequest(request))
+		assert.False(t, message.helo)
+		assert.Equal(t, request, message.heloRequest)
+		assert.Equal(t, errorMessage, message.heloResponse)
+	})
+
 	t.Run("when valid HELO request", func(t *testing.T) {
 		request := "HELO example.com"
 		session, message := new(sessionMock), new(message)
 		handler := newHandlerHelo(session, message, configuration)
 
 		assert.False(t, handler.isInvalidRequest(request))
-		assert.False(t, message.helo)
-		assert.Empty(t, message.heloRequest)
-		assert.Empty(t, message.heloResponse)
-	})
-}
-
-func TestHandlerHeloHeloDomain(t *testing.T) {
-	handler := new(handlerHelo)
-
-	t.Run("when request includes valid domain name", func(t *testing.T) {
-		validDomainName := "example.com"
-
-		assert.Equal(t, validDomainName, handler.heloDomain("HELO "+validDomainName))
-	})
-
-	t.Run("when request not includes valid domain name", func(t *testing.T) {
-		invalidDomainName := "name.42"
-
-		assert.Equal(t, EmptyString, handler.heloDomain("HELO "+invalidDomainName))
-	})
-}
-
-func TestHandlerHeloIsBlacklistedDomain(t *testing.T) {
-	domainName := "example.com"
-	request := "EHLO " + domainName
-
-	t.Run("when request includes blacklisted domain name", func(t *testing.T) {
-		session, message, configuration := new(sessionMock), new(message), createConfiguration()
-		configuration.blacklistedHeloDomains = []string{domainName}
-		errorMessage := configuration.msgQuitCmd
-		handler, err := newHandlerHelo(session, message, configuration), errors.New(errorMessage)
-		session.On("addError", err).Once().Return(nil)
-		session.On("writeResponse", errorMessage).Once().Return(nil)
-
-		assert.True(t, handler.isBlacklistedDomain(request))
-		assert.False(t, message.helo)
-		assert.Equal(t, request, message.heloRequest)
-		assert.Equal(t, errorMessage, message.heloResponse)
-	})
-
-	t.Run("when request not includes blacklisted domain name", func(t *testing.T) {
-		session, message, configuration := new(sessionMock), new(message), createConfiguration()
-		handler := newHandlerHelo(session, message, configuration)
-
-		assert.False(t, handler.isBlacklistedDomain(request))
 		assert.False(t, message.helo)
 		assert.Empty(t, message.heloRequest)
 		assert.Empty(t, message.heloResponse)

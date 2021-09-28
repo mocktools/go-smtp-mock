@@ -152,27 +152,33 @@ func TestHandlerMailfromRun(t *testing.T) {
 		assert.Equal(t, receivedMessage, message.mailfromResponse)
 	})
 
-	t.Run("when fail fast scenario disabled, request includes blacklisted MAILFROM email", func(t *testing.T) {
+	t.Run("when fail fast scenario disabled, 1 failured blacklisted MAILFROM email request, 1 successful request", func(t *testing.T) {
 		email := "user@example.com"
-		request := "MAIL FROM: " + email
+		request, anotherRequest := "MAIL FROM: "+email, "MAIL FROM: user@another.com"
 		session, message, configuration := new(sessionMock), new(message), createConfiguration()
 		configuration.blacklistedMailfromEmails = []string{email}
-		errorMessage := configuration.msgMailfromBlacklistedEmail
-		handler, err := newHandlerMailfrom(session, message, configuration), errors.New(errorMessage)
+		handler := newHandlerMailfrom(session, message, configuration)
+
+		errorMsgMailfromBlacklistedEmail := configuration.msgMailfromBlacklistedEmail
 		session.On("clearError").Once().Return(nil)
 		session.On("readRequest").Once().Return(request, nil)
-		session.On("addError", err).Once().Return(nil)
-		session.On("writeResponse", errorMessage).Once().Return(nil)
+		session.On("addError", errors.New(errorMsgMailfromBlacklistedEmail)).Once().Return(nil)
+		session.On("writeResponse", errorMsgMailfromBlacklistedEmail).Once().Return(nil)
+
+		receivedMessage := configuration.msgMailfromReceived
+		session.On("clearError").Times(2).Return(nil)
+		session.On("readRequest").Once().Return(anotherRequest, nil)
+		session.On("writeResponse", receivedMessage).Once().Return(nil)
 		handler.run()
 
-		assert.False(t, message.mailfrom)
-		assert.Equal(t, request, message.mailfromRequest)
-		assert.Equal(t, errorMessage, message.mailfromResponse)
+		assert.True(t, message.mailfrom)
+		assert.Equal(t, anotherRequest, message.mailfromRequest)
+		assert.Equal(t, receivedMessage, message.mailfromResponse)
 	})
 
 	t.Run("when fail fast scenario disabled, no read request errors, 4 failured MAILFROM requests", func(t *testing.T) {
 		email := "user@example.com"
-		requestWithBlacklistedMailfromEmail := "MAIL FROM: " + email
+		requestWithBlacklistedMailfromEmail, anotherRequest := "MAIL FROM: "+email, "MAIL FROM: user@another.com"
 		session, message, configuration := new(sessionMock), new(message), createConfiguration()
 		configuration.blacklistedMailfromEmails = []string{email}
 		handler := newHandlerMailfrom(session, message, configuration)
@@ -193,15 +199,19 @@ func TestHandlerMailfromRun(t *testing.T) {
 		session.On("writeResponse", errorMsgInvalidCmdMailfromArg).Once().Return(nil)
 
 		errorMsgMailfromBlacklistedEmail := configuration.msgMailfromBlacklistedEmail
-		session.On("clearError").Times(4).Return(nil)
 		session.On("readRequest").Once().Return(requestWithBlacklistedMailfromEmail, nil)
 		session.On("addError", errors.New(errorMsgMailfromBlacklistedEmail)).Once().Return(nil)
 		session.On("writeResponse", errorMsgMailfromBlacklistedEmail).Once().Return(nil)
+
+		receivedMessage := configuration.msgMailfromReceived
+		session.On("clearError").Times(5).Return(nil)
+		session.On("readRequest").Once().Return(anotherRequest, nil)
+		session.On("writeResponse", receivedMessage).Once().Return(nil)
 		handler.run()
 
-		assert.False(t, message.mailfrom)
-		assert.Equal(t, requestWithBlacklistedMailfromEmail, message.mailfromRequest)
-		assert.Equal(t, DefaultQuitMsg, message.mailfromResponse)
+		assert.True(t, message.mailfrom)
+		assert.Equal(t, anotherRequest, message.mailfromRequest)
+		assert.Equal(t, receivedMessage, message.mailfromResponse)
 	})
 
 	t.Run("when fail fast scenario disabled, successful MAILFROM request", func(t *testing.T) {
@@ -336,60 +346,6 @@ func TestHandlerMaifromIsInvalidCmdArg(t *testing.T) {
 	})
 }
 
-func TestHandlerMailfromIsInvalidRequest(t *testing.T) {
-	configuration := createConfiguration()
-
-	t.Run("when request includes invalid SMTP command", func(t *testing.T) {
-		request := "MAILFROM user@example.com"
-		session, message, errorMessage := new(sessionMock), new(message), configuration.msgInvalidCmd
-		handler, err := newHandlerMailfrom(session, message, configuration), errors.New(errorMessage)
-		session.On("addError", err).Once().Return(nil)
-		session.On("writeResponse", errorMessage).Once().Return(nil)
-
-		assert.True(t, handler.isInvalidRequest(request))
-		assert.False(t, message.mailfrom)
-		assert.Equal(t, request, message.mailfromRequest)
-		assert.Equal(t, errorMessage, message.mailfromResponse)
-	})
-
-	t.Run("when request includes invalid MAILFROM command sequence", func(t *testing.T) {
-		request := "RCPT TO: user@example.com"
-		session, message, errorMessage := new(sessionMock), new(message), configuration.msgInvalidCmdMailfromSequence
-		handler, err := newHandlerMailfrom(session, message, configuration), errors.New(errorMessage)
-		session.On("addError", err).Once().Return(nil)
-		session.On("writeResponse", errorMessage).Once().Return(nil)
-
-		assert.True(t, handler.isInvalidRequest(request))
-		assert.False(t, message.mailfrom)
-		assert.Equal(t, request, message.mailfromRequest)
-		assert.Equal(t, errorMessage, message.mailfromResponse)
-	})
-
-	t.Run("when request includes invalid MAILFROM command argument", func(t *testing.T) {
-		request := "MAIL FROM: user@example"
-		session, message, errorMessage := new(sessionMock), new(message), configuration.msgInvalidCmdMailfromArg
-		handler, err := newHandlerMailfrom(session, message, configuration), errors.New(errorMessage)
-		session.On("addError", err).Once().Return(nil)
-		session.On("writeResponse", errorMessage).Once().Return(nil)
-
-		assert.True(t, handler.isInvalidRequest(request))
-		assert.False(t, message.mailfrom)
-		assert.Equal(t, request, message.mailfromRequest)
-		assert.Equal(t, errorMessage, message.mailfromResponse)
-	})
-
-	t.Run("when valid MAILFROM request", func(t *testing.T) {
-		request := "MAIL FROM: user@example.com"
-		session, message := new(sessionMock), new(message)
-		handler := newHandlerMailfrom(session, message, configuration)
-
-		assert.False(t, handler.isInvalidRequest(request))
-		assert.False(t, message.mailfrom)
-		assert.Empty(t, message.mailfromRequest)
-		assert.Empty(t, message.mailfromResponse)
-	})
-}
-
 func TestHandlerMailfromMailfromEmail(t *testing.T) {
 	handler := new(handlerMailfrom)
 
@@ -435,6 +391,75 @@ func TestHandlerHeloIsBlacklistedEmail(t *testing.T) {
 		handler := newHandlerMailfrom(session, message, configuration)
 
 		assert.False(t, handler.isBlacklistedEmail(request))
+		assert.False(t, message.mailfrom)
+		assert.Empty(t, message.mailfromRequest)
+		assert.Empty(t, message.mailfromResponse)
+	})
+}
+
+func TestHandlerMailfromIsInvalidRequest(t *testing.T) {
+	configuration := createConfiguration()
+
+	t.Run("when request includes invalid SMTP command", func(t *testing.T) {
+		request := "MAILFROM user@example.com"
+		session, message, errorMessage := new(sessionMock), new(message), configuration.msgInvalidCmd
+		handler, err := newHandlerMailfrom(session, message, configuration), errors.New(errorMessage)
+		session.On("addError", err).Once().Return(nil)
+		session.On("writeResponse", errorMessage).Once().Return(nil)
+
+		assert.True(t, handler.isInvalidRequest(request))
+		assert.False(t, message.mailfrom)
+		assert.Equal(t, request, message.mailfromRequest)
+		assert.Equal(t, errorMessage, message.mailfromResponse)
+	})
+
+	t.Run("when request includes invalid MAILFROM command sequence", func(t *testing.T) {
+		request := "RCPT TO: user@example.com"
+		session, message, errorMessage := new(sessionMock), new(message), configuration.msgInvalidCmdMailfromSequence
+		handler, err := newHandlerMailfrom(session, message, configuration), errors.New(errorMessage)
+		session.On("addError", err).Once().Return(nil)
+		session.On("writeResponse", errorMessage).Once().Return(nil)
+
+		assert.True(t, handler.isInvalidRequest(request))
+		assert.False(t, message.mailfrom)
+		assert.Equal(t, request, message.mailfromRequest)
+		assert.Equal(t, errorMessage, message.mailfromResponse)
+	})
+
+	t.Run("when request includes invalid MAILFROM command argument", func(t *testing.T) {
+		request := "MAIL FROM: user@example"
+		session, message, errorMessage := new(sessionMock), new(message), configuration.msgInvalidCmdMailfromArg
+		handler, err := newHandlerMailfrom(session, message, configuration), errors.New(errorMessage)
+		session.On("addError", err).Once().Return(nil)
+		session.On("writeResponse", errorMessage).Once().Return(nil)
+
+		assert.True(t, handler.isInvalidRequest(request))
+		assert.False(t, message.mailfrom)
+		assert.Equal(t, request, message.mailfromRequest)
+		assert.Equal(t, errorMessage, message.mailfromResponse)
+	})
+
+	t.Run("when request includes blacklisted MAILFROM email", func(t *testing.T) {
+		configuration, blacklistedEmail := createConfiguration(), "user@example.com"
+		request := "MAIL FROM: " + blacklistedEmail
+		session, message, errorMessage := new(sessionMock), new(message), configuration.msgHeloBlacklistedDomain
+		configuration.blacklistedMailfromEmails = []string{blacklistedEmail}
+		handler, err := newHandlerMailfrom(session, message, configuration), errors.New(errorMessage)
+		session.On("addError", err).Once().Return(nil)
+		session.On("writeResponse", errorMessage).Once().Return(nil)
+
+		assert.True(t, handler.isInvalidRequest(request))
+		assert.False(t, message.mailfrom)
+		assert.Equal(t, request, message.mailfromRequest)
+		assert.Equal(t, errorMessage, message.mailfromResponse)
+	})
+
+	t.Run("when valid MAILFROM request", func(t *testing.T) {
+		request := "MAIL FROM: user@example.com"
+		session, message := new(sessionMock), new(message)
+		handler := newHandlerMailfrom(session, message, configuration)
+
+		assert.False(t, handler.isInvalidRequest(request))
 		assert.False(t, message.mailfrom)
 		assert.Empty(t, message.mailfromRequest)
 		assert.Empty(t, message.mailfromResponse)
