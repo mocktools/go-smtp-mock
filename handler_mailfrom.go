@@ -103,7 +103,7 @@ func (handler *handlerMailfrom) isInvalidRequest(request string) bool {
 
 // Returns domain from HELO request
 func (handler *handlerMailfrom) mailfromEmail(request string) string {
-	return regexCaptureGroup(request, ValidMaifromCmdRegexPattern, 2)
+	return regexCaptureGroup(request, ValidMaifromCmdRegexPattern, 3)
 }
 
 // Custom behaviour for HELO domain predicate. Returns true and writes result for case when HELO domain

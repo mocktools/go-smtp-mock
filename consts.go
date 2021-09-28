@@ -9,9 +9,12 @@ const (
 	DefaultReceivedMsg                   = "250 Received"
 	DefaultInvalidCmdHeloArgMsg          = "501 HELO requires domain address"
 	DefaultInvalidCmdMailfromArgMsg      = "501 MAIL FROM requires valid email address"
+	DefaultInvalidCmdRcpttoArgMsg        = "501 RCPT TO requires valid email address"
 	DefaultInvalidCmdMsg                 = "502 Command unrecognized. Available commands: HELO, EHLO, MAIL FROM:, RCPT TO:"
 	DefaultInvalidCmdHeloSequenceMsg     = "503 Bad sequence of commands. HELO should be the first"
-	DefaultInvalidCmdMailfromSequenceMsg = "503 Bad sequence of commands. MAIL FROM should used after HELO"
+	DefaultInvalidCmdMailfromSequenceMsg = "503 Bad sequence of commands. MAIL FROM should be used after HELO"
+	DefaultInvalidCmdRcpttoSequenceMsg   = "503 Bad sequence of commands. RCPT TO should be used after MAIL FROM"
+	DefaultNotRegistredRcpttoEmailMsg    = "550 User not found"
 	DefaultQuitMsg                       = "221 Closing connection"
 
 	// Logger
@@ -43,7 +46,7 @@ const (
 	ValidMailfromCmdRegexPattern = `(?i)mail from:`
 	DomainRegexPattern           = `(?i)([\p{L}0-9]+([\-.]{1}[\p{L}0-9]+)*\.\p{L}{2,63})`
 	ValidHeloCmdRegexPattern     = `\A(?i)(helo|ehlo) ` + `(` + DomainRegexPattern + `)\z`
-	EmailRegexPattern            = `(?i)(.+)@` + DomainRegexPattern
+	EmailRegexPattern            = `(?i)<?((.+)@` + DomainRegexPattern + `)>?`
 	ValidMaifromCmdRegexPattern  = `\A(?i)(mail from:) ` + `(` + EmailRegexPattern + `)\z`
 
 	// Helpers
