@@ -28,14 +28,14 @@ func TestNewConfiguration(t *testing.T) {
 
 		assert.Equal(t, DefaultInvalidCmdRcpttoSequenceMsg, buildedConfiguration.msgInvalidCmdRcpttoSequence)
 		assert.Equal(t, DefaultInvalidCmdRcpttoArgMsg, buildedConfiguration.msgInvalidCmdRcpttoArg)
-		assert.Equal(t, DefaultNotRegistredRcpttoEmailMsg, buildedConfiguration.msgRcpttoNotRegistredEmail)
 		assert.Equal(t, DefaultQuitMsg, buildedConfiguration.msgRcpttoBlacklistedEmail)
+		assert.Equal(t, DefaultNotRegistredRcpttoEmailMsg, buildedConfiguration.msgRcpttoNotRegisteredEmail)
 		assert.Equal(t, DefaultReceivedMsg, buildedConfiguration.msgRcpttoReceived)
 
 		assert.Empty(t, buildedConfiguration.blacklistedHeloDomains)
 		assert.Empty(t, buildedConfiguration.blacklistedMailfromEmails)
-		assert.Empty(t, buildedConfiguration.registredRcpttoEmails)
 		assert.Empty(t, buildedConfiguration.blacklistedRcpttoEmails)
+		assert.Empty(t, buildedConfiguration.notRegisteredEmails)
 	})
 
 	t.Run("creates new configuration with custom settings", func(t *testing.T) {
@@ -55,12 +55,12 @@ func TestNewConfiguration(t *testing.T) {
 			msgMailfromReceived:           "msgMailfromReceived",
 			msgInvalidCmdRcpttoSequence:   "msgInvalidCmdRcpttoSequence",
 			msgInvalidCmdRcpttoArg:        "msgInvalidCmdRcpttoArg",
-			msgRcpttoNotRegistredEmail:    "msgRcpttoNotRegistredEmail",
+			msgRcpttoNotRegisteredEmail:   "msgRcpttoNotRegisteredEmail",
 			msgRcpttoBlacklistedEmail:     "msgRcpttoBlacklistedEmail",
 			msgRcpttoReceived:             "msgRcpttoReceived",
 			blacklistedHeloDomains:        []string{},
 			blacklistedMailfromEmails:     []string{},
-			registredRcpttoEmails:         []string{},
+			notRegisteredEmails:           []string{},
 			blacklistedRcpttoEmails:       []string{},
 		}
 		buildedConfiguration := NewConfiguration(configAttr)
@@ -83,14 +83,14 @@ func TestNewConfiguration(t *testing.T) {
 
 		assert.Equal(t, configAttr.msgInvalidCmdRcpttoSequence, buildedConfiguration.msgInvalidCmdRcpttoSequence)
 		assert.Equal(t, configAttr.msgInvalidCmdRcpttoArg, buildedConfiguration.msgInvalidCmdRcpttoArg)
-		assert.Equal(t, configAttr.msgRcpttoNotRegistredEmail, buildedConfiguration.msgRcpttoNotRegistredEmail)
 		assert.Equal(t, configAttr.msgRcpttoBlacklistedEmail, buildedConfiguration.msgRcpttoBlacklistedEmail)
+		assert.Equal(t, configAttr.msgRcpttoNotRegisteredEmail, buildedConfiguration.msgRcpttoNotRegisteredEmail)
 		assert.Equal(t, configAttr.msgRcpttoReceived, buildedConfiguration.msgRcpttoReceived)
 
 		assert.Equal(t, configAttr.blacklistedHeloDomains, buildedConfiguration.blacklistedHeloDomains)
 		assert.Equal(t, configAttr.blacklistedMailfromEmails, buildedConfiguration.blacklistedMailfromEmails)
-		assert.Equal(t, configAttr.registredRcpttoEmails, buildedConfiguration.registredRcpttoEmails)
 		assert.Equal(t, configAttr.blacklistedRcpttoEmails, buildedConfiguration.blacklistedRcpttoEmails)
+		assert.Equal(t, configAttr.notRegisteredEmails, buildedConfiguration.notRegisteredEmails)
 	})
 }
 
@@ -115,8 +115,8 @@ func TestConfigurationAttrAssignDefaultValues(t *testing.T) {
 
 		assert.Equal(t, DefaultInvalidCmdRcpttoSequenceMsg, configurationAttr.msgInvalidCmdRcpttoSequence)
 		assert.Equal(t, DefaultInvalidCmdRcpttoArgMsg, configurationAttr.msgInvalidCmdRcpttoArg)
-		assert.Equal(t, DefaultNotRegistredRcpttoEmailMsg, configurationAttr.msgRcpttoNotRegistredEmail)
 		assert.Equal(t, DefaultQuitMsg, configurationAttr.msgRcpttoBlacklistedEmail)
+		assert.Equal(t, DefaultNotRegistredRcpttoEmailMsg, configurationAttr.msgRcpttoNotRegisteredEmail)
 		assert.Equal(t, DefaultReceivedMsg, configurationAttr.msgRcpttoReceived)
 	})
 }

@@ -6,9 +6,8 @@ import "sync"
 type message struct {
 	heloRequest, heloResponse         string
 	mailfromRequest, mailfromResponse string
-	helo, mailfrom                    bool
-	// rcpttoRequest, rcpttoResponse     string
-	// rcptto            bool
+	rcpttoRequest, rcpttoResponse     string
+	helo, mailfrom, rcptto            bool
 }
 
 // Concurrent type that can be safely shared between goroutines

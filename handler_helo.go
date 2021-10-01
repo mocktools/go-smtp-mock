@@ -49,7 +49,7 @@ func (handler *handlerHelo) run() {
 	handler.writeResult(true, requestSnapshot, handler.configuration.msgHeloReceived)
 }
 
-// Writes hadled HELO result to session, message. Always returns true
+// Writes handled HELO result to session, message. Always returns true
 func (handler *handlerHelo) writeResult(isSuccessful bool, request, response string) bool {
 	session, message := handler.session, handler.message
 	if !isSuccessful {
@@ -84,7 +84,7 @@ func (handler *handlerHelo) isInvalidCmdSequence(request string) bool {
 // Invalid HELO command argument predicate. Returns true and writes result for case when HELO command
 // argument is invalid, otherwise returns false
 func (handler *handlerHelo) isInvalidCmdArg(request string) bool {
-	if !matchRegex(request, ValidHeloCmdRegexPattern) {
+	if !matchRegex(request, ValidHeloComplexCmdRegexPattern) {
 		return handler.writeResult(false, request, handler.configuration.msgInvalidCmdHeloArg)
 	}
 
@@ -93,10 +93,10 @@ func (handler *handlerHelo) isInvalidCmdArg(request string) bool {
 
 // Returns domain from HELO request
 func (handler *handlerHelo) heloDomain(request string) string {
-	return regexCaptureGroup(request, ValidHeloCmdRegexPattern, 2)
+	return regexCaptureGroup(request, ValidHeloComplexCmdRegexPattern, 2)
 }
 
-// Custom behaviour for HELO domain predicate. Returns true and writes result for case when HELO domain
+// Custom behaviour for HELO domain. Returns true and writes result for case when HELO domain
 // is included in configuration.blacklistedHeloDomains slice
 func (handler *handlerHelo) isBlacklistedDomain(request string) bool {
 	configuration := handler.configuration

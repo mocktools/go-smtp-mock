@@ -176,7 +176,7 @@ func TestHandlerMailfromRun(t *testing.T) {
 		assert.Equal(t, receivedMessage, message.mailfromResponse)
 	})
 
-	t.Run("when fail fast scenario disabled, no read request errors, 4 failured MAILFROM requests", func(t *testing.T) {
+	t.Run("when fail fast scenario disabled, no read request errors, 4 failured MAILFROM requests, 1 successful request", func(t *testing.T) {
 		email := "user@example.com"
 		requestWithBlacklistedMailfromEmail, anotherRequest := "MAIL FROM: "+email, "MAIL FROM: user@another.com"
 		session, message, configuration := new(sessionMock), new(message), createConfiguration()
