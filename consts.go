@@ -41,13 +41,15 @@ const (
 
 	// Regex patterns
 
-	AvailableCmdsRegexPattern    = `(?i)helo|ehlo|mail from:|rcpt to:`
-	ValidHeloCmdsRegexPattern    = `(?i)helo|ehlo`
-	ValidMailfromCmdRegexPattern = `(?i)mail from:`
-	DomainRegexPattern           = `(?i)([\p{L}0-9]+([\-.]{1}[\p{L}0-9]+)*\.\p{L}{2,63})`
-	ValidHeloCmdRegexPattern     = `\A(?i)(helo|ehlo) ` + `(` + DomainRegexPattern + `)\z`
-	EmailRegexPattern            = `(?i)<?((.+)@` + DomainRegexPattern + `)>?`
-	ValidMaifromCmdRegexPattern  = `\A(?i)(mail from:) ` + `(` + EmailRegexPattern + `)\z`
+	AvailableCmdsRegexPattern          = `(?i)helo|ehlo|mail from:|rcpt to:`
+	DomainRegexPattern                 = `(?i)([\p{L}0-9]+([\-.]{1}[\p{L}0-9]+)*\.\p{L}{2,63})`
+	EmailRegexPattern                  = `(?i)<?((.+)@` + DomainRegexPattern + `)>?`
+	ValidHeloCmdsRegexPattern          = `(?i)helo|ehlo`
+	ValidMailfromCmdRegexPattern       = `(?i)mail from:`
+	ValidRcpttoCmdRegexPattern         = `(?i)rcpt to:`
+	ValidHeloComplexCmdRegexPattern    = `\A(` + ValidHeloCmdsRegexPattern + `) (` + DomainRegexPattern + `)\z`
+	ValidMailromComplexCmdRegexPattern = `\A(` + ValidMailfromCmdRegexPattern + `) (` + EmailRegexPattern + `)\z`
+	ValidRcpttoComplexCmdRegexPattern  = `\A(` + ValidRcpttoCmdRegexPattern + `) (` + EmailRegexPattern + `)\z`
 
 	// Helpers
 

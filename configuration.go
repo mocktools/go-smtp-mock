@@ -20,13 +20,13 @@ type configuration struct {
 	msgMailfromReceived           string
 	msgInvalidCmdRcpttoSequence   string
 	msgInvalidCmdRcpttoArg        string
-	msgRcpttoNotRegistredEmail    string
+	msgRcpttoNotRegisteredEmail   string
 	msgRcpttoBlacklistedEmail     string
 	msgRcpttoReceived             string
 	blacklistedHeloDomains        []string
 	blacklistedMailfromEmails     []string
-	registredRcpttoEmails         []string
 	blacklistedRcpttoEmails       []string
+	notRegisteredEmails           []string
 	// TODO: add ability to send 221 response before end of the session
 }
 
@@ -52,14 +52,14 @@ func NewConfiguration(config ConfigurationAttr) *configuration {
 		msgMailfromReceived:           config.msgMailfromReceived,
 		msgInvalidCmdRcpttoSequence:   config.msgInvalidCmdRcpttoSequence,
 		msgInvalidCmdRcpttoArg:        config.msgInvalidCmdRcpttoArg,
-		msgRcpttoNotRegistredEmail:    config.msgRcpttoNotRegistredEmail,
+		msgRcpttoNotRegisteredEmail:   config.msgRcpttoNotRegisteredEmail,
 		msgRcpttoBlacklistedEmail:     config.msgRcpttoBlacklistedEmail,
 		msgRcpttoReceived:             config.msgRcpttoReceived,
 		msgQuitCmd:                    config.msgQuitCmd,
 		blacklistedHeloDomains:        config.blacklistedHeloDomains,
 		blacklistedMailfromEmails:     config.blacklistedMailfromEmails,
-		registredRcpttoEmails:         config.registredRcpttoEmails,
 		blacklistedRcpttoEmails:       config.blacklistedRcpttoEmails,
+		notRegisteredEmails:           config.notRegisteredEmails,
 	}
 }
 
@@ -83,13 +83,13 @@ type ConfigurationAttr struct {
 	msgMailfromReceived           string
 	msgInvalidCmdRcpttoSequence   string
 	msgInvalidCmdRcpttoArg        string
-	msgRcpttoNotRegistredEmail    string
+	msgRcpttoNotRegisteredEmail   string
 	msgRcpttoBlacklistedEmail     string
 	msgRcpttoReceived             string
 	blacklistedHeloDomains        []string
 	blacklistedMailfromEmails     []string
-	registredRcpttoEmails         []string
 	blacklistedRcpttoEmails       []string
+	notRegisteredEmails           []string
 }
 
 // ConfigurationAttr methods
@@ -147,11 +147,11 @@ func (config *ConfigurationAttr) assignDefaultValues() {
 	if config.msgInvalidCmdRcpttoArg == EmptyString {
 		config.msgInvalidCmdRcpttoArg = DefaultInvalidCmdRcpttoArgMsg
 	}
-	if config.msgRcpttoNotRegistredEmail == EmptyString {
-		config.msgRcpttoNotRegistredEmail = DefaultNotRegistredRcpttoEmailMsg
-	}
 	if config.msgRcpttoBlacklistedEmail == EmptyString {
 		config.msgRcpttoBlacklistedEmail = DefaultQuitMsg
+	}
+	if config.msgRcpttoNotRegisteredEmail == EmptyString {
+		config.msgRcpttoNotRegisteredEmail = DefaultNotRegistredRcpttoEmailMsg
 	}
 	if config.msgRcpttoReceived == EmptyString {
 		config.msgRcpttoReceived = DefaultReceivedMsg

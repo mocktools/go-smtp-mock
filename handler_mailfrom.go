@@ -49,7 +49,7 @@ func (handler *handlerMailfrom) run() {
 	handler.writeResult(true, requestSnapshot, handler.configuration.msgMailfromReceived)
 }
 
-// Writes hadled HELO result to session, message. Always returns true
+// Writes handled HELO result to session, message. Always returns true
 func (handler *handlerMailfrom) writeResult(isSuccessful bool, request, response string) bool {
 	session, message := handler.session, handler.message
 	if !isSuccessful {
@@ -84,20 +84,20 @@ func (handler *handlerMailfrom) isInvalidCmdSequence(request string) bool {
 // Invalid MAILFROM command argument predicate. Returns true and writes result for case when MAILFROM
 // command argument is invalid, otherwise returns false
 func (handler *handlerMailfrom) isInvalidCmdArg(request string) bool {
-	if !matchRegex(request, ValidMaifromCmdRegexPattern) {
+	if !matchRegex(request, ValidMailromComplexCmdRegexPattern) {
 		return handler.writeResult(false, request, handler.configuration.msgInvalidCmdMailfromArg)
 	}
 
 	return false
 }
 
-// Returns domain from HELO request
+// Returns email from MAILFROM request
 func (handler *handlerMailfrom) mailfromEmail(request string) string {
-	return regexCaptureGroup(request, ValidMaifromCmdRegexPattern, 3)
+	return regexCaptureGroup(request, ValidMailromComplexCmdRegexPattern, 3)
 }
 
-// Custom behaviour for HELO domain predicate. Returns true and writes result for case when HELO domain
-// is included in configuration.blacklistedHeloDomains slice
+// Custom behaviour for MAILFROM email. Returns true and writes result for case when
+// MAILFROM email is included in configuration.blacklistedMailfromEmails slice
 func (handler *handlerMailfrom) isBlacklistedEmail(request string) bool {
 	configuration := handler.configuration
 	if !isIncluded(configuration.blacklistedMailfromEmails, handler.mailfromEmail(request)) {
