@@ -23,6 +23,8 @@ type configuration struct {
 	msgRcpttoNotRegisteredEmail   string
 	msgRcpttoBlacklistedEmail     string
 	msgRcpttoReceived             string
+	msgInvalidCmdDataSequence     string
+	msgDataReceived               string
 	blacklistedHeloDomains        []string
 	blacklistedMailfromEmails     []string
 	blacklistedRcpttoEmails       []string
@@ -55,6 +57,8 @@ func NewConfiguration(config ConfigurationAttr) *configuration {
 		msgRcpttoNotRegisteredEmail:   config.msgRcpttoNotRegisteredEmail,
 		msgRcpttoBlacklistedEmail:     config.msgRcpttoBlacklistedEmail,
 		msgRcpttoReceived:             config.msgRcpttoReceived,
+		msgInvalidCmdDataSequence:     config.msgInvalidCmdDataSequence,
+		msgDataReceived:               config.msgDataReceived,
 		msgQuitCmd:                    config.msgQuitCmd,
 		blacklistedHeloDomains:        config.blacklistedHeloDomains,
 		blacklistedMailfromEmails:     config.blacklistedMailfromEmails,
@@ -86,6 +90,8 @@ type ConfigurationAttr struct {
 	msgRcpttoNotRegisteredEmail   string
 	msgRcpttoBlacklistedEmail     string
 	msgRcpttoReceived             string
+	msgInvalidCmdDataSequence     string
+	msgDataReceived               string
 	blacklistedHeloDomains        []string
 	blacklistedMailfromEmails     []string
 	blacklistedRcpttoEmails       []string
@@ -155,5 +161,13 @@ func (config *ConfigurationAttr) assignDefaultValues() {
 	}
 	if config.msgRcpttoReceived == EmptyString {
 		config.msgRcpttoReceived = DefaultReceivedMsg
+	}
+
+	// DATA defaults
+	if config.msgInvalidCmdDataSequence == EmptyString {
+		config.msgInvalidCmdDataSequence = DefaultInvalidCmdDataSequenceMsg
+	}
+	if config.msgDataReceived == EmptyString {
+		config.msgDataReceived = DefaultReadyForReceiveMsg
 	}
 }

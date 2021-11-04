@@ -344,7 +344,7 @@ func TestHandlerRcpttoIsInvalidCmdSequence(t *testing.T) {
 		assert.Equal(t, errorMessage, message.rcpttoResponse)
 	})
 
-	t.Run("when request includes valid command MAILFROM sequence", func(t *testing.T) {
+	t.Run("when request includes valid command RCPTTO sequence", func(t *testing.T) {
 		message := new(message)
 		handler := newHandlerRcptto(session, message, configuration)
 
