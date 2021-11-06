@@ -7,7 +7,8 @@ type message struct {
 	heloRequest, heloResponse         string
 	mailfromRequest, mailfromResponse string
 	rcpttoRequest, rcpttoResponse     string
-	helo, mailfrom, rcptto            bool
+	dataRequest, dataResponse         string
+	helo, mailfrom, rcptto, data      bool
 }
 
 // Concurrent type that can be safely shared between goroutines

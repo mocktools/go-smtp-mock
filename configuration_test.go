@@ -32,6 +32,9 @@ func TestNewConfiguration(t *testing.T) {
 		assert.Equal(t, DefaultNotRegistredRcpttoEmailMsg, buildedConfiguration.msgRcpttoNotRegisteredEmail)
 		assert.Equal(t, DefaultReceivedMsg, buildedConfiguration.msgRcpttoReceived)
 
+		assert.Equal(t, DefaultInvalidCmdDataSequenceMsg, buildedConfiguration.msgInvalidCmdDataSequence)
+		assert.Equal(t, DefaultReadyForReceiveMsg, buildedConfiguration.msgDataReceived)
+
 		assert.Empty(t, buildedConfiguration.blacklistedHeloDomains)
 		assert.Empty(t, buildedConfiguration.blacklistedMailfromEmails)
 		assert.Empty(t, buildedConfiguration.blacklistedRcpttoEmails)
@@ -58,6 +61,8 @@ func TestNewConfiguration(t *testing.T) {
 			msgRcpttoNotRegisteredEmail:   "msgRcpttoNotRegisteredEmail",
 			msgRcpttoBlacklistedEmail:     "msgRcpttoBlacklistedEmail",
 			msgRcpttoReceived:             "msgRcpttoReceived",
+			msgInvalidCmdDataSequence:     "msgInvalidCmdDataSequence",
+			msgDataReceived:               "msgDataReceived",
 			blacklistedHeloDomains:        []string{},
 			blacklistedMailfromEmails:     []string{},
 			notRegisteredEmails:           []string{},
@@ -86,6 +91,9 @@ func TestNewConfiguration(t *testing.T) {
 		assert.Equal(t, configAttr.msgRcpttoBlacklistedEmail, buildedConfiguration.msgRcpttoBlacklistedEmail)
 		assert.Equal(t, configAttr.msgRcpttoNotRegisteredEmail, buildedConfiguration.msgRcpttoNotRegisteredEmail)
 		assert.Equal(t, configAttr.msgRcpttoReceived, buildedConfiguration.msgRcpttoReceived)
+
+		assert.Equal(t, configAttr.msgInvalidCmdDataSequence, buildedConfiguration.msgInvalidCmdDataSequence)
+		assert.Equal(t, configAttr.msgDataReceived, buildedConfiguration.msgDataReceived)
 
 		assert.Equal(t, configAttr.blacklistedHeloDomains, buildedConfiguration.blacklistedHeloDomains)
 		assert.Equal(t, configAttr.blacklistedMailfromEmails, buildedConfiguration.blacklistedMailfromEmails)
@@ -118,5 +126,8 @@ func TestConfigurationAttrAssignDefaultValues(t *testing.T) {
 		assert.Equal(t, DefaultQuitMsg, configurationAttr.msgRcpttoBlacklistedEmail)
 		assert.Equal(t, DefaultNotRegistredRcpttoEmailMsg, configurationAttr.msgRcpttoNotRegisteredEmail)
 		assert.Equal(t, DefaultReceivedMsg, configurationAttr.msgRcpttoReceived)
+
+		assert.Equal(t, DefaultInvalidCmdDataSequenceMsg, configurationAttr.msgInvalidCmdDataSequence)
+		assert.Equal(t, DefaultReadyForReceiveMsg, configurationAttr.msgDataReceived)
 	})
 }
