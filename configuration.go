@@ -1,5 +1,7 @@
 package smtpmock
 
+import "fmt"
+
 // SMTP mock configuration structure. Provides to configure mock behaviour
 type configuration struct {
 	hostAddress                   string
@@ -25,10 +27,14 @@ type configuration struct {
 	msgRcpttoReceived             string
 	msgInvalidCmdDataSequence     string
 	msgDataReceived               string
+	msgMsgSizeIsTooBig            string
+	msgMsgReceived                string
 	blacklistedHeloDomains        []string
 	blacklistedMailfromEmails     []string
 	blacklistedRcpttoEmails       []string
 	notRegisteredEmails           []string
+	msqSizeLimit                  int
+
 	// TODO: add ability to send 221 response before end of the session
 }
 
@@ -59,11 +65,14 @@ func NewConfiguration(config ConfigurationAttr) *configuration {
 		msgRcpttoReceived:             config.msgRcpttoReceived,
 		msgInvalidCmdDataSequence:     config.msgInvalidCmdDataSequence,
 		msgDataReceived:               config.msgDataReceived,
+		msgMsgSizeIsTooBig:            config.msgMsgSizeIsTooBig,
+		msgMsgReceived:                config.msgMsgReceived,
 		msgQuitCmd:                    config.msgQuitCmd,
 		blacklistedHeloDomains:        config.blacklistedHeloDomains,
 		blacklistedMailfromEmails:     config.blacklistedMailfromEmails,
 		blacklistedRcpttoEmails:       config.blacklistedRcpttoEmails,
 		notRegisteredEmails:           config.notRegisteredEmails,
+		msqSizeLimit:                  config.msqSizeLimit,
 	}
 }
 
@@ -92,10 +101,13 @@ type ConfigurationAttr struct {
 	msgRcpttoReceived             string
 	msgInvalidCmdDataSequence     string
 	msgDataReceived               string
+	msgMsgSizeIsTooBig            string
+	msgMsgReceived                string
 	blacklistedHeloDomains        []string
 	blacklistedMailfromEmails     []string
 	blacklistedRcpttoEmails       []string
 	notRegisteredEmails           []string
+	msqSizeLimit                  int
 }
 
 // ConfigurationAttr methods
@@ -169,5 +181,16 @@ func (config *ConfigurationAttr) assignDefaultValues() {
 	}
 	if config.msgDataReceived == EmptyString {
 		config.msgDataReceived = DefaultReadyForReceiveMsg
+	}
+
+	// Message defaults
+	if config.msqSizeLimit == 0 {
+		config.msqSizeLimit = MessageSizeLimit
+	}
+	if config.msgMsgSizeIsTooBig == EmptyString {
+		config.msgMsgSizeIsTooBig = fmt.Sprintf(DefaultMsgSizeIsTooBigMsg+" %d bytes", config.msqSizeLimit)
+	}
+	if config.msgMsgReceived == EmptyString {
+		config.msgMsgReceived = DefaultReceivedMsg
 	}
 }

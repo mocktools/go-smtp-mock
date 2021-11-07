@@ -1,6 +1,7 @@
 package smtpmock
 
 import (
+	"fmt"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
@@ -35,6 +36,10 @@ func TestNewConfiguration(t *testing.T) {
 		assert.Equal(t, DefaultInvalidCmdDataSequenceMsg, buildedConfiguration.msgInvalidCmdDataSequence)
 		assert.Equal(t, DefaultReadyForReceiveMsg, buildedConfiguration.msgDataReceived)
 
+		assert.Equal(t, fmt.Sprintf(DefaultMsgSizeIsTooBigMsg+" %d bytes", MessageSizeLimit), buildedConfiguration.msgMsgSizeIsTooBig)
+		assert.Equal(t, DefaultReceivedMsg, buildedConfiguration.msgMsgReceived)
+		assert.Equal(t, MessageSizeLimit, buildedConfiguration.msqSizeLimit)
+
 		assert.Empty(t, buildedConfiguration.blacklistedHeloDomains)
 		assert.Empty(t, buildedConfiguration.blacklistedMailfromEmails)
 		assert.Empty(t, buildedConfiguration.blacklistedRcpttoEmails)
@@ -63,10 +68,13 @@ func TestNewConfiguration(t *testing.T) {
 			msgRcpttoReceived:             "msgRcpttoReceived",
 			msgInvalidCmdDataSequence:     "msgInvalidCmdDataSequence",
 			msgDataReceived:               "msgDataReceived",
+			msgMsgSizeIsTooBig:            EmptyString,
+			msgMsgReceived:                "msgMsgReceived",
 			blacklistedHeloDomains:        []string{},
 			blacklistedMailfromEmails:     []string{},
 			notRegisteredEmails:           []string{},
 			blacklistedRcpttoEmails:       []string{},
+			msqSizeLimit:                  42,
 		}
 		buildedConfiguration := NewConfiguration(configAttr)
 
@@ -94,6 +102,10 @@ func TestNewConfiguration(t *testing.T) {
 
 		assert.Equal(t, configAttr.msgInvalidCmdDataSequence, buildedConfiguration.msgInvalidCmdDataSequence)
 		assert.Equal(t, configAttr.msgDataReceived, buildedConfiguration.msgDataReceived)
+
+		assert.Equal(t, fmt.Sprintf(DefaultMsgSizeIsTooBigMsg+" %d bytes", configAttr.msqSizeLimit), buildedConfiguration.msgMsgSizeIsTooBig)
+		assert.Equal(t, configAttr.msgMsgReceived, buildedConfiguration.msgMsgReceived)
+		assert.Equal(t, configAttr.msqSizeLimit, buildedConfiguration.msqSizeLimit)
 
 		assert.Equal(t, configAttr.blacklistedHeloDomains, buildedConfiguration.blacklistedHeloDomains)
 		assert.Equal(t, configAttr.blacklistedMailfromEmails, buildedConfiguration.blacklistedMailfromEmails)
@@ -129,5 +141,9 @@ func TestConfigurationAttrAssignDefaultValues(t *testing.T) {
 
 		assert.Equal(t, DefaultInvalidCmdDataSequenceMsg, configurationAttr.msgInvalidCmdDataSequence)
 		assert.Equal(t, DefaultReadyForReceiveMsg, configurationAttr.msgDataReceived)
+
+		assert.Equal(t, fmt.Sprintf(DefaultMsgSizeIsTooBigMsg+" %d bytes", MessageSizeLimit), configurationAttr.msgMsgSizeIsTooBig)
+		assert.Equal(t, DefaultReceivedMsg, configurationAttr.msgMsgReceived)
+		assert.Equal(t, MessageSizeLimit, configurationAttr.msqSizeLimit)
 	})
 }

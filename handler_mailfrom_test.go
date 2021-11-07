@@ -335,11 +335,31 @@ func TestHandlerMaifromIsInvalidCmdArg(t *testing.T) {
 		assert.Empty(t, message.mailfromResponse)
 	})
 
+	t.Run("when request includes valid command MAILFROM argument without <> sign without space", func(t *testing.T) {
+		message := new(message)
+		handler := newHandlerMailfrom(session, message, configuration)
+
+		assert.False(t, handler.isInvalidCmdArg("MAIL FROM:user@example.com"))
+		assert.False(t, message.mailfrom)
+		assert.Empty(t, message.mailfromRequest)
+		assert.Empty(t, message.mailfromResponse)
+	})
+
 	t.Run("when request includes valid command MAILFROM argument with <> sign", func(t *testing.T) {
 		message := new(message)
 		handler := newHandlerMailfrom(session, message, configuration)
 
 		assert.False(t, handler.isInvalidCmdArg("MAIL FROM: <user@example.com>"))
+		assert.False(t, message.mailfrom)
+		assert.Empty(t, message.mailfromRequest)
+		assert.Empty(t, message.mailfromResponse)
+	})
+
+	t.Run("when request includes valid command MAILFROM argument with <> sign without space", func(t *testing.T) {
+		message := new(message)
+		handler := newHandlerMailfrom(session, message, configuration)
+
+		assert.False(t, handler.isInvalidCmdArg("MAIL FROM:<user@example.com>"))
 		assert.False(t, message.mailfrom)
 		assert.Empty(t, message.mailfromRequest)
 		assert.Empty(t, message.mailfromResponse)

@@ -12,12 +12,17 @@ type sessionInterface interface {
 	writeResponse(string)
 	addError(error)
 	clearError()
+	discardBufin()
+	readBytes() ([]byte, error)
 }
 
 // session interfaces
 
 type bufin interface {
 	ReadString(byte) (string, error)
+	Buffered() int
+	Discard(int) (int, error)
+	ReadBytes(byte) ([]byte, error)
 }
 
 type bufout interface {
@@ -63,6 +68,17 @@ func (session *session) clearError() {
 	session.err = nil
 }
 
+// Discardes the bufin remnants
+func (session *session) discardBufin() {
+	bufin := session.bufin
+	_, err := bufin.Discard(bufin.Buffered())
+
+	if err != nil {
+		session.err = err
+		session.logger.error(err.Error())
+	}
+}
+
 // Reades client request from the session, returns trimmed string.
 // When error case happened writes it to session.err and triggers logger with error level
 func (session *session) readRequest() (string, error) {
@@ -76,6 +92,21 @@ func (session *session) readRequest() (string, error) {
 	session.err = err
 	session.logger.error(err.Error())
 	return EmptyString, err
+}
+
+// Reades client request from the session, returns bytes.
+// When error case happened writes it to session.err and triggers logger with error level
+func (session *session) readBytes() ([]byte, error) {
+	var request []byte
+	request, err := session.bufin.ReadBytes('\n')
+	if err == nil {
+		session.logger.infoActivity(SessionRequestMsg + SessionBinaryDataMsg)
+		return request, err
+	}
+
+	session.err = err
+	session.logger.error(err.Error())
+	return request, err
 }
 
 // Writes server response to the client session. When error case happened triggers
