@@ -6,6 +6,7 @@ const (
 	// SMTP mock default messages
 
 	DefaultGreetingMsg                   = "220 Welcome"
+	DefaultQuitMsg                       = "221 Closing connection"
 	DefaultReceivedMsg                   = "250 Received"
 	DefaultReadyForReceiveMsg            = "354 Ready for receive message. End data with <CR><LF>.<CR><LF>"
 	DefaultInvalidCmdHeloArgMsg          = "501 HELO requires domain address"
@@ -17,7 +18,7 @@ const (
 	DefaultInvalidCmdRcpttoSequenceMsg   = "503 Bad sequence of commands. RCPT TO should be used after MAIL FROM"
 	DefaultInvalidCmdDataSequenceMsg     = "503 Bad sequence of commands. DATA should be used after RCPT TO"
 	DefaultNotRegistredRcpttoEmailMsg    = "550 User not found"
-	DefaultQuitMsg                       = "221 Closing connection"
+	DefaultMsgSizeIsTooBigMsg            = "552 Message exceeded max size of"
 
 	// Logger
 
@@ -28,18 +29,20 @@ const (
 
 	// Session
 
-	SessionStartMsg    = "New SMTP session started"
-	SessionRequestMsg  = "SMTP request: "
-	SessionResponseMsg = "SMTP response: "
-	SessionEndMsg      = "SMTP session finished"
+	SessionStartMsg      = "New SMTP session started"
+	SessionRequestMsg    = "SMTP request: "
+	SessionResponseMsg   = "SMTP response: "
+	SessionEndMsg        = "SMTP session finished"
+	SessionBinaryDataMsg = "message binary data portion"
 
 	// Server
 
-	NetworkProtocol = "tcp"
-	HostAddress     = "0.0.0.0"
-	PortNuber       = 2525
-	ServerStartMsg  = "SMTP mock server started on port"
-	ServerErrorMsg  = "Failed to start SMTP mock server on port"
+	NetworkProtocol  = "tcp"
+	HostAddress      = "0.0.0.0"
+	PortNuber        = 2525
+	ServerStartMsg   = "SMTP mock server started on port"
+	ServerErrorMsg   = "Failed to start SMTP mock server on port"
+	MessageSizeLimit = 10485760 // 10MB
 
 	// Regex patterns
 
@@ -51,8 +54,8 @@ const (
 	ValidRcpttoCmdRegexPattern         = `(?i)rcpt to:`
 	ValidDataCmdRegexPattern           = `\A(?i)data\z`
 	ValidHeloComplexCmdRegexPattern    = `\A(` + ValidHeloCmdsRegexPattern + `) (` + DomainRegexPattern + `)\z`
-	ValidMailromComplexCmdRegexPattern = `\A(` + ValidMailfromCmdRegexPattern + `) (` + EmailRegexPattern + `)\z`
-	ValidRcpttoComplexCmdRegexPattern  = `\A(` + ValidRcpttoCmdRegexPattern + `) (` + EmailRegexPattern + `)\z`
+	ValidMailromComplexCmdRegexPattern = `\A(` + ValidMailfromCmdRegexPattern + `) ?(` + EmailRegexPattern + `)\z`
+	ValidRcpttoComplexCmdRegexPattern  = `\A(` + ValidRcpttoCmdRegexPattern + `) ?(` + EmailRegexPattern + `)\z`
 
 	// Helpers
 

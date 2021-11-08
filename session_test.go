@@ -40,6 +40,28 @@ func TestSessionClearError(t *testing.T) {
 	})
 }
 
+func TestSessionDiscardBufin(t *testing.T) {
+	t.Run("discardes the bufin remnants", func(t *testing.T) {
+		bufin := new(bufioReaderMock)
+		session := &session{bufin: bufin}
+		bufin.On("Buffered").Once().Return(42)
+		bufin.On("Discard", 42).Once().Return(42, nil)
+		session.discardBufin()
+	})
+
+	t.Run("discardes the bufin remnants with error", func(t *testing.T) {
+		errorMessage, bufin, logger := "bufin discard error", new(bufioReaderMock), new(loggerMock)
+		session, err := &session{bufin: bufin, logger: logger}, errors.New(errorMessage)
+		bufin.On("Buffered").Once().Return(42)
+		bufin.On("Discard", 42).Once().Return(42, err)
+		logger.On("error", errorMessage).Once().Return(nil)
+		session.discardBufin()
+
+		assert.Error(t, session.err)
+		assert.Same(t, session.err, err)
+	})
+}
+
 func TestNewSession(t *testing.T) {
 	t.Run("creates new SMTP session", func(t *testing.T) {
 		connectionAddress := "127.0.0.1:25"
@@ -81,6 +103,34 @@ func TestSessionReadRequest(t *testing.T) {
 		request, err := session.readRequest()
 
 		assert.Equal(t, EmptyString, request)
+		assert.Error(t, err)
+		assert.Same(t, session.err, err)
+	})
+}
+
+func TestSessionReadBytes(t *testing.T) {
+	t.Run("extracts line in bytes from bufin without error", func(t *testing.T) {
+		str := "stringContext\n"
+		bufin, logger := bufio.NewReader(strings.NewReader(str)), new(loggerMock)
+		session := &session{bufin: bufin, logger: logger}
+		logger.On("infoActivity", SessionRequestMsg+SessionBinaryDataMsg).Once().Return(nil)
+		request, err := session.readBytes()
+
+		assert.Equal(t, []uint8(str), request)
+		assert.NoError(t, err)
+		assert.NoError(t, session.err)
+	})
+
+	t.Run("extracts line in bytes from bufin with error", func(t *testing.T) {
+		var delim uint8 = '\n'
+		errorMessage, bufin, logger := "read error", new(bufioReaderMock), new(loggerMock)
+		err := errors.New(errorMessage)
+		bufin.On("ReadBytes", delim).Once().Return([]byte{}, err)
+		logger.On("error", errorMessage).Once().Return(nil)
+		session := &session{bufin: bufin, logger: logger}
+		request, err := session.readBytes()
+
+		assert.Equal(t, []byte{}, request)
 		assert.Error(t, err)
 		assert.Same(t, session.err, err)
 	})

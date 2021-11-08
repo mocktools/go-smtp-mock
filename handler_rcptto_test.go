@@ -380,11 +380,31 @@ func TestHandlerRcpttoIsInvalidCmdArg(t *testing.T) {
 		assert.Empty(t, message.rcpttoResponse)
 	})
 
+	t.Run("when request includes valid command RCPTTO argument without <> sign without space", func(t *testing.T) {
+		message := new(message)
+		handler := newHandlerRcptto(session, message, configuration)
+
+		assert.False(t, handler.isInvalidCmdArg("RCPT TO:user@example.com"))
+		assert.False(t, message.rcptto)
+		assert.Empty(t, message.rcpttoRequest)
+		assert.Empty(t, message.rcpttoResponse)
+	})
+
 	t.Run("when request includes valid command RCPTTO argument with <> sign", func(t *testing.T) {
 		message := new(message)
 		handler := newHandlerRcptto(session, message, configuration)
 
 		assert.False(t, handler.isInvalidCmdArg("RCPT TO: <user@example.com>"))
+		assert.False(t, message.rcptto)
+		assert.Empty(t, message.rcpttoRequest)
+		assert.Empty(t, message.rcpttoResponse)
+	})
+
+	t.Run("when request includes valid command RCPTTO argument with <> sign withoyt space", func(t *testing.T) {
+		message := new(message)
+		handler := newHandlerRcptto(session, message, configuration)
+
+		assert.False(t, handler.isInvalidCmdArg("RCPT TO:<user@example.com>"))
 		assert.False(t, message.rcptto)
 		assert.Empty(t, message.rcpttoRequest)
 		assert.Empty(t, message.rcpttoResponse)

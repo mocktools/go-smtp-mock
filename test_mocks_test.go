@@ -79,6 +79,21 @@ func (buf bufioReaderMock) ReadString(delim byte) (string, error) {
 	return args.String(0), args.Error(1)
 }
 
+func (buf bufioReaderMock) Buffered() int {
+	args := buf.Called()
+	return args.Int(0)
+}
+
+func (buf bufioReaderMock) Discard(number int) (int, error) {
+	args := buf.Called(number)
+	return args.Int(0), args.Error(1)
+}
+
+func (buf bufioReaderMock) ReadBytes(data byte) ([]byte, error) {
+	args := buf.Called(data)
+	return args.Get(0).([]byte), args.Error(1)
+}
+
 // bufio.Writer mock
 type bufioWriterMock struct {
 	mock.Mock
@@ -135,4 +150,13 @@ func (session *sessionMock) addError(err error) {
 
 func (session *sessionMock) clearError() {
 	session.Called()
+}
+
+func (session *sessionMock) discardBufin() {
+	session.Called()
+}
+
+func (session *sessionMock) readBytes() ([]byte, error) {
+	args := session.Called()
+	return args.Get(0).([]byte), args.Error(1)
 }
