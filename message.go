@@ -12,6 +12,8 @@ type message struct {
 	helo, mailfrom, rcptto, data, msg bool
 }
 
+var zeroMessage = &message{}
+
 // Concurrent type that can be safely shared between goroutines
 type messages struct {
 	sync.RWMutex
