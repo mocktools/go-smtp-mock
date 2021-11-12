@@ -14,3 +14,8 @@ type handler struct {
 func (handler *handler) isFailFastScenario() bool {
 	return handler.configuration.isCmdFailFast
 }
+
+// Erases session error
+func (handler *handler) clearError() {
+	handler.session.clearError()
+}
