@@ -4,14 +4,23 @@ import "sync"
 
 // Structure for storing the result of SMTP client-server interaction
 type message struct {
-	heloRequest, heloResponse         string
-	mailfromRequest, mailfromResponse string
-	rcpttoRequest, rcpttoResponse     string
-	dataRequest, dataResponse         string
-	msgRequest, msgResponse           string
-	helo, mailfrom, rcptto, data, msg bool
+	heloRequest, heloResponse                  string
+	mailfromRequest, mailfromResponse          string
+	rcpttoRequest, rcpttoResponse              string
+	dataRequest, dataResponse                  string
+	msgRequest, msgResponse                    string
+	helo, mailfrom, rcptto, data, msg, cleared bool
 }
 
+// message methods
+
+// Cleared status predicate. Returns true for case when message struct
+// was cleared. Otherwise returns false
+func (message *message) isCleared() bool {
+	return message.cleared
+}
+
+// Pointer to empty message
 var zeroMessage = &message{}
 
 // Concurrent type that can be safely shared between goroutines

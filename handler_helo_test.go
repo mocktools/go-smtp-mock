@@ -23,14 +23,13 @@ func TestHandlerHeloRun(t *testing.T) {
 		request := "HELO example.com"
 		session, message, configuration := new(sessionMock), new(message), createConfiguration()
 		receivedMessage := configuration.msgHeloReceived
-		message.mailfrom = true // check for handler.clearMessage()
 		handler := newHandlerHelo(session, message, configuration)
 		session.On("clearError").Once().Return(nil)
 		session.On("writeResponse", receivedMessage).Once().Return(nil)
 		handler.run(request)
 
 		assert.True(t, message.helo)
-		assert.False(t, message.mailfrom) // check for handler.clearMessage()
+		assert.True(t, message.isCleared())
 		assert.Equal(t, request, message.heloRequest)
 		assert.Equal(t, receivedMessage, message.heloResponse)
 	})
@@ -39,7 +38,6 @@ func TestHandlerHeloRun(t *testing.T) {
 		request := "HELO"
 		session, message, configuration := new(sessionMock), new(message), createConfiguration()
 		errorMessage := configuration.msgInvalidCmdHeloArg
-		message.mailfrom = true // check for handler.clearMessage()
 		handler, err := newHandlerHelo(session, message, configuration), errors.New(errorMessage)
 		session.On("clearError").Once().Return(nil)
 		session.On("addError", err).Once().Return(nil)
@@ -47,7 +45,7 @@ func TestHandlerHeloRun(t *testing.T) {
 		handler.run(request)
 
 		assert.False(t, message.helo)
-		assert.False(t, message.mailfrom) // check for handler.clearMessage()
+		assert.True(t, message.isCleared())
 		assert.Equal(t, request, message.heloRequest)
 		assert.Equal(t, errorMessage, message.heloResponse)
 	})
@@ -58,7 +56,6 @@ func TestHandlerHeloRun(t *testing.T) {
 		session, message, configuration := new(sessionMock), new(message), createConfiguration()
 		configuration.blacklistedHeloDomains = []string{domainName}
 		errorMessage := configuration.msgHeloBlacklistedDomain
-		message.mailfrom = true // check for handler.clearMessage()
 		handler, err := newHandlerHelo(session, message, configuration), errors.New(errorMessage)
 		session.On("clearError").Once().Return(nil)
 		session.On("readRequest").Once().Return(request, nil)
@@ -67,7 +64,7 @@ func TestHandlerHeloRun(t *testing.T) {
 		handler.run(request)
 
 		assert.False(t, message.helo)
-		assert.False(t, message.mailfrom) // check for handler.clearMessage()
+		assert.True(t, message.isCleared())
 		assert.Equal(t, request, message.heloRequest)
 		assert.Equal(t, errorMessage, message.heloResponse)
 	})
@@ -92,14 +89,16 @@ func TestHandlerHeloClearMessage(t *testing.T) {
 			data:             true,
 			msg:              true,
 		}
-		handler := newHandlerHelo(new(session), notEmptyMessage, new(configuration))
+		handler, clearedMessage := newHandlerHelo(new(session), notEmptyMessage, new(configuration)), &message{cleared: true}
 		handler.clearMessage()
 
 		assert.Same(t, notEmptyMessage, handler.message)
-		assert.Equal(t, new(message), handler.message)
+		assert.Equal(t, clearedMessage, handler.message)
+
 		handler.message.heloRequest = "42"
 		handler.clearMessage()
-		assert.Equal(t, new(message), handler.message)
+
+		assert.Equal(t, clearedMessage, handler.message)
 	})
 }
 
