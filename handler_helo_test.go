@@ -34,7 +34,7 @@ func TestHandlerHeloRun(t *testing.T) {
 		assert.Equal(t, receivedMessage, message.heloResponse)
 	})
 
-	t.Run("when failure HELO request, invalid command", func(t *testing.T) {
+	t.Run("when failure HELO request, invalid command argument", func(t *testing.T) {
 		request := "HELO"
 		session, message, configuration := new(sessionMock), new(message), createConfiguration()
 		errorMessage := configuration.msgInvalidCmdHeloArg
@@ -71,7 +71,7 @@ func TestHandlerHeloRun(t *testing.T) {
 }
 
 func TestHandlerHeloClearMessage(t *testing.T) {
-	t.Run("cleanes handler message", func(t *testing.T) {
+	t.Run("erases all handler message data, changes cleared status to true", func(t *testing.T) {
 		notEmptyMessage := &message{
 			heloRequest:      "a",
 			heloResponse:     "b",
