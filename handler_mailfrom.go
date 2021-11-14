@@ -15,38 +15,27 @@ func newHandlerMailfrom(session sessionInterface, message *message, configuratio
 // MAILFROM handler methods
 
 // Main MAILFROM handler runner
-func (handler *handlerMailfrom) run() {
-	var requestSnapshot string
-	session := handler.session
+func (handler *handlerMailfrom) run(request string) {
+	handler.clearError()
+	handler.clearMessage()
 
-	if handler.isFailFastScenario() {
-		request, err := session.readRequest()
-		if err != nil {
-			return
-		}
-
-		if handler.isInvalidRequest(request) {
-			return
-		}
-		requestSnapshot = request
+	if handler.isInvalidRequest(request) {
+		return
 	}
 
-	if !handler.isFailFastScenario() {
-		for {
-			session.clearError()
-			request, err := session.readRequest()
-			if err != nil {
-				return
-			}
+	handler.writeResult(true, request, handler.configuration.msgMailfromReceived)
+}
 
-			if !handler.isInvalidRequest(request) {
-				requestSnapshot = request
-				break
-			}
-		}
+// Erases all message data from MAILFROM command, changes cleared status to true
+func (handler *handlerMailfrom) clearMessage() {
+	messageWithData := handler.message
+	clearedMessage := &message{
+		heloRequest:  messageWithData.heloRequest,
+		heloResponse: messageWithData.heloResponse,
+		helo:         messageWithData.helo,
+		cleared:      true,
 	}
-
-	handler.writeResult(true, requestSnapshot, handler.configuration.msgMailfromReceived)
+	*messageWithData = *clearedMessage
 }
 
 // Writes handled HELO result to session, message. Always returns true
@@ -61,28 +50,18 @@ func (handler *handlerMailfrom) writeResult(isSuccessful bool, request, response
 	return true
 }
 
-// Invalid SMTP command predicate. Returns true and writes result for case when command is invalid,
-// otherwise returns false.
-func (handler *handlerMailfrom) isInvalidCmd(request string) bool {
-	if !matchRegex(request, AvailableCmdsRegexPattern) {
-		return handler.writeResult(false, request, handler.configuration.msgInvalidCmd)
-	}
-
-	return false
-}
-
-// Invalid MAILFROM command sequence predicate. Returns true and writes result for case when MAILFROM
-// command sequence is invalid, otherwise returns false
+// Invalid MAILFROM command sequence predicate. Returns true and writes result for case when
+// MAILFROM command sequence is invalid (HELO command was failure), otherwise returns false
 func (handler *handlerMailfrom) isInvalidCmdSequence(request string) bool {
-	if !matchRegex(request, ValidMailfromCmdRegexPattern) {
+	if !handler.message.helo {
 		return handler.writeResult(false, request, handler.configuration.msgInvalidCmdMailfromSequence)
 	}
 
 	return false
 }
 
-// Invalid MAILFROM command argument predicate. Returns true and writes result for case when MAILFROM
-// command argument is invalid, otherwise returns false
+// Invalid MAILFROM command argument predicate. Returns true and writes result for case when
+// MAILFROM command argument is invalid, otherwise returns false
 func (handler *handlerMailfrom) isInvalidCmdArg(request string) bool {
 	if !matchRegex(request, ValidMailromComplexCmdRegexPattern) {
 		return handler.writeResult(false, request, handler.configuration.msgInvalidCmdMailfromArg)
@@ -110,8 +89,7 @@ func (handler *handlerMailfrom) isBlacklistedEmail(request string) bool {
 // Invalid MAILFROM command request complex predicate. Returns true for case when one
 // of the chain checks returns true, otherwise returns false
 func (handler *handlerMailfrom) isInvalidRequest(request string) bool {
-	return handler.isInvalidCmd(request) ||
-		handler.isInvalidCmdSequence(request) ||
+	return handler.isInvalidCmdSequence(request) ||
 		handler.isInvalidCmdArg(request) ||
 		handler.isBlacklistedEmail(request)
 }
