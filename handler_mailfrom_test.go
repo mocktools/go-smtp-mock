@@ -90,23 +90,7 @@ func TestHandlerMailfromRun(t *testing.T) {
 
 func TestHandlerMailfromClearMessage(t *testing.T) {
 	t.Run("erases all handler message data from MAILFROM command, changes cleared status to true", func(t *testing.T) {
-		notEmptyMessage := &message{
-			heloRequest:      "a",
-			heloResponse:     "b",
-			mailfromRequest:  "c",
-			mailfromResponse: "d",
-			rcpttoRequest:    "a",
-			rcpttoResponse:   "b",
-			dataRequest:      "c",
-			dataResponse:     "d",
-			msgRequest:       "a",
-			msgResponse:      "b",
-			helo:             true,
-			mailfrom:         true,
-			rcptto:           true,
-			data:             true,
-			msg:              true,
-		}
+		notEmptyMessage := createNotEmptyMessage()
 		handler := newHandlerMailfrom(new(session), notEmptyMessage, new(configuration))
 		clearedMessage := &message{
 			heloRequest:  notEmptyMessage.heloRequest,

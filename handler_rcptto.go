@@ -15,38 +15,30 @@ func newHandlerRcptto(session sessionInterface, message *message, configuration 
 // RCPTTO handler methods
 
 // Main RCPTTO handler runner
-func (handler *handlerRcptto) run() {
-	var requestSnapshot string
-	session := handler.session
+func (handler *handlerRcptto) run(request string) {
+	handler.clearError()
+	handler.clearMessage()
 
-	if handler.isFailFastScenario() {
-		request, err := session.readRequest()
-		if err != nil {
-			return
-		}
-
-		if handler.isInvalidRequest(request) {
-			return
-		}
-		requestSnapshot = request
+	if handler.isInvalidRequest(request) {
+		return
 	}
 
-	if !handler.isFailFastScenario() {
-		for {
-			session.clearError()
-			request, err := session.readRequest()
-			if err != nil {
-				return
-			}
+	handler.writeResult(true, request, handler.configuration.msgRcpttoReceived)
+}
 
-			if !handler.isInvalidRequest(request) {
-				requestSnapshot = request
-				break
-			}
-		}
+// Erases all message data from RCPTTO command, changes cleared status to true
+func (handler *handlerRcptto) clearMessage() {
+	messageWithData := handler.message
+	clearedMessage := &message{
+		heloRequest:      messageWithData.heloRequest,
+		heloResponse:     messageWithData.heloResponse,
+		helo:             messageWithData.helo,
+		mailfromRequest:  messageWithData.mailfromRequest,
+		mailfromResponse: messageWithData.mailfromResponse,
+		mailfrom:         messageWithData.mailfrom,
+		cleared:          true,
 	}
-
-	handler.writeResult(true, requestSnapshot, handler.configuration.msgRcpttoReceived)
+	*messageWithData = *clearedMessage
 }
 
 // Writes handled RCPTTO result to session, message. Always returns true
@@ -61,20 +53,11 @@ func (handler *handlerRcptto) writeResult(isSuccessful bool, request, response s
 	return true
 }
 
-// Invalid SMTP command predicate. Returns true and writes result for case when command is invalid,
-// otherwise returns false.
-func (handler *handlerRcptto) isInvalidCmd(request string) bool {
-	if !matchRegex(request, AvailableCmdsRegexPattern) {
-		return handler.writeResult(false, request, handler.configuration.msgInvalidCmd)
-	}
-
-	return false
-}
-
 // Invalid RCPTTO command sequence predicate. Returns true and writes result for case when RCPTTO
 // command sequence is invalid, otherwise returns false
 func (handler *handlerRcptto) isInvalidCmdSequence(request string) bool {
-	if !matchRegex(request, ValidRcpttoCmdRegexPattern) {
+	message := handler.message
+	if !message.helo && !message.mailfrom {
 		return handler.writeResult(false, request, handler.configuration.msgInvalidCmdRcpttoSequence)
 	}
 
@@ -121,8 +104,7 @@ func (handler *handlerRcptto) isNotRegisteredEmail(request string) bool {
 // Invalid RCPTTO command request complex predicate. Returns true for case when one
 // of the chain checks returns true, otherwise returns false
 func (handler *handlerRcptto) isInvalidRequest(request string) bool {
-	return handler.isInvalidCmd(request) ||
-		handler.isInvalidCmdSequence(request) ||
+	return handler.isInvalidCmdSequence(request) ||
 		handler.isInvalidCmdArg(request) ||
 		handler.isBlacklistedEmail(request) ||
 		handler.isNotRegisteredEmail(request)

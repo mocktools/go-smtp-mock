@@ -14,3 +14,24 @@ func loggerMessageRegex(logLevel, logMessage string) *regexp.Regexp {
 func createConfiguration() *configuration {
 	return NewConfiguration(ConfigurationAttr{})
 }
+
+// Creates not empty message
+func createNotEmptyMessage() *message {
+	return &message{
+		heloRequest:      "a",
+		heloResponse:     "b",
+		mailfromRequest:  "c",
+		mailfromResponse: "d",
+		rcpttoRequest:    "a",
+		rcpttoResponse:   "b",
+		dataRequest:      "c",
+		dataResponse:     "d",
+		msgRequest:       "a",
+		msgResponse:      "b",
+		helo:             true,
+		mailfrom:         true,
+		rcptto:           true,
+		data:             true,
+		msg:              true,
+	}
+}
