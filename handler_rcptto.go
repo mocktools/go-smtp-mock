@@ -83,11 +83,12 @@ func (handler *handlerRcptto) rcpttoEmail(request string) string {
 // RCPTTO email is included in configuration.blacklistedRcpttoEmails slice
 func (handler *handlerRcptto) isBlacklistedEmail(request string) bool {
 	configuration := handler.configuration
-	if !isIncluded(configuration.blacklistedRcpttoEmails, handler.rcpttoEmail(request)) {
-		return false
+	if isIncluded(configuration.blacklistedRcpttoEmails, handler.rcpttoEmail(request)) {
+		return handler.writeResult(false, request, configuration.msgRcpttoBlacklistedEmail)
+
 	}
 
-	return handler.writeResult(false, request, configuration.msgRcpttoBlacklistedEmail)
+	return false
 }
 
 // Custom behaviour for RCPTTO email. Returns true and writes result for case when

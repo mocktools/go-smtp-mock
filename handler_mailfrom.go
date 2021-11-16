@@ -79,11 +79,11 @@ func (handler *handlerMailfrom) mailfromEmail(request string) string {
 // MAILFROM email is included in configuration.blacklistedMailfromEmails slice
 func (handler *handlerMailfrom) isBlacklistedEmail(request string) bool {
 	configuration := handler.configuration
-	if !isIncluded(configuration.blacklistedMailfromEmails, handler.mailfromEmail(request)) {
-		return false
+	if isIncluded(configuration.blacklistedMailfromEmails, handler.mailfromEmail(request)) {
+		return handler.writeResult(false, request, configuration.msgMailfromBlacklistedEmail)
 	}
 
-	return handler.writeResult(false, request, configuration.msgMailfromBlacklistedEmail)
+	return false
 }
 
 // Invalid MAILFROM command request complex predicate. Returns true for case when one

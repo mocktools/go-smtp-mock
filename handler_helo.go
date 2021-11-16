@@ -63,11 +63,11 @@ func (handler *handlerHelo) heloDomain(request string) string {
 // is included in configuration.blacklistedHeloDomains slice
 func (handler *handlerHelo) isBlacklistedDomain(request string) bool {
 	configuration := handler.configuration
-	if !isIncluded(configuration.blacklistedHeloDomains, handler.heloDomain(request)) {
-		return false
+	if isIncluded(configuration.blacklistedHeloDomains, handler.heloDomain(request)) {
+		return handler.writeResult(false, request, configuration.msgHeloBlacklistedDomain)
 	}
 
-	return handler.writeResult(false, request, configuration.msgHeloBlacklistedDomain)
+	return false
 }
 
 // Invalid HELO command request complex predicate. Returns true for case when one
