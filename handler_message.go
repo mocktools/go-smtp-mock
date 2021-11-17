@@ -5,6 +5,11 @@ import (
 	"errors"
 )
 
+// Message handler interface
+type handlerMessageInterface interface {
+	run()
+}
+
 // Message handler
 type handlerMessage struct {
 	*handler

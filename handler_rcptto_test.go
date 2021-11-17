@@ -87,7 +87,7 @@ func TestHandlerRcpttoRun(t *testing.T) {
 		assert.Equal(t, errorMessage, message.rcpttoResponse)
 	})
 
-	t.Run("when failure RCPTTO request,, request includes not registered RCPTTO email", func(t *testing.T) {
+	t.Run("when failure RCPTTO request, request includes not registered RCPTTO email", func(t *testing.T) {
 		email := "user@example.com"
 		request := "RCPT TO: " + email
 		session, message, configuration := new(sessionMock), new(message), createConfiguration()
