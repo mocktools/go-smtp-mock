@@ -160,3 +160,12 @@ func (session *sessionMock) readBytes() ([]byte, error) {
 	args := session.Called()
 	return args.Get(0).([]byte), args.Error(1)
 }
+
+// handlerMessage mock
+type handlerMessageMock struct {
+	mock.Mock
+}
+
+func (handler *handlerMessageMock) run() {
+	handler.Called()
+}

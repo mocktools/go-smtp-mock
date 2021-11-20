@@ -7,48 +7,53 @@ import (
 // DATA command handler
 type handlerData struct {
 	*handler
+	handlerMessage handlerMessageInterface
 }
 
 // DATA command handler builder. Returns pointer to new handlerData structure
 func newHandlerData(session sessionInterface, message *message, configuration *configuration) *handlerData {
-	return &handlerData{&handler{session: session, message: message, configuration: configuration}}
+	return &handlerData{
+		&handler{session: session, message: message, configuration: configuration},
+		newHandlerMessage(session, message, configuration),
+	}
 }
 
 // DATA handler methods
 
 // Main DATA handler runner
-func (handler *handlerData) run() {
-	var requestSnapshot string
-	session := handler.session
+func (handler *handlerData) run(request string) {
+	handler.clearError()
+	handler.clearMessage()
 
-	if handler.isFailFastScenario() {
-		request, err := session.readRequest()
-		if err != nil {
-			return
-		}
-
-		if handler.isInvalidRequest(request) {
-			return
-		}
-		requestSnapshot = request
+	if handler.isInvalidRequest(request) {
+		return
 	}
 
-	if !handler.isFailFastScenario() {
-		for {
-			session.clearError()
-			request, err := session.readRequest()
-			if err != nil {
-				return
-			}
+	handler.writeResult(true, request, handler.configuration.msgDataReceived)
+	handler.processIncomingMessage()
+}
 
-			if !handler.isInvalidRequest(request) {
-				requestSnapshot = request
-				break
-			}
-		}
+// Erases all message data from DATA command, changes cleared status to true
+func (handler *handlerData) clearMessage() {
+	messageWithData := handler.message
+	clearedMessage := &message{
+		heloRequest:      messageWithData.heloRequest,
+		heloResponse:     messageWithData.heloResponse,
+		helo:             messageWithData.helo,
+		mailfromRequest:  messageWithData.mailfromRequest,
+		mailfromResponse: messageWithData.mailfromResponse,
+		mailfrom:         messageWithData.mailfrom,
+		rcpttoRequest:    messageWithData.rcpttoRequest,
+		rcpttoResponse:   messageWithData.rcpttoResponse,
+		rcptto:           messageWithData.rcptto,
+		cleared:          true,
 	}
+	*messageWithData = *clearedMessage
+}
 
-	handler.writeResult(true, requestSnapshot, handler.configuration.msgDataReceived)
+// Reads and saves message body context using handlerMessage under the hood
+func (handler *handlerData) processIncomingMessage() {
+	handler.handlerMessage.run()
 }
 
 // Writes handled DATA result to session, message. Always returns true
@@ -63,28 +68,29 @@ func (handler *handlerData) writeResult(isSuccessful bool, request, response str
 	return true
 }
 
-// Invalid SMTP command predicate. Returns true and writes result for case when command is invalid,
-// otherwise returns false.
-func (handler *handlerData) isInvalidCmd(request string) bool {
-	if !matchRegex(request, AvailableCmdsRegexPattern) {
-		return handler.writeResult(false, request, handler.configuration.msgInvalidCmd)
-	}
-
-	return false
-}
-
-// Invalid DATA command sequence predicate. Returns true and writes result for case when DATA
-// command sequence is invalid, otherwise returns false
+// Invalid DATA command sequence predicate. Returns true and writes result for case
+// when DATA command sequence is invalid, otherwise returns false
 func (handler *handlerData) isInvalidCmdSequence(request string) bool {
-	if !matchRegex(request, ValidDataCmdRegexPattern) {
+	message := handler.message
+	if !(message.helo && message.mailfrom && message.rcptto) {
 		return handler.writeResult(false, request, handler.configuration.msgInvalidCmdDataSequence)
 	}
 
 	return false
 }
 
-// Invalid DATA command request complex predicate. Returns true for case when one
-// of the chain checks returns true, otherwise returns false
+// Invalid DATA command predicate. Returns true and writes result for case
+// when DATA command is invalid, otherwise returns false
+func (handler *handlerData) isInvalidCmd(request string) bool {
+	if !matchRegex(request, ValidDataCmdRegexPattern) {
+		return handler.writeResult(false, request, handler.configuration.msgInvalidCmd)
+	}
+
+	return false
+}
+
+// Invalid DATA command predicate. Returns true and writes result for case
+// when request is invalid, otherwise returns false.
 func (handler *handlerData) isInvalidRequest(request string) bool {
-	return handler.isInvalidCmd(request) || handler.isInvalidCmdSequence(request)
+	return handler.isInvalidCmdSequence(request) || handler.isInvalidCmd(request)
 }
