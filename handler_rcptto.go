@@ -57,7 +57,7 @@ func (handler *handlerRcptto) writeResult(isSuccessful bool, request, response s
 // command sequence is invalid, otherwise returns false
 func (handler *handlerRcptto) isInvalidCmdSequence(request string) bool {
 	message := handler.message
-	if !message.helo && !message.mailfrom {
+	if !(message.helo && message.mailfrom) {
 		return handler.writeResult(false, request, handler.configuration.msgInvalidCmdRcpttoSequence)
 	}
 

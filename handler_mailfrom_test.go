@@ -138,9 +138,9 @@ func TestHandlerMailfromWriteResult(t *testing.T) {
 }
 
 func TestHandlerMailfromIsInvalidCmdSequence(t *testing.T) {
-	configuration, session, request := createConfiguration(), &sessionMock{}, "MAIL FROM: <user@domain.com>"
+	request, configuration, session := "some request", createConfiguration(), &sessionMock{}
 
-	t.Run("when request includes invalid command MAILFROM sequence, the previous command is not successful ", func(t *testing.T) {
+	t.Run("when helo previous command was failure ", func(t *testing.T) {
 		message, errorMessage := new(message), configuration.msgInvalidCmdMailfromSequence
 		handler, err := newHandlerMailfrom(session, message, configuration), errors.New(errorMessage)
 		session.On("addError", err).Once().Return(nil)
@@ -152,7 +152,7 @@ func TestHandlerMailfromIsInvalidCmdSequence(t *testing.T) {
 		assert.Equal(t, errorMessage, message.mailfromResponse)
 	})
 
-	t.Run("when request includes valid command MAILFROM sequence, the previous command is successful ", func(t *testing.T) {
+	t.Run("when helo previous command was successful ", func(t *testing.T) {
 		message := new(message)
 		handler := newHandlerMailfrom(session, message, configuration)
 		message.helo = true

@@ -135,10 +135,10 @@ func TestHandlerDataWriteResult(t *testing.T) {
 }
 
 func TestHandlerDataIsInvalidCmdSequence(t *testing.T) {
-	configuration, session := createConfiguration(), &sessionMock{}
+	request, configuration, session := "some request", createConfiguration(), &sessionMock{}
 
-	t.Run("when request includes invalid command DATA sequence", func(t *testing.T) {
-		request, message, errorMessage := "DATA:", new(message), configuration.msgInvalidCmdDataSequence
+	t.Run("when none of the previous command was successful", func(t *testing.T) {
+		message, errorMessage := new(message), configuration.msgInvalidCmdDataSequence
 		handler, err := newHandlerData(session, message, configuration), errors.New(errorMessage)
 		session.On("addError", err).Once().Return(nil)
 		session.On("writeResponse", errorMessage).Once().Return(nil)
@@ -149,12 +149,38 @@ func TestHandlerDataIsInvalidCmdSequence(t *testing.T) {
 		assert.Equal(t, errorMessage, message.dataResponse)
 	})
 
-	t.Run("when request includes valid command DATA sequence", func(t *testing.T) {
+	t.Run("when rcptto previous command was failure", func(t *testing.T) {
+		message, errorMessage := new(message), configuration.msgInvalidCmdDataSequence
+		message.helo, message.mailfrom = true, true
+		handler, err := newHandlerData(session, message, configuration), errors.New(errorMessage)
+		session.On("addError", err).Once().Return(nil)
+		session.On("writeResponse", errorMessage).Once().Return(nil)
+
+		assert.True(t, handler.isInvalidCmdSequence(request))
+		assert.False(t, message.data)
+		assert.Equal(t, request, message.dataRequest)
+		assert.Equal(t, errorMessage, message.dataResponse)
+	})
+
+	t.Run("when mailfrom, rcptto previous commands were failure", func(t *testing.T) {
+		message, errorMessage := new(message), configuration.msgInvalidCmdDataSequence
+		message.helo = true
+		handler, err := newHandlerData(session, message, configuration), errors.New(errorMessage)
+		session.On("addError", err).Once().Return(nil)
+		session.On("writeResponse", errorMessage).Once().Return(nil)
+
+		assert.True(t, handler.isInvalidCmdSequence(request))
+		assert.False(t, message.data)
+		assert.Equal(t, request, message.dataRequest)
+		assert.Equal(t, errorMessage, message.dataResponse)
+	})
+
+	t.Run("when all of the previous commands was successful", func(t *testing.T) {
 		message := new(message)
 		message.helo, message.mailfrom, message.rcptto = true, true, true
 		handler := newHandlerData(session, message, configuration)
 
-		assert.False(t, handler.isInvalidCmd("DATA"))
+		assert.False(t, handler.isInvalidCmdSequence(request))
 		assert.False(t, message.data)
 		assert.Empty(t, message.dataRequest)
 		assert.Empty(t, message.dataResponse)
