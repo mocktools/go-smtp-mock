@@ -160,9 +160,9 @@ func TestHandlerRcpttoWriteResult(t *testing.T) {
 }
 
 func TestHandlerRcpttoIsInvalidCmdSequence(t *testing.T) {
-	configuration, session, request := createConfiguration(), &sessionMock{}, "RCPT TO: user@domain.com"
+	request, configuration, session := "some request", createConfiguration(), &sessionMock{}
 
-	t.Run("when request includes invalid command RCPTTO sequence", func(t *testing.T) {
+	t.Run("when none of the previous command was successful", func(t *testing.T) {
 		message, errorMessage := new(message), configuration.msgInvalidCmdRcpttoSequence
 		handler, err := newHandlerRcptto(session, message, configuration), errors.New(errorMessage)
 		session.On("addError", err).Once().Return(nil)
@@ -174,7 +174,20 @@ func TestHandlerRcpttoIsInvalidCmdSequence(t *testing.T) {
 		assert.Equal(t, errorMessage, message.rcpttoResponse)
 	})
 
-	t.Run("when request includes valid command RCPTTO sequence", func(t *testing.T) {
+	t.Run("when mailfrom previous command was failure", func(t *testing.T) {
+		message, errorMessage := new(message), configuration.msgInvalidCmdRcpttoSequence
+		message.helo = true
+		handler, err := newHandlerRcptto(session, message, configuration), errors.New(errorMessage)
+		session.On("addError", err).Once().Return(nil)
+		session.On("writeResponse", errorMessage).Once().Return(nil)
+
+		assert.True(t, handler.isInvalidCmdSequence(request))
+		assert.False(t, message.rcptto)
+		assert.Equal(t, request, message.rcpttoRequest)
+		assert.Equal(t, errorMessage, message.rcpttoResponse)
+	})
+
+	t.Run("when all of the previous commands was successful", func(t *testing.T) {
 		message := new(message)
 		message.helo, message.mailfrom = true, true
 		handler := newHandlerRcptto(session, message, configuration)
