@@ -4,12 +4,12 @@ import "sync"
 
 // Structure for storing the result of SMTP client-server interaction
 type message struct {
-	heloRequest, heloResponse                  string
-	mailfromRequest, mailfromResponse          string
-	rcpttoRequest, rcpttoResponse              string
-	dataRequest, dataResponse                  string
-	msgRequest, msgResponse                    string
-	helo, mailfrom, rcptto, data, msg, cleared bool
+	heloRequest, heloResponse                            string
+	mailfromRequest, mailfromResponse                    string
+	rcpttoRequest, rcpttoResponse                        string
+	dataRequest, dataResponse                            string
+	msgRequest, msgResponse                              string
+	helo, mailfrom, rcptto, data, msg, cleared, quitSent bool
 }
 
 // message methods
