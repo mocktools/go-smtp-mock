@@ -6,6 +6,7 @@ import (
 	"errors"
 	"strings"
 	"testing"
+	"time"
 
 	"github.com/stretchr/testify/assert"
 )
@@ -37,6 +38,30 @@ func TestSessionClearError(t *testing.T) {
 		session.clearError()
 
 		assert.NoError(t, session.err)
+	})
+}
+
+func TestSessionSetTimeout(t *testing.T) {
+	timeStub, timeout := time.Now(), 42
+	timeNow = func() time.Time { return timeStub }
+
+	t.Run("sets connection deadline for session", func(t *testing.T) {
+		connection := netConnectionMock{}
+		connection.On("SetDeadline", timeNow().Add(time.Duration(timeout)*time.Second)).Once().Return(nil)
+		session := &session{connection: connection}
+		session.setTimeout(timeout)
+	})
+
+	t.Run("when connection error", func(t *testing.T) {
+		errorMessage, connection, logger := "some connection error", netConnectionMock{}, new(loggerMock)
+		err := errors.New(errorMessage)
+		connection.On("SetDeadline", timeNow().Add(time.Duration(timeout)*time.Second)).Once().Return(err)
+		logger.On("error", errorMessage).Once().Return(nil)
+		session := &session{connection: connection, logger: logger}
+		session.setTimeout(timeout)
+
+		assert.Error(t, session.err)
+		assert.Same(t, session.err, err)
 	})
 }
 
