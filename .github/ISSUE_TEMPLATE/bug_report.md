@@ -7,7 +7,7 @@ assignees: bestwebua
 
 ---
 
-<!-- Thanks for helping to make DnsMock better! Before submit your bug, please make sure to check the following boxes by putting an x in the [ ] (don't: [x ], [ x], do: [x]) -->
+<!-- Thanks for helping to make SmtpMock better! Before submit your bug, please make sure to check the following boxes by putting an x in the [ ] (don't: [x ], [ x], do: [x]) -->
 
 ### New bug checklist
 

@@ -1,13 +1,13 @@
 ---
 name: Feature request
-about: Suggest an idea for DnsMock
+about: Suggest an idea for SmtpMock
 title: "[FEATURE] Your feature request title here"
 labels: enhancement
 assignees: bestwebua
 
 ---
 
-<!-- Thanks for helping to make DnsMock better! Before submit your new feature request, please make sure to check the following boxes by putting an x in the [ ] (don't: [x ], [ x], do: [x]) -->
+<!-- Thanks for helping to make SmtpMock better! Before submit your new feature request, please make sure to check the following boxes by putting an x in the [ ] (don't: [x ], [ x], do: [x]) -->
 
 ### New feature request checklist
 

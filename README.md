@@ -1,4 +1,8 @@
-# Golang SMTP mock. Mimic SMTP server behaviour for your test environment and even more.
+# ![Golang SMTP mock. Mimic SMTP server behaviour for your test environment and even more!](https://repository-images.githubusercontent.com/401721985/848bc1dd-fc35-4d78-8bd9-0ac3430270d8)
+
+[![CircleCI](https://circleci.com/gh/mocktools/golang-smtp-mock/tree/master.svg?style=svg)](https://circleci.com/gh/mocktools/golang-smtp-mock/tree/master)
+[![GitHub](https://img.shields.io/github/license/mocktools/golang-smtp-mock)](LICENSE.txt)
+[![Contributor Covenant](https://img.shields.io/badge/Contributor%20Covenant-v1.4%20adopted-ff69b4.svg)](CODE_OF_CONDUCT.md)
 
 ## Table of Contents
 
@@ -15,9 +19,30 @@
 
 ## Features
 
+- Configurable multithreaded RFC compatible SMTP server
+- Configurable behaviour for each SMTP command
+- Fail fast scenario
+
 ## Requirements
 
+Golang 1.15+
+
 ## Installation
+
+Install `truemail-go`:
+
+```bash
+go get github.com/mocktools/go-smtp-mock
+go install -i github.com/mocktools/go-smtp-mock
+```
+
+Import `truemail-go` dependency into your code:
+
+```go
+package main
+
+import "github.com/mocktools/go-smtp-mock"
+```
 
 ## Usage
 
@@ -27,11 +52,11 @@ Bug reports and pull requests are welcome on GitHub at https://github.com/mockto
 
 ## License
 
-The gem is available as open source under the terms of the [MIT License](https://opensource.org/licenses/MIT).
+The golang library is available as open source under the terms of the [MIT License](https://opensource.org/licenses/MIT).
 
 ## Code of Conduct
 
-Everyone interacting in the DnsMock project’s codebases, issue trackers, chat rooms and mailing lists is expected to follow the [code of conduct](CODE_OF_CONDUCT.md).
+Everyone interacting in the SmtpMock project’s codebases, issue trackers, chat rooms and mailing lists is expected to follow the [code of conduct](CODE_OF_CONDUCT.md).
 
 ## Credits
 
@@ -40,4 +65,4 @@ Everyone interacting in the DnsMock project’s codebases, issue trackers, chat 
 
 ## Versioning
 
-DnsMock uses [Semantic Versioning 2.0.0](https://semver.org)
+SmtpMock uses [Semantic Versioning 2.0.0](https://semver.org)
