@@ -37,12 +37,14 @@ const (
 
 	// Server
 
-	NetworkProtocol  = "tcp"
-	HostAddress      = "0.0.0.0"
-	PortNuber        = 2525
-	ServerStartMsg   = "SMTP mock server started on port"
-	ServerErrorMsg   = "Failed to start SMTP mock server on port"
-	MessageSizeLimit = 10485760 // 10MB
+	NetworkProtocol               = "tcp"
+	DefaultHostAddress            = "0.0.0.0"
+	DefaultPortNuber              = 2525
+	DefaultMessageSizeLimit       = 10485760 // in bytes (10MB)
+	DefaultSessionTimeout         = 30       // in seconds
+	ServerStartMsg                = "SMTP mock server started on port"
+	ServerErrorMsg                = "Failed to start SMTP mock server on port"
+	ServerNotAcceptNewConnections = "SMTP mock server is in the shutdown mode and won't accept new connections"
 
 	// Regex patterns
 

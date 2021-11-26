@@ -34,6 +34,7 @@ type configuration struct {
 	blacklistedRcpttoEmails       []string
 	notRegisteredEmails           []string
 	msqSizeLimit                  int
+	sessionTimeout                int
 
 	// TODO: add ability to send 221 response before end of the session
 }
@@ -73,6 +74,7 @@ func NewConfiguration(config ConfigurationAttr) *configuration {
 		blacklistedRcpttoEmails:       config.blacklistedRcpttoEmails,
 		notRegisteredEmails:           config.notRegisteredEmails,
 		msqSizeLimit:                  config.msqSizeLimit,
+		sessionTimeout:                config.sessionTimeout,
 	}
 }
 
@@ -108,17 +110,19 @@ type ConfigurationAttr struct {
 	blacklistedRcpttoEmails       []string
 	notRegisteredEmails           []string
 	msqSizeLimit                  int
+	sessionTimeout                int
 }
 
 // ConfigurationAttr methods
 
 // assigns default values to ConfigurationAttr fields
 func (config *ConfigurationAttr) assignDefaultValues() {
+	// Server defaults
 	if config.hostAddress == EmptyString {
-		config.hostAddress = HostAddress
+		config.hostAddress = DefaultHostAddress
 	}
 	if config.portNumber == 0 {
-		config.portNumber = PortNuber
+		config.portNumber = DefaultPortNuber
 	}
 	if config.msgGreeting == EmptyString {
 		config.msgGreeting = DefaultGreetingMsg
@@ -128,6 +132,9 @@ func (config *ConfigurationAttr) assignDefaultValues() {
 	}
 	if config.msgQuitCmd == EmptyString {
 		config.msgQuitCmd = DefaultQuitMsg
+	}
+	if config.sessionTimeout == 0 {
+		config.sessionTimeout = DefaultSessionTimeout
 	}
 
 	// HELO defaults
@@ -185,7 +192,7 @@ func (config *ConfigurationAttr) assignDefaultValues() {
 
 	// Message defaults
 	if config.msqSizeLimit == 0 {
-		config.msqSizeLimit = MessageSizeLimit
+		config.msqSizeLimit = DefaultMessageSizeLimit
 	}
 	if config.msgMsgSizeIsTooBig == EmptyString {
 		config.msgMsgSizeIsTooBig = fmt.Sprintf(DefaultMsgSizeIsTooBigMsg+" %d bytes", config.msqSizeLimit)

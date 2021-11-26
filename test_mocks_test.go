@@ -135,6 +135,10 @@ type sessionMock struct {
 	mock.Mock
 }
 
+func (session *sessionMock) setTimeout(timeout int) {
+	session.Called(timeout)
+}
+
 func (session *sessionMock) readRequest() (string, error) {
 	args := session.Called()
 	return args.String(0), args.Error(1)

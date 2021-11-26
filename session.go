@@ -4,10 +4,15 @@ import (
 	"bufio"
 	"net"
 	"strings"
+	"time"
 )
+
+// Returns time.Time with current time. Allows to stub time.Now()
+var timeNow func() time.Time = func() time.Time { return time.Now() }
 
 // SMTP client-server session interface
 type sessionInterface interface {
+	setTimeout(int)
 	readRequest() (string, error)
 	writeResponse(string)
 	addError(error)
@@ -66,6 +71,18 @@ func (session *session) addError(err error) {
 // Sets session.err = nil
 func (session *session) clearError() {
 	session.err = nil
+}
+
+// Sets session timeout from now to the specified duration in seconds
+func (session *session) setTimeout(timeout int) {
+	err := session.connection.SetDeadline(
+		timeNow().Add(time.Duration(timeout) * time.Second),
+	)
+
+	if err != nil {
+		session.err = err
+		session.logger.error(err.Error())
+	}
 }
 
 // Discardes the bufin remnants
