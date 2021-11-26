@@ -1,8 +1,10 @@
-# ![Golang SMTP mock. Mimic SMTP server behaviour for your test environment and even more!](https://repository-images.githubusercontent.com/401721985/848bc1dd-fc35-4d78-8bd9-0ac3430270d8)
+# ![Golang SMTP mock. Mimic SMTP server behaviour for your test environment and even more](https://repository-images.githubusercontent.com/401721985/848bc1dd-fc35-4d78-8bd9-0ac3430270d8)
 
 [![CircleCI](https://circleci.com/gh/mocktools/golang-smtp-mock/tree/master.svg?style=svg)](https://circleci.com/gh/mocktools/golang-smtp-mock/tree/master)
 [![GitHub](https://img.shields.io/github/license/mocktools/golang-smtp-mock)](LICENSE.txt)
 [![Contributor Covenant](https://img.shields.io/badge/Contributor%20Covenant-v1.4%20adopted-ff69b4.svg)](CODE_OF_CONDUCT.md)
+
+Golang SMTP mock. Mimic SMTP server behaviour for your test environment and even more. It's lightweight configurable multithreaded SMTP server package written in Go. It meets the minimum requirements specified by [RFC 2821](https://datatracker.ietf.org/doc/html/rfc2821) & [RFC 5321](https://datatracker.ietf.org/doc/html/rfc5321).
 
 ## Table of Contents
 
@@ -20,8 +22,14 @@
 ## Features
 
 - Configurable multithreaded RFC compatible SMTP server
-- Configurable behaviour for each SMTP command
-- Fail fast scenario
+- Implements the minimum command set, responds to commands and adds a valid received header to messages as specified in [RFC 2821](https://datatracker.ietf.org/doc/html/rfc2821) & [RFC 5321](https://datatracker.ietf.org/doc/html/rfc5321)
+- Ability to configure behaviour for each SMTP command
+- Default settings, configure only what you need
+- Ability to override previous SMTP commands
+- Fail fast scenario (closing client session for case when command was inconsistent or failed)
+- Mock-server activity logger
+- Ability to do graceful shutdown of SMTP mock server
+- Simple and intuitive DSL
 
 ## Requirements
 
@@ -52,7 +60,7 @@ Bug reports and pull requests are welcome on GitHub at https://github.com/mockto
 
 ## License
 
-The golang library is available as open source under the terms of the [MIT License](https://opensource.org/licenses/MIT).
+This golang package is available as open source under the terms of the [MIT License](https://opensource.org/licenses/MIT).
 
 ## Code of Conduct
 
