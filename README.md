@@ -29,14 +29,14 @@ Golang 1.15+
 
 ## Installation
 
-Install `truemail-go`:
+Install `smtpmock`:
 
 ```bash
 go get github.com/mocktools/go-smtp-mock
 go install -i github.com/mocktools/go-smtp-mock
 ```
 
-Import `truemail-go` dependency into your code:
+Import `smtpmock` dependency into your code:
 
 ```go
 package main
