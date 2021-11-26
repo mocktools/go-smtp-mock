@@ -24,11 +24,12 @@ Golang SMTP mock. Mimic SMTP server behaviour for your test environment and even
 - Configurable multithreaded RFC compatible SMTP server
 - Implements the minimum command set, responds to commands and adds a valid received header to messages as specified in [RFC 2821](https://datatracker.ietf.org/doc/html/rfc2821) & [RFC 5321](https://datatracker.ietf.org/doc/html/rfc5321)
 - Ability to configure behaviour for each SMTP command
-- Default settings, configure only what you need
+- Comes with default settings out of the box, configure only what you need
 - Ability to override previous SMTP commands
 - Fail fast scenario (closing client session for case when command was inconsistent or failed)
 - Mock-server activity logger
 - Ability to do graceful shutdown of SMTP mock server
+- No authentication support
 - Simple and intuitive DSL
 
 ## Requirements
