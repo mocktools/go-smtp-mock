@@ -26,10 +26,11 @@ Golang SMTP mock. Mimic SMTP server behaviour for your test environment and even
 - Ability to configure behaviour for each SMTP command
 - Comes with default settings out of the box, configure only what you need
 - Ability to override previous SMTP commands
-- Fail fast scenario (closing client session for case when command was inconsistent or failed)
+- Fail fast scenario (ability to close client session for case when command was inconsistent or failed)
 - Mock-server activity logger
 - Ability to do graceful shutdown of SMTP mock server
 - No authentication support
+- Zero runtime dependencies
 - Simple and intuitive DSL
 
 ## Requirements
