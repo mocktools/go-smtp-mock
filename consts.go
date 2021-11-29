@@ -25,7 +25,7 @@ const (
 	InfoLogLevel    = "INFO"
 	WarningLogLevel = "WARNING"
 	ErrorLogLevel   = "ERROR"
-	LogFlag         = log.Ldate | log.Ltime
+	LogFlag         = log.Ldate | log.Lmicroseconds
 
 	// Session
 
