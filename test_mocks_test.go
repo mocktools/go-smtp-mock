@@ -165,6 +165,15 @@ func (session *sessionMock) readBytes() ([]byte, error) {
 	return args.Get(0).([]byte), args.Error(1)
 }
 
+func (session *sessionMock) isErrorFound() bool {
+	args := session.Called()
+	return args.Bool(0)
+}
+
+func (session *sessionMock) finish() {
+	session.Called()
+}
+
 // handlerMessage mock
 type handlerMessageMock struct {
 	mock.Mock
@@ -172,4 +181,41 @@ type handlerMessageMock struct {
 
 func (handler *handlerMessageMock) run() {
 	handler.Called()
+}
+
+// WaitGroup mock
+type waitGroupMock struct {
+	mock.Mock
+}
+
+func (wg *waitGroupMock) Add(count int) {
+	wg.Called(count)
+}
+
+func (wg *waitGroupMock) Done() {
+	wg.Called()
+}
+
+func (wg *waitGroupMock) Wait() {
+	wg.Called()
+}
+
+// listener mock
+type listenerMock struct {
+	mock.Mock
+}
+
+func (listener *listenerMock) Accept() (net.Conn, error) {
+	args := listener.Called()
+	return args.Get(0).(net.Conn), args.Error(1)
+}
+
+func (listener *listenerMock) Close() error {
+	args := listener.Called()
+	return args.Error(0)
+}
+
+func (listener *listenerMock) Addr() net.Addr {
+	args := listener.Called()
+	return args.Get(0).(net.Addr)
 }

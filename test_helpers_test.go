@@ -1,7 +1,10 @@
 package smtpmock
 
 import (
+	"net"
+	"net/smtp"
 	"regexp"
+	"time"
 )
 
 // Returns log message regex based on log level and message context
@@ -34,4 +37,22 @@ func createNotEmptyMessage() *message {
 		data:             true,
 		msg:              true,
 	}
+}
+
+// Runs minimal successfull SMTP session with target host
+func runMinimalSuccessfulSmtpSession(hostAddress string, portNumber int) error {
+	connection, _ := net.DialTimeout(NetworkProtocol, serverWithPortNumber(hostAddress, portNumber), time.Duration(2)*time.Second)
+	client, _ := smtp.NewClient(connection, hostAddress)
+
+	if err := client.Hello("example.com"); err != nil {
+		return err
+	}
+	if err := client.Quit(); err != nil {
+		return err
+	}
+	if err := client.Close(); err != nil {
+		return err
+	}
+
+	return nil
 }

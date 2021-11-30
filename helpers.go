@@ -1,6 +1,9 @@
 package smtpmock
 
-import "regexp"
+import (
+	"fmt"
+	"regexp"
+)
 
 // Regex builder
 func newRegex(regexPattern string) (*regexp.Regexp, error) {
@@ -38,4 +41,9 @@ func isIncluded(slice []string, target string) bool {
 	}
 
 	return false
+}
+
+// Returns server with port number follows {server}:{portNumber} pattern
+func serverWithPortNumber(server string, portNumber int) string {
+	return fmt.Sprintf("%s:%d", server, portNumber)
 }

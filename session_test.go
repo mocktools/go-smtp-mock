@@ -11,6 +11,12 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
+func TestTimeNow(t *testing.T) {
+	t.Run("wrappes time.Now() in function", func(t *testing.T) {
+		assert.Equal(t, time.Now().Day(), timeNow().Day())
+	})
+}
+
 func TestSessionIsErrorFound(t *testing.T) {
 	t.Run("when error exists", func(t *testing.T) {
 		session := &session{err: errors.New("some error messsage")}

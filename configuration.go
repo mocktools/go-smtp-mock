@@ -36,7 +36,7 @@ type configuration struct {
 	msqSizeLimit                  int
 	sessionTimeout                int
 
-	// TODO: add ability to send 221 response before end of the session
+	// TODO: add ability to send 221 response before end of session for case when fail fast scenario enabled
 }
 
 // New configuration builder. Returns pointer to valid new configuration structure

@@ -2,6 +2,7 @@ package smtpmock
 
 import (
 	"regexp"
+	"strconv"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
@@ -64,5 +65,13 @@ func TestIsIncluded(t *testing.T) {
 
 	t.Run("item not found in slice", func(t *testing.T) {
 		assert.False(t, isIncluded([]string{}, item))
+	})
+}
+
+func TestServerWithPortNumber(t *testing.T) {
+	t.Run("returns server with port number", func(t *testing.T) {
+		server, portNumber := "1.2.3.4", 42
+
+		assert.Equal(t, server+":"+strconv.Itoa(portNumber), serverWithPortNumber(server, portNumber))
 	})
 }
