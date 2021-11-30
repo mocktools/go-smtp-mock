@@ -187,25 +187,44 @@ smtpmock.ConfigurationAttr{
 
 ### Starting-stopping server
 
-To iterate with your SMTP mock server you have to create it using `smtpmock.New()` and  `smtpmock.ConfigurationAttr` first:
+To iterate with your SMTP mock server you have to create it using `smtpmock.New()` and  `smtpmock.ConfigurationAttr` first. Example of usage:
 
 ```go
 package main
 
 import (
   "fmt"
+  "net"
+  "net/smtp"
 
   "github.com/mocktools/go-smtp-mock"
 )
 
 func main() {
+  hostAddress, portNumber := "127.0.0.1", 2525
+
   // You can pass empty ConfigurationAttr{}. It means that smtpmock will use default settings
-  server := smtpmock.New(smtpmock.ConfigurationAttr{})
+  server := smtpmock.New(smtpmock.ConfigurationAttr{
+    hostAddress:       hostAddress,
+    portNumber:        portNumber,
+    logToStdout:       true,
+    logServerActivity: true,
+  })
 
   // To start server use Start() method
   if err := server.Start(); err != nil {
     fmt.Println(err)
   }
+
+  // Possible SMTP-client stuff for iteration with mock server
+  address := fmt.Sprintf("%s:%d", hostAddress, portNumber)
+  timeout := time.Duration(2) * time.Second
+
+  connection, _ := net.DialTimeout("tcp", address, timeout)
+  client, _ := smtp.NewClient(connection, hostAddress)
+  client.Hello("example.com")
+  client.Quit()
+  client.Close()
 
   // To stop the server use Stop() method. Please note, smtpmock uses graceful shutdown.
   // It means that smtpmock will end all sessions after client responses or by session
@@ -216,9 +235,24 @@ func main() {
 }
 ```
 
+Code from example above will produce next output to stdout:
+
+```
+INFO: 2021/11/30 22:07:30.554827 SMTP mock server started on port: 2525
+INFO: 2021/11/30 22:07:30.554961 SMTP session started
+INFO: 2021/11/30 22:07:30.554998 SMTP response: 220 Welcome
+INFO: 2021/11/30 22:07:30.555059 SMTP request: EHLO example.com
+INFO: 2021/11/30 22:07:30.555648 SMTP response: 250 Received
+INFO: 2021/11/30 22:07:30.555686 SMTP request: QUIT
+INFO: 2021/11/30 22:07:30.555722 SMTP response: 221 Closing connection
+INFO: 2021/11/30 22:07:30.555732 SMTP session finished
+WARNING: 2021/11/30 22:07:30.555801 SMTP mock server is in the shutdown mode and won't accept new connections
+INFO: 2021/11/30 22:07:30.555808 SMTP mock server was stopped successfully
+```
+
 ## Contributing
 
-Bug reports and pull requests are welcome on GitHub at https://github.com/mocktools/go-smtp-mock. This project is intended to be a safe, welcoming space for collaboration, and contributors are expected to adhere to the [Contributor Covenant](http://contributor-covenant.org) code of conduct. Please check the [open tikets](https://github.com/mocktools/go-smtp-mock/issues). Be shure to follow Contributor Code of Conduct below and our [Contributing Guidelines](CONTRIBUTING.md).
+Bug reports and pull requests are welcome on GitHub at <https://github.com/mocktools/go-smtp-mock>. This project is intended to be a safe, welcoming space for collaboration, and contributors are expected to adhere to the [Contributor Covenant](http://contributor-covenant.org) code of conduct. Please check the [open tikets](https://github.com/mocktools/go-smtp-mock/issues). Be shure to follow Contributor Code of Conduct below and our [Contributing Guidelines](CONTRIBUTING.md).
 
 ## License
 

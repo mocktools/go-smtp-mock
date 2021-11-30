@@ -16,9 +16,12 @@ func TestNewServer(t *testing.T) {
 		server := newServer(configuration)
 
 		assert.Same(t, configuration, server.configuration)
+		assert.Equal(t, new(messages), server.messages)
 		assert.Equal(t, newLogger(configuration.logToStdout, configuration.logServerActivity), server.logger)
 		assert.Nil(t, server.listener)
-		assert.Equal(t, new(messages), server.messages)
+		assert.NotNil(t, server.wg)
+		assert.Nil(t, server.quit)
+		assert.False(t, server.isStarted)
 	})
 }
 
@@ -170,11 +173,12 @@ func TestServerHandleSession(t *testing.T) {
 	t.Run("when server quit channel was closed", func(t *testing.T) {
 		session, configuration := &sessionMock{}, NewConfiguration(ConfigurationAttr{isCmdFailFast: true})
 		server := newServer(configuration)
+		server.quit = make(chan interface{})
+		close(server.quit)
 
 		session.On("writeResponse", configuration.msgGreeting).Once().Return(nil)
 		session.On("finish").Once().Return(nil)
 
-		close(server.quit)
 		server.handleSession(session)
 	})
 
@@ -197,8 +201,11 @@ func TestServerStart(t *testing.T) {
 		server := newServer(configuration)
 
 		assert.NoError(t, server.Start())
-		assert.True(t, server.isStarted)
 		_ = runMinimalSuccessfulSmtpSession(configuration.hostAddress, configuration.portNumber)
+		assert.NotEmpty(t, server.messages)
+		assert.NotNil(t, server.quit)
+		assert.True(t, server.isStarted)
+
 		_ = server.Stop()
 	})
 
