@@ -1,6 +1,9 @@
 # ![Golang SMTP mock. Mimic SMTP server behaviour for your test environment and even more](https://repository-images.githubusercontent.com/401721985/848bc1dd-fc35-4d78-8bd9-0ac3430270d8)
 
 [![CircleCI](https://circleci.com/gh/mocktools/golang-smtp-mock/tree/master.svg?style=svg)](https://circleci.com/gh/mocktools/golang-smtp-mock/tree/master)
+[![GitHub release (latest by date)](https://img.shields.io/github/v/release/mocktools/golang-smtp-mock)](https://github.com/mocktools/golang-smtp-mock/releases)
+[![Go Report Card](https://goreportcard.com/badge/github.com/mocktools/go-smtp-mock)](https://goreportcard.com/report/github.com/mocktools/go-smtp-mock)
+[![PkgGoDev](https://pkg.go.dev/badge/github.com/mocktools/go-smtp-mock)](https://pkg.go.dev/github.com/mocktools/go-smtp-mock)
 [![GitHub](https://img.shields.io/github/license/mocktools/golang-smtp-mock)](LICENSE.txt)
 [![Contributor Covenant](https://img.shields.io/badge/Contributor%20Covenant-v1.4%20adopted-ff69b4.svg)](CODE_OF_CONDUCT.md)
 
@@ -12,6 +15,8 @@ Golang SMTP mock. Mimic SMTP server behaviour for your test environment and even
 - [Requirements](#requirements)
 - [Installation](#installation)
 - [Usage](#usage)
+  - [Configuring](#configuring)
+  - [Starting/stopping server](#starting-stopping-server)
 - [Contributing](#contributing)
 - [License](#license)
 - [Code of Conduct](#code-of-conduct)
@@ -55,6 +60,161 @@ import "github.com/mocktools/go-smtp-mock"
 ```
 
 ## Usage
+
+- [Configuring](#configuring)
+- [Starting-stopping server](#starting-stopping-server)
+
+### Configuring
+
+`smtpmock` is SMTP server for test environment with configurable behaviour. It comes with default settings out of the box. But you can override any default behaviour if you need.
+
+```go
+smtpmock.ConfigurationAttr{
+
+  // Customizing server behaviour
+  // ---------------------------------------------------------------------
+  // Host address where smtpmock will run, it's equal to "127.0.0.1" by default
+  hostAddress:                   "[::]",
+
+  // Port number on which the server will bind, it's equal to 2525 by default
+  portNumber:                    2526,
+
+  // Enables/disables log to stdout. It's equal to false by default
+  logToStdout:                   true,
+
+  // Enables/disables log server activity. It's equal to false by default
+  logServerActivity:             true,
+
+  // Ability to specify session timeout. It's equal to 30 seconds by default
+  sessionTimeout:                42,
+
+
+  // Customizing SMTP command handlers behaviour
+  // ---------------------------------------------------------------------
+  // Ability to configure fail fast scenario. It means that server will
+  // close client session for case when command was inconsistent or failed.
+  // It's equal to false by default
+  isCmdFailFast:                 true,
+
+  // Ability to specify blacklisted HELO domains. It's equal to empty []string
+  blacklistedHeloDomains:        []string{"example1.com", "example2.com"},
+
+  // Ability to specify blacklisted MAIL FROM emails. It's equal to empty []string
+  blacklistedMailfromEmails:     []string{"bot@olo.com", "robot@molo.com"},
+
+  // Ability to specify blacklisted RCPT TO emails. It's equal to empty []string
+  blacklistedRcpttoEmails:       []string{"blacklisted@olo.com", "blacklisted@molo.com"},
+
+  // Ability to specify not registered (non-existent) RCPT TO emails.
+  // It's equal to empty []string
+  notRegisteredEmails:           []string{"nobody@olo.com", "non-existent@email.com"},
+
+  // Ability to specify message body size limit. It's equal to 10485760 bytes (10MB) by default
+  msqSizeLimit:                  5,
+  
+
+  // Customazing SMTP command handler messages context
+  // ---------------------------------------------------------------------
+  // Custom server greeting message. Base on DefaultGreetingMsg by default
+  msgGreeting:                   "msgGreeting",
+
+  // Custom invalid command message. Based on DefaultInvalidCmdMsg by default
+  msgInvalidCmd:                 "msgInvalidCmd",
+
+  // Custom invalid command HELO sequence message.
+  // Based on DefaultInvalidCmdHeloSequenceMsg by default
+  msgInvalidCmdHeloSequence:     "msgInvalidCmdHeloSequence",
+
+  // Custom invalid command HELO argument message.
+  // Based on DefaultInvalidCmdHeloArgMsg by default
+  msgInvalidCmdHeloArg:          "msgInvalidCmdHeloArg",
+
+  // Custom HELO blacklisted domain message. Based on DefaultQuitMsg by default
+  msgHeloBlacklistedDomain:      "msgHeloBlacklistedDomain",
+
+  // Custom HELO received message. Based on DefaultReceivedMsg by default
+  msgHeloReceived:               "msgHeloReceived",
+
+  // Custom invalid command MAIL FROM sequence message.
+  // Based on DefaultInvalidCmdMailfromSequenceMsg by default
+  msgInvalidCmdMailfromSequence: "msgInvalidCmdMailfromSequence",
+
+  // Custom invalid command MAIL FROM argument message.
+  // Based on DefaultInvalidCmdMailfromArgMsg by default
+  msgInvalidCmdMailfromArg:      "msgInvalidCmdMailfromArg",
+
+  // Custom MAIL FROM blacklisted domain message. Based on DefaultQuitMsg by default
+  msgMailfromBlacklistedEmail:   "msgMailfromBlacklistedEmail",
+
+  // Custom MAIL FROM received message. Based on DefaultReceivedMsg by default
+  msgMailfromReceived:           "msgMailfromReceived",
+
+  // Custom invalid command RCPT TO sequence message.
+  // Based on DefaultInvalidCmdRcpttoSequenceMsg by default
+  msgInvalidCmdRcpttoSequence:   "msgInvalidCmdRcpttoSequence",
+
+  // Custom invalid command RCPT TO argument message.
+  // Based on DefaultInvalidCmdRcpttoArgMsg by default
+  msgInvalidCmdRcpttoArg:        "msgInvalidCmdRcpttoArg",
+
+  // Custom RCPT TO not registered email message.
+  // Based on DefaultNotRegistredRcpttoEmailMsg by default
+  msgRcpttoNotRegisteredEmail:   "msgRcpttoNotRegisteredEmail",
+
+  // Custom RCPT TO blacklisted email message. Based on DefaultQuitMsg by default
+  msgRcpttoBlacklistedEmail:     "msgRcpttoBlacklistedEmail",
+
+  // Custom RCPT TO received message. Based on DefaultReceivedMsg by default
+  msgRcpttoReceived:             "msgRcpttoReceived",
+
+  // Custom invalid command DATA sequence message.
+  // Based on DefaultInvalidCmdDataSequenceMsg by default
+  msgInvalidCmdDataSequence:     "msgInvalidCmdDataSequence",
+
+  // Custom DATA received message. Based on DefaultReadyForReceiveMsg by default
+  msgDataReceived:              "msgDataReceived",
+
+  // Custom size is too big message. Based on DefaultMsgSizeIsTooBigMsg by default
+  msgMsgSizeIsTooBig:            "msgMsgSizeIsTooBig",
+
+  // Custom received message body message. Based on DefaultReceivedMsg by default
+  msgMsgReceived:                "msgMsgReceived",
+
+  // Custom quit command message. Based on DefaultQuitMsg by default
+  msgQuitCmd:                    "msgQuitCmd",
+}
+```
+
+### Starting-stopping server
+
+To iterate with your SMTP mock server you have to create it using `smtpmock.New()` and  `smtpmock.ConfigurationAttr` first:
+
+```go
+package main
+
+import (
+  "fmt"
+
+  "github.com/mocktools/go-smtp-mock"
+)
+
+func main() {
+  // You can pass empty ConfigurationAttr{}. It means that smtpmock will use default settings
+  server := smtpmock.New(smtpmock.ConfigurationAttr{})
+
+  // To start server use Start() method
+  if err := server.Start(); err != nil {
+    fmt.Println(err)
+  }
+
+  // To stop the server use Stop() method. Please note, smtpmock uses graceful shutdown.
+  // It means that smtpmock will end all sessions after client responses or by session
+  // timeouts immediately.
+  if err := server.Stop(); err != nil {
+    fmt.Println(err)
+  }
+}
+```
 
 ## Contributing
 
