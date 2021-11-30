@@ -39,7 +39,7 @@ func createNotEmptyMessage() *message {
 	}
 }
 
-// Runs minimal successfull SMTP session with target host
+// Runs minimal successful SMTP session with target host
 func runMinimalSuccessfulSmtpSession(hostAddress string, portNumber int) error {
 	connection, _ := net.DialTimeout(NetworkProtocol, serverWithPortNumber(hostAddress, portNumber), time.Duration(2)*time.Second)
 	client, _ := smtp.NewClient(connection, hostAddress)
