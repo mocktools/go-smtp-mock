@@ -195,41 +195,48 @@ func TestServerStart(t *testing.T) {
 	t.Run("when no errors happens during starting and running the server", func(t *testing.T) {
 		configuration := createConfiguration()
 		server := newServer(configuration)
-		server.start()
 
+		assert.NoError(t, server.Start())
 		assert.True(t, server.isStarted)
-
 		_ = runMinimalSuccessfulSmtpSession(configuration.hostAddress, configuration.portNumber)
-		server.stop()
-
-		assert.False(t, server.isStarted)
+		_ = server.Stop()
 	})
 
-	t.Run("when error happens during starting the server", func(t *testing.T) {
+	t.Run("when active server doesn't start current server", func(t *testing.T) {
+		server := &server{isStarted: true}
+
+		assert.EqualError(t, server.Start(), ServerStartErrorMsg)
+	})
+
+	t.Run("when listener error happens during starting the server doesn't start current server", func(t *testing.T) {
 		configuration := createConfiguration()
 		server, logger := newServer(configuration), new(loggerMock)
+		errorMessage := fmt.Sprintf("%s: %d", ServerErrorMsg, configuration.portNumber)
 		listener, _ := net.Listen(NetworkProtocol, serverWithPortNumber(configuration.hostAddress, configuration.portNumber))
 		server.logger = logger
-		logger.On("error", fmt.Sprintf("%s: %d", ServerErrorMsg, configuration.portNumber)).Once().Return(nil)
-		server.start()
-		listener.Close()
+		logger.On("error", errorMessage).Once().Return(nil)
 
+		assert.EqualError(t, server.Start(), errorMessage)
 		assert.False(t, server.isStarted)
+		listener.Close()
 	})
 }
 
 func TestServerStop(t *testing.T) {
-	logger, listener, waitGroup, quitChannel := new(loggerMock), new(listenerMock), new(waitGroupMock), make(chan interface{})
-	server := &server{logger: logger, listener: listener, wg: waitGroup, quit: quitChannel}
-
-	t.Run("stops the server", func(t *testing.T) {
+	t.Run("when server active stops current server", func(t *testing.T) {
+		logger, listener, waitGroup, quitChannel := new(loggerMock), new(listenerMock), new(waitGroupMock), make(chan interface{})
+		server := &server{logger: logger, listener: listener, wg: waitGroup, quit: quitChannel, isStarted: true}
 		listener.On("Close").Once().Return(nil)
 		waitGroup.On("Wait").Once().Return(nil)
 		logger.On("infoActivity", ServerStopMsg).Once().Return(nil)
-		server.stop()
-		_, isChannelOpened := <-server.quit
 
-		assert.False(t, isChannelOpened)
+		assert.NoError(t, server.Stop())
 		assert.False(t, server.isStarted)
+		_, isChannelOpened := <-server.quit
+		assert.False(t, isChannelOpened)
+	})
+
+	t.Run("when server is inactive doesn't stop current server", func(t *testing.T) {
+		assert.EqualError(t, new(server).Stop(), ServerStopErrorMsg)
 	})
 }

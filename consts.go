@@ -43,7 +43,9 @@ const (
 	DefaultMessageSizeLimit          = 10485760 // in bytes (10MB)
 	DefaultSessionTimeout            = 30       // in seconds
 	ServerStartMsg                   = "SMTP mock server started on port"
+	ServerStartErrorMsg              = "unable to start SMTP mock server. Server must be inactive"
 	ServerErrorMsg                   = "Failed to start SMTP mock server on port"
+	ServerStopErrorMsg               = "unable to stop SMTP mock server. Server must be active"
 	ServerNotAcceptNewConnectionsMsg = "SMTP mock server is in the shutdown mode and won't accept new connections"
 	ServerStopMsg                    = "SMTP mock server was stopped successfully"
 

@@ -1,6 +1,7 @@
 package smtpmock
 
 import (
+	"errors"
 	"fmt"
 	"net"
 	"strings"
@@ -43,6 +44,64 @@ func (server *server) newMessage() *message {
 	newMessage := new(message)
 	server.messages.append(newMessage)
 	return newMessage
+}
+
+// Binds and runs SMTP mock server on specified port
+func (server *server) Start() (err error) {
+	if server.isStarted {
+		return errors.New(ServerStartErrorMsg)
+	}
+
+	configuration, logger := server.configuration, server.logger
+	portNumber := configuration.portNumber
+
+	listener, err := net.Listen(NetworkProtocol, serverWithPortNumber(configuration.hostAddress, portNumber))
+	if err != nil {
+		errorMessage := fmt.Sprintf("%s: %d", ServerErrorMsg, server.configuration.portNumber)
+		logger.error(errorMessage)
+		return errors.New(errorMessage)
+	}
+
+	server.listener, server.isStarted = listener, true
+	logger.infoActivity(fmt.Sprintf("%s: %d", ServerStartMsg, portNumber))
+
+	server.addToWaitGroup()
+	go func() {
+		defer server.removeFromWaitGroup()
+		for {
+			connection, err := server.listener.Accept()
+			if err != nil {
+				if _, ok := <-server.quit; !ok {
+					logger.warning(ServerNotAcceptNewConnectionsMsg)
+				}
+				return
+			}
+
+			server.addToWaitGroup()
+			go func() {
+				server.handleSession(newSession(connection, logger))
+				server.removeFromWaitGroup()
+			}()
+
+			logger.infoActivity(SessionStartMsg)
+		}
+	}()
+
+	return err
+}
+
+// Stops server gracefully. Returns error for case when server is not active
+func (server *server) Stop() (err error) {
+	if server.isStarted {
+		close(server.quit)
+		server.listener.Close()
+		server.wg.Wait()
+		server.isStarted = false
+		server.logger.infoActivity(ServerStopMsg)
+		return
+	}
+
+	return errors.New(ServerStopErrorMsg)
 }
 
 // Invalid SMTP command predicate. Returns true when command is invalid, otherwise returns false
@@ -107,50 +166,4 @@ func (server *server) handleSession(session sessionInterface) {
 			}
 		}
 	}
-}
-
-// Binds and runs SMTP mock server on specified port
-func (server *server) start() {
-	configuration, logger := server.configuration, server.logger
-	portNumber := configuration.portNumber
-
-	listener, err := net.Listen(NetworkProtocol, serverWithPortNumber(configuration.hostAddress, portNumber))
-	if err != nil {
-		logger.error(fmt.Sprintf("%s: %d", ServerErrorMsg, server.configuration.portNumber))
-		return
-	}
-
-	server.listener, server.isStarted = listener, true
-	logger.infoActivity(fmt.Sprintf("%s: %d", ServerStartMsg, portNumber))
-
-	server.addToWaitGroup()
-	go func() {
-		defer server.removeFromWaitGroup()
-		for {
-			connection, err := server.listener.Accept()
-			if err != nil {
-				if _, ok := <-server.quit; !ok {
-					logger.warning(ServerNotAcceptNewConnectionsMsg)
-				}
-				return
-			}
-
-			server.addToWaitGroup()
-			go func() {
-				server.handleSession(newSession(connection, logger))
-				server.removeFromWaitGroup()
-			}()
-
-			logger.infoActivity(SessionStartMsg)
-		}
-	}()
-}
-
-// Stops server gracefully
-func (server *server) stop() {
-	close(server.quit)
-	server.listener.Close()
-	server.wg.Wait()
-	server.isStarted = false
-	server.logger.infoActivity(ServerStopMsg)
 }
