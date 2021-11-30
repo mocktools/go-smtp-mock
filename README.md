@@ -1,10 +1,10 @@
 # ![Golang SMTP mock. Mimic SMTP server behaviour for your test environment and even more](https://repository-images.githubusercontent.com/401721985/848bc1dd-fc35-4d78-8bd9-0ac3430270d8)
 
-[![CircleCI](https://circleci.com/gh/mocktools/golang-smtp-mock/tree/master.svg?style=svg)](https://circleci.com/gh/mocktools/golang-smtp-mock/tree/master)
-[![GitHub release (latest by date)](https://img.shields.io/github/v/release/mocktools/golang-smtp-mock)](https://github.com/mocktools/golang-smtp-mock/releases)
+[![CircleCI](https://circleci.com/gh/mocktools/go-smtp-mock/tree/master.svg?style=svg)](https://circleci.com/gh/mocktools/go-smtp-mock/tree/master)
+[![GitHub release (latest by date)](https://img.shields.io/github/v/release/mocktools/go-smtp-mock)](https://github.com/mocktools/go-smtp-mock/releases)
 [![Go Report Card](https://goreportcard.com/badge/github.com/mocktools/go-smtp-mock)](https://goreportcard.com/report/github.com/mocktools/go-smtp-mock)
 [![PkgGoDev](https://pkg.go.dev/badge/github.com/mocktools/go-smtp-mock)](https://pkg.go.dev/github.com/mocktools/go-smtp-mock)
-[![GitHub](https://img.shields.io/github/license/mocktools/golang-smtp-mock)](LICENSE.txt)
+[![GitHub](https://img.shields.io/github/license/mocktools/go-smtp-mock)](LICENSE.txt)
 [![Contributor Covenant](https://img.shields.io/badge/Contributor%20Covenant-v1.4%20adopted-ff69b4.svg)](CODE_OF_CONDUCT.md)
 
 Golang SMTP mock. Mimic SMTP server behaviour for your test environment and even more. It's lightweight configurable multithreaded SMTP server package written in Go. It meets the minimum requirements specified by [RFC 2821](https://datatracker.ietf.org/doc/html/rfc2821) & [RFC 5321](https://datatracker.ietf.org/doc/html/rfc5321).
@@ -187,7 +187,7 @@ smtpmock.ConfigurationAttr{
 
 ### Starting-stopping server
 
-To iterate with your SMTP mock server you have to create it using `smtpmock.New()` and  `smtpmock.ConfigurationAttr` first. Example of usage:
+You have to create your SMTP mock server using `smtpmock.New()` and `smtpmock.ConfigurationAttr` to iterate with it first. Example of usage:
 
 ```go
 package main
@@ -260,7 +260,7 @@ This golang package is available as open source under the terms of the [MIT Lice
 
 ## Code of Conduct
 
-Everyone interacting in the SmtpMock project’s codebases, issue trackers, chat rooms and mailing lists is expected to follow the [code of conduct](CODE_OF_CONDUCT.md).
+Everyone interacting in the `smtpmock` project’s codebases, issue trackers, chat rooms and mailing lists is expected to follow the [code of conduct](CODE_OF_CONDUCT.md).
 
 ## Credits
 
@@ -269,4 +269,4 @@ Everyone interacting in the SmtpMock project’s codebases, issue trackers, chat
 
 ## Versioning
 
-SmtpMock uses [Semantic Versioning 2.0.0](https://semver.org)
+`smtpmock` uses [Semantic Versioning 2.0.0](https://semver.org)
