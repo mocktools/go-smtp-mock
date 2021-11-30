@@ -33,7 +33,6 @@ func newServer(configuration *configuration) *server {
 		messages:      new(messages),
 		logger:        newLogger(configuration.logToStdout, configuration.logServerActivity),
 		wg:            new(sync.WaitGroup),
-		quit:          make(chan interface{}),
 	}
 }
 
@@ -52,6 +51,7 @@ func (server *server) Start() (err error) {
 		return errors.New(ServerStartErrorMsg)
 	}
 
+	server.quit = make(chan interface{})
 	configuration, logger := server.configuration, server.logger
 	portNumber := configuration.portNumber
 
