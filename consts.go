@@ -4,7 +4,6 @@ import "log"
 
 const (
 	// SMTP mock default messages
-
 	DefaultGreetingMsg                   = "220 Welcome"
 	DefaultQuitMsg                       = "221 Closing connection"
 	DefaultReceivedMsg                   = "250 Received"
@@ -21,14 +20,12 @@ const (
 	DefaultMsgSizeIsTooBigMsg            = "552 Message exceeded max size of"
 
 	// Logger
-
 	InfoLogLevel    = "INFO"
 	WarningLogLevel = "WARNING"
 	ErrorLogLevel   = "ERROR"
 	LogFlag         = log.Ldate | log.Lmicroseconds
 
 	// Session
-
 	SessionStartMsg      = "SMTP session started"
 	SessionRequestMsg    = "SMTP request: "
 	SessionResponseMsg   = "SMTP response: "
@@ -36,7 +33,6 @@ const (
 	SessionBinaryDataMsg = "message binary data portion"
 
 	// Server
-
 	NetworkProtocol                  = "tcp"
 	DefaultHostAddress               = "0.0.0.0"
 	DefaultPortNuber                 = 2525
@@ -50,7 +46,6 @@ const (
 	ServerStopMsg                    = "SMTP mock server was stopped successfully"
 
 	// Regex patterns
-
 	AvailableCmdsRegexPattern          = `(?i)helo|ehlo|mail from:|rcpt to:|data|quit`
 	DomainRegexPattern                 = `(?i)([\p{L}0-9]+([\-.]{1}[\p{L}0-9]+)*\.\p{L}{2,63})`
 	EmailRegexPattern                  = `(?i)<?((.+)@` + DomainRegexPattern + `)>?`
@@ -64,6 +59,5 @@ const (
 	ValidRcpttoComplexCmdRegexPattern  = `\A(` + ValidRcpttoCmdRegexPattern + `) ?(` + EmailRegexPattern + `)\z`
 
 	// Helpers
-
 	EmptyString = ""
 )
