@@ -1,0 +1,47 @@
+version: 2.1
+
+jobs:
+  lint:
+    docker:
+      - image: golangci/golangci-lint:v1.33-alpine
+    steps:
+      - checkout
+      - run: golangci-lint run
+
+  test:
+    docker:
+      - image: golang:1.15
+    working_directory: /go/src/github.com/mocktools/go-smtp-mock
+    steps:
+      - checkout
+      - run:
+          name: Installing Gotestsum
+          command: go get gotest.tools/gotestsum
+
+      - run:
+          name: Running tests
+          command: gotestsum --format standard-verbose -- -coverprofile=c.out ./...
+
+      - run:
+          name: Creating coverage reports
+          command: |
+            mkdir -p /tmp/artifacts
+            go tool cover -html=c.out -o coverage.html
+            mv coverage.html /tmp/artifacts
+            go tool cover -func=c.out -o coverage.txt
+            mv coverage.txt /tmp/artifacts
+
+      - store_artifacts:
+          name: Saving coverage artifacts
+          path: /tmp/artifacts
+
+      - run:
+          name: Enforcing minimum code coverage
+          command: |
+            tail -1 /tmp/artifacts/coverage.txt | awk '{ exit (($NF == "100.0%") ? 0 : 1) }'
+
+workflows:
+  build:
+    jobs:
+      - lint
+      - test
