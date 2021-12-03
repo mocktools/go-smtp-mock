@@ -238,7 +238,7 @@ func TestHandlerMailfromMailfromEmail(t *testing.T) {
 	t.Run("when request includes invalid email address", func(t *testing.T) {
 		invalidEmail := "user@invalid"
 
-		assert.Equal(t, EmptyString, handler.mailfromEmail("MAIL FROM: "+invalidEmail))
+		assert.Equal(t, emptyString, handler.mailfromEmail("MAIL FROM: "+invalidEmail))
 	})
 }
 

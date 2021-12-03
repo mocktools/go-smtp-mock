@@ -27,7 +27,7 @@ func TestNewServer(t *testing.T) {
 
 func TestServerNewMessage(t *testing.T) {
 	t.Run("pushes new message into server.messages, returns this message", func(t *testing.T) {
-		server := &server{messages: new(messages)}
+		server := &Server{messages: new(messages)}
 		message, messages := server.newMessage(), server.messages.items
 
 		assert.NotEmpty(t, messages)
@@ -36,7 +36,7 @@ func TestServerNewMessage(t *testing.T) {
 }
 
 func TestServerIsInvalidCmd(t *testing.T) {
-	availableComands, server := strings.Split("helo,ehlo,mail from:,rcpt to:,data,quit", ","), new(server)
+	availableComands, server := strings.Split("helo,ehlo,mail from:,rcpt to:,data,quit", ","), new(Server)
 
 	for _, validCommand := range availableComands {
 		t.Run("when valid command", func(t *testing.T) {
@@ -54,13 +54,13 @@ func TestServerRecognizeCommand(t *testing.T) {
 		firstWord, secondWord := "first", " command"
 		command := firstWord + secondWord
 
-		assert.Equal(t, strings.ToUpper(firstWord), new(server).recognizeCommand(command))
+		assert.Equal(t, strings.ToUpper(firstWord), new(Server).recognizeCommand(command))
 	})
 }
 
 func TestServerAddToWaitGroup(t *testing.T) {
 	waitGroup := new(waitGroupMock)
-	server := &server{wg: waitGroup}
+	server := &Server{wg: waitGroup}
 
 	t.Run("increases count of goroutines by one", func(t *testing.T) {
 		waitGroup.On("Add", 1).Once().Return(nil)
@@ -70,7 +70,7 @@ func TestServerAddToWaitGroup(t *testing.T) {
 
 func TestServerRemoveFromWaitGroup(t *testing.T) {
 	waitGroup := new(waitGroupMock)
-	server := &server{wg: waitGroup}
+	server := &Server{wg: waitGroup}
 
 	t.Run("decreases count of goroutines by one", func(t *testing.T) {
 		waitGroup.On("Done").Once().Return(nil)
@@ -85,31 +85,31 @@ func TestServerHandleSession(t *testing.T) {
 
 		session.On("writeResponse", configuration.msgGreeting).Once().Return(nil)
 
-		session.On("setTimeout", DefaultSessionTimeout).Once().Return(nil)
+		session.On("setTimeout", defaultSessionTimeout).Once().Return(nil)
 		session.On("readRequest").Once().Return("helo example.com", nil)
 		session.On("clearError").Once().Return(nil)
 		session.On("writeResponse", configuration.msgHeloReceived).Once().Return(nil)
 		session.On("isErrorFound").Once().Return(false)
 
-		session.On("setTimeout", DefaultSessionTimeout).Once().Return(nil)
+		session.On("setTimeout", defaultSessionTimeout).Once().Return(nil)
 		session.On("readRequest").Once().Return("ehlo example.com", nil)
 		session.On("clearError").Once().Return(nil)
 		session.On("writeResponse", configuration.msgHeloReceived).Once().Return(nil)
 		session.On("isErrorFound").Once().Return(false)
 
-		session.On("setTimeout", DefaultSessionTimeout).Once().Return(nil)
+		session.On("setTimeout", defaultSessionTimeout).Once().Return(nil)
 		session.On("readRequest").Once().Return("mail from: receiver@example.com", nil)
 		session.On("clearError").Once().Return(nil)
 		session.On("writeResponse", configuration.msgMailfromReceived).Once().Return(nil)
 		session.On("isErrorFound").Once().Return(false)
 
-		session.On("setTimeout", DefaultSessionTimeout).Once().Return(nil)
+		session.On("setTimeout", defaultSessionTimeout).Once().Return(nil)
 		session.On("readRequest").Once().Return("rcpt to: sender@example.com", nil)
 		session.On("clearError").Once().Return(nil)
 		session.On("writeResponse", configuration.msgRcpttoReceived).Once().Return(nil)
 		session.On("isErrorFound").Once().Return(false)
 
-		session.On("setTimeout", DefaultSessionTimeout).Once().Return(nil)
+		session.On("setTimeout", defaultSessionTimeout).Once().Return(nil)
 		session.On("readRequest").Once().Return("data", nil)
 		session.On("clearError").Once().Return(nil)
 		session.On("writeResponse", configuration.msgDataReceived).Once().Return(nil)
@@ -119,7 +119,7 @@ func TestServerHandleSession(t *testing.T) {
 		session.On("readBytes").Once().Return([]uint8(".\r\n"), nil)
 		session.On("writeResponse", configuration.msgMsgReceived).Once().Return(nil)
 
-		session.On("setTimeout", DefaultSessionTimeout).Once().Return(nil)
+		session.On("setTimeout", defaultSessionTimeout).Once().Return(nil)
 		session.On("readRequest").Once().Return("quit", nil)
 		session.On("writeResponse", configuration.msgQuitCmd).Once().Return(nil)
 		session.On("isErrorFound").Once().Return(false)
@@ -135,11 +135,11 @@ func TestServerHandleSession(t *testing.T) {
 
 		session.On("writeResponse", configuration.msgGreeting).Once().Return(nil)
 
-		session.On("setTimeout", DefaultSessionTimeout).Once().Return(nil)
+		session.On("setTimeout", defaultSessionTimeout).Once().Return(nil)
 		session.On("readRequest").Once().Return("not implemented command", nil)
 		session.On("writeResponse", configuration.msgInvalidCmd).Once().Return(nil)
 
-		session.On("setTimeout", DefaultSessionTimeout).Once().Return(nil)
+		session.On("setTimeout", defaultSessionTimeout).Once().Return(nil)
 		session.On("readRequest").Once().Return("quit", nil)
 		session.On("writeResponse", configuration.msgQuitCmd).Once().Return(nil)
 
@@ -149,16 +149,16 @@ func TestServerHandleSession(t *testing.T) {
 	})
 
 	t.Run("when invalid command, session error, fail fast scenario enabled", func(t *testing.T) {
-		session, configuration := &sessionMock{}, NewConfiguration(ConfigurationAttr{isCmdFailFast: true})
+		session, configuration := &sessionMock{}, newConfiguration(ConfigurationAttr{isCmdFailFast: true})
 		server, errorMessage := newServer(configuration), configuration.msgInvalidCmdHeloArg
 
 		session.On("writeResponse", configuration.msgGreeting).Once().Return(nil)
 
-		session.On("setTimeout", DefaultSessionTimeout).Once().Return(nil)
+		session.On("setTimeout", defaultSessionTimeout).Once().Return(nil)
 		session.On("readRequest").Once().Return("not implemented command", nil)
 		session.On("writeResponse", configuration.msgInvalidCmd).Once().Return(nil)
 
-		session.On("setTimeout", DefaultSessionTimeout).Once().Return(nil)
+		session.On("setTimeout", defaultSessionTimeout).Once().Return(nil)
 		session.On("readRequest").Once().Return("helo 42", nil)
 		session.On("clearError").Once().Return(nil)
 		session.On("addError", errors.New(errorMessage)).Once().Return(nil)
@@ -171,7 +171,7 @@ func TestServerHandleSession(t *testing.T) {
 	})
 
 	t.Run("when server quit channel was closed", func(t *testing.T) {
-		session, configuration := &sessionMock{}, NewConfiguration(ConfigurationAttr{isCmdFailFast: true})
+		session, configuration := &sessionMock{}, newConfiguration(ConfigurationAttr{isCmdFailFast: true})
 		server := newServer(configuration)
 		server.quit = make(chan interface{})
 		close(server.quit)
@@ -183,12 +183,12 @@ func TestServerHandleSession(t *testing.T) {
 	})
 
 	t.Run("when read request session error", func(t *testing.T) {
-		session, configuration := &sessionMock{}, NewConfiguration(ConfigurationAttr{isCmdFailFast: true})
+		session, configuration := &sessionMock{}, newConfiguration(ConfigurationAttr{isCmdFailFast: true})
 		server := newServer(configuration)
 
 		session.On("writeResponse", configuration.msgGreeting).Once().Return(nil)
-		session.On("setTimeout", DefaultSessionTimeout).Once().Return(nil)
-		session.On("readRequest").Once().Return(EmptyString, errors.New("some read request error"))
+		session.On("setTimeout", defaultSessionTimeout).Once().Return(nil)
+		session.On("readRequest").Once().Return(emptyString, errors.New("some read request error"))
 		session.On("finish").Once().Return(nil)
 
 		server.handleSession(session)
@@ -201,7 +201,7 @@ func TestServerStart(t *testing.T) {
 		server := newServer(configuration)
 
 		assert.NoError(t, server.Start())
-		_ = runMinimalSuccessfulSmtpSession(configuration.hostAddress, configuration.portNumber)
+		_ = runMinimalSuccessfulSMTPSession(configuration.hostAddress, configuration.portNumber)
 		assert.NotEmpty(t, server.messages)
 		assert.NotNil(t, server.quit)
 		assert.True(t, server.isStarted)
@@ -210,16 +210,16 @@ func TestServerStart(t *testing.T) {
 	})
 
 	t.Run("when active server doesn't start current server", func(t *testing.T) {
-		server := &server{isStarted: true}
+		server := &Server{isStarted: true}
 
-		assert.EqualError(t, server.Start(), ServerStartErrorMsg)
+		assert.EqualError(t, server.Start(), serverStartErrorMsg)
 	})
 
 	t.Run("when listener error happens during starting the server doesn't start current server", func(t *testing.T) {
 		configuration := createConfiguration()
 		server, logger := newServer(configuration), new(loggerMock)
-		errorMessage := fmt.Sprintf("%s: %d", ServerErrorMsg, configuration.portNumber)
-		listener, _ := net.Listen(NetworkProtocol, serverWithPortNumber(configuration.hostAddress, configuration.portNumber))
+		errorMessage := fmt.Sprintf("%s: %d", serverErrorMsg, configuration.portNumber)
+		listener, _ := net.Listen(networkProtocol, serverWithPortNumber(configuration.hostAddress, configuration.portNumber))
 		server.logger = logger
 		logger.On("error", errorMessage).Once().Return(nil)
 
@@ -232,10 +232,10 @@ func TestServerStart(t *testing.T) {
 func TestServerStop(t *testing.T) {
 	t.Run("when server active stops current server", func(t *testing.T) {
 		logger, listener, waitGroup, quitChannel := new(loggerMock), new(listenerMock), new(waitGroupMock), make(chan interface{})
-		server := &server{logger: logger, listener: listener, wg: waitGroup, quit: quitChannel, isStarted: true}
+		server := &Server{logger: logger, listener: listener, wg: waitGroup, quit: quitChannel, isStarted: true}
 		listener.On("Close").Once().Return(nil)
 		waitGroup.On("Wait").Once().Return(nil)
-		logger.On("infoActivity", ServerStopMsg).Once().Return(nil)
+		logger.On("infoActivity", serverStopMsg).Once().Return(nil)
 
 		assert.NoError(t, server.Stop())
 		assert.False(t, server.isStarted)
@@ -244,6 +244,6 @@ func TestServerStop(t *testing.T) {
 	})
 
 	t.Run("when server is inactive doesn't stop current server", func(t *testing.T) {
-		assert.EqualError(t, new(server).Stop(), ServerStopErrorMsg)
+		assert.EqualError(t, new(Server).Stop(), serverStopErrorMsg)
 	})
 }

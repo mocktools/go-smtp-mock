@@ -152,7 +152,7 @@ func TestHandlerHeloHeloDomain(t *testing.T) {
 	t.Run("when request not includes valid domain name", func(t *testing.T) {
 		invalidDomainName := "name.42"
 
-		assert.Equal(t, EmptyString, handler.heloDomain("HELO "+invalidDomainName))
+		assert.Equal(t, emptyString, handler.heloDomain("HELO "+invalidDomainName))
 	})
 }
 

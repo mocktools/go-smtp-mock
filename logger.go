@@ -27,7 +27,7 @@ func newLogger(logToStdout, logServerActivity bool) *eventLogger {
 	return &eventLogger{
 		logToStdout:       logToStdout,
 		logServerActivity: logServerActivity,
-		flag:              LogFlag,
+		flag:              logFlag,
 		stdout:            os.Stdout,
 		stderr:            os.Stderr,
 	}
@@ -40,7 +40,7 @@ func newLogger(logToStdout, logServerActivity bool) *eventLogger {
 func (logger *eventLogger) infoActivity(message string) {
 	if logger.logToStdout && logger.logServerActivity {
 		if logger.eventInfo == nil {
-			logger.eventInfo = log.New(logger.stdout, InfoLogLevel+": ", logger.flag)
+			logger.eventInfo = log.New(logger.stdout, infoLogLevel+": ", logger.flag)
 		}
 
 		logger.eventInfo.Println(message)
@@ -52,7 +52,7 @@ func (logger *eventLogger) infoActivity(message string) {
 func (logger *eventLogger) info(message string) {
 	if logger.logToStdout {
 		if logger.eventInfo == nil {
-			logger.eventInfo = log.New(logger.stdout, InfoLogLevel+": ", logger.flag)
+			logger.eventInfo = log.New(logger.stdout, infoLogLevel+": ", logger.flag)
 		}
 
 		logger.eventInfo.Println(message)
@@ -64,7 +64,7 @@ func (logger *eventLogger) info(message string) {
 func (logger *eventLogger) warning(message string) {
 	if logger.logToStdout {
 		if logger.eventWarning == nil {
-			logger.eventWarning = log.New(logger.stdout, WarningLogLevel+": ", logger.flag)
+			logger.eventWarning = log.New(logger.stdout, warningLogLevel+": ", logger.flag)
 		}
 
 		logger.eventWarning.Println(message)
@@ -76,7 +76,7 @@ func (logger *eventLogger) warning(message string) {
 func (logger *eventLogger) error(message string) {
 	if logger.logToStdout {
 		if logger.eventError == nil {
-			logger.eventError = log.New(logger.stderr, ErrorLogLevel+": ", logger.flag)
+			logger.eventError = log.New(logger.stderr, errorLogLevel+": ", logger.flag)
 		}
 
 		logger.eventError.Println(message)

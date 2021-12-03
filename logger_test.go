@@ -14,7 +14,7 @@ func TestNewLogger(t *testing.T) {
 		logger := &eventLogger{
 			logToStdout:       isLogToStdoutEnabled,
 			logServerActivity: logServerActivity,
-			flag:              LogFlag,
+			flag:              logFlag,
 			stdout:            os.Stdout,
 			stderr:            os.Stderr,
 		}
@@ -25,7 +25,7 @@ func TestNewLogger(t *testing.T) {
 	t.Run("when log to stdout, server activity disabled", func(t *testing.T) {
 		isLogToStdoutEnabled, logServerActivity := false, false
 		logger := &eventLogger{
-			flag:   LogFlag,
+			flag:   logFlag,
 			stdout: os.Stdout,
 			stderr: os.Stderr,
 		}
@@ -43,7 +43,7 @@ func TestEventLoggerInfoActivity(t *testing.T) {
 		logger.stdout = &buf
 		logger.infoActivity(logMessage) // initializes and memoizes INFO logger during first function calling
 
-		assert.Regexp(t, loggerMessageRegex(InfoLogLevel, logMessage), buf.String())
+		assert.Regexp(t, loggerMessageRegex(infoLogLevel, logMessage), buf.String())
 		assert.NotNil(t, logger.eventInfo)
 		memoizedInfoLogger := logger.eventInfo
 		logger.infoActivity(logMessage)
@@ -80,7 +80,7 @@ func TestEventLoggerInfo(t *testing.T) {
 		logger.stdout = &buf
 		logger.info(logMessage) // initializes and memoizes INFO logger during first function calling
 
-		assert.Regexp(t, loggerMessageRegex(InfoLogLevel, logMessage), buf.String())
+		assert.Regexp(t, loggerMessageRegex(infoLogLevel, logMessage), buf.String())
 		assert.NotNil(t, logger.eventInfo)
 		memoizedInfoLogger := logger.eventInfo
 		logger.info(logMessage)
@@ -107,7 +107,7 @@ func TestEventLoggerWarning(t *testing.T) {
 		logger.stdout = &buf
 		logger.warning(logMessage) // initializes and memoizes WARNING logger during first function calling
 
-		assert.Regexp(t, loggerMessageRegex(WarningLogLevel, logMessage), buf.String())
+		assert.Regexp(t, loggerMessageRegex(warningLogLevel, logMessage), buf.String())
 		assert.NotNil(t, logger.eventWarning)
 		memoizedWarningLogger := logger.eventWarning
 		logger.warning(logMessage)
@@ -134,7 +134,7 @@ func TestEventLoggerError(t *testing.T) {
 		logger.stderr = &buf
 		logger.error(logMessage) // initializes and memoizes ERROR logger during first function calling
 
-		assert.Regexp(t, loggerMessageRegex(ErrorLogLevel, logMessage), buf.String())
+		assert.Regexp(t, loggerMessageRegex(errorLogLevel, logMessage), buf.String())
 		assert.NotNil(t, logger.eventError)
 		memoizedErrorLogger := logger.eventError
 		logger.error(logMessage)

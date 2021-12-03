@@ -47,7 +47,7 @@ func (handler *handlerHelo) writeResult(isSuccessful bool, request, response str
 // Invalid HELO command argument predicate. Returns true and writes result for case when HELO command
 // argument is invalid, otherwise returns false
 func (handler *handlerHelo) isInvalidCmdArg(request string) bool {
-	if !matchRegex(request, ValidHeloComplexCmdRegexPattern) {
+	if !matchRegex(request, validHeloComplexCmdRegexPattern) {
 		return handler.writeResult(false, request, handler.configuration.msgInvalidCmdHeloArg)
 	}
 
@@ -56,7 +56,7 @@ func (handler *handlerHelo) isInvalidCmdArg(request string) bool {
 
 // Returns domain from HELO request
 func (handler *handlerHelo) heloDomain(request string) string {
-	return regexCaptureGroup(request, ValidHeloComplexCmdRegexPattern, 2)
+	return regexCaptureGroup(request, validHeloComplexCmdRegexPattern, 2)
 }
 
 // Custom behaviour for HELO domain. Returns true and writes result for case when HELO domain

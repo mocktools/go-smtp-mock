@@ -273,7 +273,7 @@ func TestHandlerRcpttoRcpttoEmail(t *testing.T) {
 	t.Run("when request includes invalid email address", func(t *testing.T) {
 		invalidEmail := "user@invalid"
 
-		assert.Equal(t, EmptyString, handler.rcpttoEmail("RCPT TO: "+invalidEmail))
+		assert.Equal(t, emptyString, handler.rcpttoEmail("RCPT TO: "+invalidEmail))
 	})
 }
 

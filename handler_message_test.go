@@ -32,7 +32,7 @@ func TestHandlerMessageRun(t *testing.T) {
 	})
 
 	t.Run("when message size limit reached", func(t *testing.T) {
-		session, message, configuration := new(sessionMock), new(message), NewConfiguration(ConfigurationAttr{msqSizeLimit: 1})
+		session, message, configuration := new(sessionMock), new(message), newConfiguration(ConfigurationAttr{msqSizeLimit: 1})
 		errorMessage := configuration.msgMsgSizeIsTooBig
 		handler, err := newHandlerMessage(session, message, configuration), errors.New(errorMessage)
 		session.On("readBytes").Once().Return([]uint8("some message"), nil)
@@ -43,7 +43,7 @@ func TestHandlerMessageRun(t *testing.T) {
 		handler.run()
 
 		assert.False(t, message.msg)
-		assert.Equal(t, EmptyString, message.msgRequest)
+		assert.Equal(t, emptyString, message.msgRequest)
 		assert.Equal(t, errorMessage, message.msgResponse)
 	})
 
@@ -52,12 +52,12 @@ func TestHandlerMessageRun(t *testing.T) {
 		handler, msgContext := newHandlerMessage(session, message, configuration), "some message"
 		session.On("readBytes").Once().Return([]uint8("."+msgContext), nil)
 		session.On("readBytes").Once().Return([]uint8(".\r\n"), nil)
-		session.On("writeResponse", DefaultReceivedMsg).Once().Return(nil)
+		session.On("writeResponse", defaultReceivedMsg).Once().Return(nil)
 		handler.run()
 
 		assert.True(t, message.msg)
 		assert.Equal(t, msgContext, message.msgRequest)
-		assert.Equal(t, DefaultReceivedMsg, message.msgResponse)
+		assert.Equal(t, defaultReceivedMsg, message.msgResponse)
 	})
 }
 
