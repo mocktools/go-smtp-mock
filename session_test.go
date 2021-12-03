@@ -116,7 +116,7 @@ func TestSessionReadRequest(t *testing.T) {
 		binaryData := strings.NewReader(stringContext)
 		bufin, logger := bufio.NewReader(binaryData), new(loggerMock)
 		session := &session{bufin: bufin, logger: logger}
-		logger.On("infoActivity", SessionRequestMsg+capturedStringContext).Once().Return(nil)
+		logger.On("infoActivity", sessionRequestMsg+capturedStringContext).Once().Return(nil)
 		request, err := session.readRequest()
 
 		assert.Equal(t, capturedStringContext, request)
@@ -128,12 +128,12 @@ func TestSessionReadRequest(t *testing.T) {
 		var delim uint8 = '\n'
 		errorMessage, bufin, logger := "read error", new(bufioReaderMock), new(loggerMock)
 		err := errors.New(errorMessage)
-		bufin.On("ReadString", delim).Once().Return(EmptyString, err)
+		bufin.On("ReadString", delim).Once().Return(emptyString, err)
 		logger.On("error", errorMessage).Once().Return(nil)
 		session := &session{bufin: bufin, logger: logger}
 		request, err := session.readRequest()
 
-		assert.Equal(t, EmptyString, request)
+		assert.Equal(t, emptyString, request)
 		assert.Error(t, err)
 		assert.Same(t, session.err, err)
 	})
@@ -144,7 +144,7 @@ func TestSessionReadBytes(t *testing.T) {
 		str := "stringContext\n"
 		bufin, logger := bufio.NewReader(strings.NewReader(str)), new(loggerMock)
 		session := &session{bufin: bufin, logger: logger}
-		logger.On("infoActivity", SessionRequestMsg+SessionBinaryDataMsg).Once().Return(nil)
+		logger.On("infoActivity", sessionRequestMsg+sessionBinaryDataMsg).Once().Return(nil)
 		request, err := session.readBytes()
 
 		assert.Equal(t, []uint8(str), request)
@@ -172,7 +172,7 @@ func TestSessionWriteResponse(t *testing.T) {
 		response := "some response"
 		binaryData := bytes.NewBufferString("")
 		bufout, logger := bufio.NewWriter(binaryData), new(loggerMock)
-		logger.On("infoActivity", SessionResponseMsg+response).Once().Return(nil)
+		logger.On("infoActivity", sessionResponseMsg+response).Once().Return(nil)
 		session := &session{bufout: bufout, logger: logger}
 		session.writeResponse(response)
 
@@ -186,7 +186,7 @@ func TestSessionWriteResponse(t *testing.T) {
 		bufout.On("WriteString", response+"\r\n").Once().Return(0, err)
 		bufout.On("Flush").Once().Return(err)
 		logger.On("warning", errorMessage).Once().Return(nil)
-		logger.On("infoActivity", SessionResponseMsg+response).Once().Return(nil)
+		logger.On("infoActivity", sessionResponseMsg+response).Once().Return(nil)
 		session := &session{bufout: bufout, logger: logger}
 		session.writeResponse(response)
 
@@ -198,7 +198,7 @@ func TestSessionFinish(t *testing.T) {
 	t.Run("closes session connection without error", func(t *testing.T) {
 		connection, logger := netConnectionMock{}, new(loggerMock)
 		connection.On("Close").Once().Return(nil)
-		logger.On("infoActivity", SessionEndMsg).Once().Return(nil)
+		logger.On("infoActivity", sessionEndMsg).Once().Return(nil)
 		session := &session{connection: connection, logger: logger}
 		session.finish()
 
@@ -210,7 +210,7 @@ func TestSessionFinish(t *testing.T) {
 		connection, logger, err := netConnectionMock{}, new(loggerMock), errors.New(errorMessage)
 		connection.On("Close").Once().Return(err)
 		logger.On("warning", errorMessage).Once().Return(nil)
-		logger.On("infoActivity", SessionEndMsg).Once().Return(nil)
+		logger.On("infoActivity", sessionEndMsg).Once().Return(nil)
 		session := &session{connection: connection, logger: logger}
 		session.finish()
 

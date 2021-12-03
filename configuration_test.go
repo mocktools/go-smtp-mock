@@ -9,40 +9,40 @@ import (
 
 func TestNewConfiguration(t *testing.T) {
 	t.Run("creates new configuration with default settings", func(t *testing.T) {
-		buildedConfiguration := NewConfiguration(ConfigurationAttr{})
+		buildedConfiguration := newConfiguration(ConfigurationAttr{})
 
-		assert.Equal(t, DefaultHostAddress, buildedConfiguration.hostAddress)
-		assert.Equal(t, DefaultPortNuber, buildedConfiguration.portNumber)
+		assert.Equal(t, defaultHostAddress, buildedConfiguration.hostAddress)
+		assert.Equal(t, defaultPortNuber, buildedConfiguration.portNumber)
 		assert.False(t, buildedConfiguration.logToStdout)
 		assert.False(t, buildedConfiguration.isCmdFailFast)
 		assert.False(t, buildedConfiguration.logServerActivity)
-		assert.Equal(t, DefaultGreetingMsg, buildedConfiguration.msgGreeting)
-		assert.Equal(t, DefaultInvalidCmdMsg, buildedConfiguration.msgInvalidCmd)
-		assert.Equal(t, DefaultQuitMsg, buildedConfiguration.msgQuitCmd)
-		assert.Equal(t, DefaultSessionTimeout, buildedConfiguration.sessionTimeout)
+		assert.Equal(t, defaultGreetingMsg, buildedConfiguration.msgGreeting)
+		assert.Equal(t, defaultInvalidCmdMsg, buildedConfiguration.msgInvalidCmd)
+		assert.Equal(t, defaultQuitMsg, buildedConfiguration.msgQuitCmd)
+		assert.Equal(t, defaultSessionTimeout, buildedConfiguration.sessionTimeout)
 
-		assert.Equal(t, DefaultInvalidCmdHeloSequenceMsg, buildedConfiguration.msgInvalidCmdHeloSequence)
-		assert.Equal(t, DefaultInvalidCmdHeloArgMsg, buildedConfiguration.msgInvalidCmdHeloArg)
-		assert.Equal(t, DefaultQuitMsg, buildedConfiguration.msgHeloBlacklistedDomain)
-		assert.Equal(t, DefaultReceivedMsg, buildedConfiguration.msgHeloReceived)
+		assert.Equal(t, defaultInvalidCmdHeloSequenceMsg, buildedConfiguration.msgInvalidCmdHeloSequence)
+		assert.Equal(t, defaultInvalidCmdHeloArgMsg, buildedConfiguration.msgInvalidCmdHeloArg)
+		assert.Equal(t, defaultQuitMsg, buildedConfiguration.msgHeloBlacklistedDomain)
+		assert.Equal(t, defaultReceivedMsg, buildedConfiguration.msgHeloReceived)
 
-		assert.Equal(t, DefaultInvalidCmdMailfromSequenceMsg, buildedConfiguration.msgInvalidCmdMailfromSequence)
-		assert.Equal(t, DefaultInvalidCmdMailfromArgMsg, buildedConfiguration.msgInvalidCmdMailfromArg)
-		assert.Equal(t, DefaultQuitMsg, buildedConfiguration.msgMailfromBlacklistedEmail)
-		assert.Equal(t, DefaultReceivedMsg, buildedConfiguration.msgMailfromReceived)
+		assert.Equal(t, defaultInvalidCmdMailfromSequenceMsg, buildedConfiguration.msgInvalidCmdMailfromSequence)
+		assert.Equal(t, defaultInvalidCmdMailfromArgMsg, buildedConfiguration.msgInvalidCmdMailfromArg)
+		assert.Equal(t, defaultQuitMsg, buildedConfiguration.msgMailfromBlacklistedEmail)
+		assert.Equal(t, defaultReceivedMsg, buildedConfiguration.msgMailfromReceived)
 
-		assert.Equal(t, DefaultInvalidCmdRcpttoSequenceMsg, buildedConfiguration.msgInvalidCmdRcpttoSequence)
-		assert.Equal(t, DefaultInvalidCmdRcpttoArgMsg, buildedConfiguration.msgInvalidCmdRcpttoArg)
-		assert.Equal(t, DefaultQuitMsg, buildedConfiguration.msgRcpttoBlacklistedEmail)
-		assert.Equal(t, DefaultNotRegistredRcpttoEmailMsg, buildedConfiguration.msgRcpttoNotRegisteredEmail)
-		assert.Equal(t, DefaultReceivedMsg, buildedConfiguration.msgRcpttoReceived)
+		assert.Equal(t, defaultInvalidCmdRcpttoSequenceMsg, buildedConfiguration.msgInvalidCmdRcpttoSequence)
+		assert.Equal(t, defaultInvalidCmdRcpttoArgMsg, buildedConfiguration.msgInvalidCmdRcpttoArg)
+		assert.Equal(t, defaultQuitMsg, buildedConfiguration.msgRcpttoBlacklistedEmail)
+		assert.Equal(t, defaultNotRegistredRcpttoEmailMsg, buildedConfiguration.msgRcpttoNotRegisteredEmail)
+		assert.Equal(t, defaultReceivedMsg, buildedConfiguration.msgRcpttoReceived)
 
-		assert.Equal(t, DefaultInvalidCmdDataSequenceMsg, buildedConfiguration.msgInvalidCmdDataSequence)
-		assert.Equal(t, DefaultReadyForReceiveMsg, buildedConfiguration.msgDataReceived)
+		assert.Equal(t, defaultInvalidCmdDataSequenceMsg, buildedConfiguration.msgInvalidCmdDataSequence)
+		assert.Equal(t, defaultReadyForReceiveMsg, buildedConfiguration.msgDataReceived)
 
-		assert.Equal(t, fmt.Sprintf(DefaultMsgSizeIsTooBigMsg+" %d bytes", DefaultMessageSizeLimit), buildedConfiguration.msgMsgSizeIsTooBig)
-		assert.Equal(t, DefaultReceivedMsg, buildedConfiguration.msgMsgReceived)
-		assert.Equal(t, DefaultMessageSizeLimit, buildedConfiguration.msqSizeLimit)
+		assert.Equal(t, fmt.Sprintf(defaultMsgSizeIsTooBigMsg+" %d bytes", defaultMessageSizeLimit), buildedConfiguration.msgMsgSizeIsTooBig)
+		assert.Equal(t, defaultReceivedMsg, buildedConfiguration.msgMsgReceived)
+		assert.Equal(t, defaultMessageSizeLimit, buildedConfiguration.msqSizeLimit)
 
 		assert.Empty(t, buildedConfiguration.blacklistedHeloDomains)
 		assert.Empty(t, buildedConfiguration.blacklistedMailfromEmails)
@@ -75,7 +75,7 @@ func TestNewConfiguration(t *testing.T) {
 			msgRcpttoReceived:             "msgRcpttoReceived",
 			msgInvalidCmdDataSequence:     "msgInvalidCmdDataSequence",
 			msgDataReceived:               "msgDataReceived",
-			msgMsgSizeIsTooBig:            EmptyString,
+			msgMsgSizeIsTooBig:            emptyString,
 			msgMsgReceived:                "msgMsgReceived",
 			blacklistedHeloDomains:        []string{},
 			blacklistedMailfromEmails:     []string{},
@@ -84,7 +84,7 @@ func TestNewConfiguration(t *testing.T) {
 			msqSizeLimit:                  42,
 			sessionTimeout:                120,
 		}
-		buildedConfiguration := NewConfiguration(configAttr)
+		buildedConfiguration := newConfiguration(configAttr)
 
 		assert.Equal(t, configAttr.hostAddress, buildedConfiguration.hostAddress)
 		assert.Equal(t, configAttr.portNumber, buildedConfiguration.portNumber)
@@ -115,7 +115,7 @@ func TestNewConfiguration(t *testing.T) {
 		assert.Equal(t, configAttr.msgInvalidCmdDataSequence, buildedConfiguration.msgInvalidCmdDataSequence)
 		assert.Equal(t, configAttr.msgDataReceived, buildedConfiguration.msgDataReceived)
 
-		assert.Equal(t, fmt.Sprintf(DefaultMsgSizeIsTooBigMsg+" %d bytes", configAttr.msqSizeLimit), buildedConfiguration.msgMsgSizeIsTooBig)
+		assert.Equal(t, fmt.Sprintf(defaultMsgSizeIsTooBigMsg+" %d bytes", configAttr.msqSizeLimit), buildedConfiguration.msgMsgSizeIsTooBig)
 		assert.Equal(t, configAttr.msgMsgReceived, buildedConfiguration.msgMsgReceived)
 		assert.Equal(t, configAttr.msqSizeLimit, buildedConfiguration.msqSizeLimit)
 
@@ -131,34 +131,34 @@ func TestConfigurationAttrAssignDefaultValues(t *testing.T) {
 		configurationAttr := new(ConfigurationAttr)
 		configurationAttr.assignDefaultValues()
 
-		assert.Equal(t, DefaultHostAddress, configurationAttr.hostAddress)
-		assert.Equal(t, DefaultPortNuber, configurationAttr.portNumber)
-		assert.Equal(t, DefaultGreetingMsg, configurationAttr.msgGreeting)
-		assert.Equal(t, DefaultInvalidCmdMsg, configurationAttr.msgInvalidCmd)
-		assert.Equal(t, DefaultQuitMsg, configurationAttr.msgQuitCmd)
-		assert.Equal(t, DefaultSessionTimeout, configurationAttr.sessionTimeout)
+		assert.Equal(t, defaultHostAddress, configurationAttr.hostAddress)
+		assert.Equal(t, defaultPortNuber, configurationAttr.portNumber)
+		assert.Equal(t, defaultGreetingMsg, configurationAttr.msgGreeting)
+		assert.Equal(t, defaultInvalidCmdMsg, configurationAttr.msgInvalidCmd)
+		assert.Equal(t, defaultQuitMsg, configurationAttr.msgQuitCmd)
+		assert.Equal(t, defaultSessionTimeout, configurationAttr.sessionTimeout)
 
-		assert.Equal(t, DefaultInvalidCmdHeloSequenceMsg, configurationAttr.msgInvalidCmdHeloSequence)
-		assert.Equal(t, DefaultInvalidCmdHeloArgMsg, configurationAttr.msgInvalidCmdHeloArg)
-		assert.Equal(t, DefaultQuitMsg, configurationAttr.msgHeloBlacklistedDomain)
-		assert.Equal(t, DefaultReceivedMsg, configurationAttr.msgHeloReceived)
+		assert.Equal(t, defaultInvalidCmdHeloSequenceMsg, configurationAttr.msgInvalidCmdHeloSequence)
+		assert.Equal(t, defaultInvalidCmdHeloArgMsg, configurationAttr.msgInvalidCmdHeloArg)
+		assert.Equal(t, defaultQuitMsg, configurationAttr.msgHeloBlacklistedDomain)
+		assert.Equal(t, defaultReceivedMsg, configurationAttr.msgHeloReceived)
 
-		assert.Equal(t, DefaultInvalidCmdMailfromSequenceMsg, configurationAttr.msgInvalidCmdMailfromSequence)
-		assert.Equal(t, DefaultInvalidCmdMailfromArgMsg, configurationAttr.msgInvalidCmdMailfromArg)
-		assert.Equal(t, DefaultQuitMsg, configurationAttr.msgMailfromBlacklistedEmail)
-		assert.Equal(t, DefaultReceivedMsg, configurationAttr.msgMailfromReceived)
+		assert.Equal(t, defaultInvalidCmdMailfromSequenceMsg, configurationAttr.msgInvalidCmdMailfromSequence)
+		assert.Equal(t, defaultInvalidCmdMailfromArgMsg, configurationAttr.msgInvalidCmdMailfromArg)
+		assert.Equal(t, defaultQuitMsg, configurationAttr.msgMailfromBlacklistedEmail)
+		assert.Equal(t, defaultReceivedMsg, configurationAttr.msgMailfromReceived)
 
-		assert.Equal(t, DefaultInvalidCmdRcpttoSequenceMsg, configurationAttr.msgInvalidCmdRcpttoSequence)
-		assert.Equal(t, DefaultInvalidCmdRcpttoArgMsg, configurationAttr.msgInvalidCmdRcpttoArg)
-		assert.Equal(t, DefaultQuitMsg, configurationAttr.msgRcpttoBlacklistedEmail)
-		assert.Equal(t, DefaultNotRegistredRcpttoEmailMsg, configurationAttr.msgRcpttoNotRegisteredEmail)
-		assert.Equal(t, DefaultReceivedMsg, configurationAttr.msgRcpttoReceived)
+		assert.Equal(t, defaultInvalidCmdRcpttoSequenceMsg, configurationAttr.msgInvalidCmdRcpttoSequence)
+		assert.Equal(t, defaultInvalidCmdRcpttoArgMsg, configurationAttr.msgInvalidCmdRcpttoArg)
+		assert.Equal(t, defaultQuitMsg, configurationAttr.msgRcpttoBlacklistedEmail)
+		assert.Equal(t, defaultNotRegistredRcpttoEmailMsg, configurationAttr.msgRcpttoNotRegisteredEmail)
+		assert.Equal(t, defaultReceivedMsg, configurationAttr.msgRcpttoReceived)
 
-		assert.Equal(t, DefaultInvalidCmdDataSequenceMsg, configurationAttr.msgInvalidCmdDataSequence)
-		assert.Equal(t, DefaultReadyForReceiveMsg, configurationAttr.msgDataReceived)
+		assert.Equal(t, defaultInvalidCmdDataSequenceMsg, configurationAttr.msgInvalidCmdDataSequence)
+		assert.Equal(t, defaultReadyForReceiveMsg, configurationAttr.msgDataReceived)
 
-		assert.Equal(t, fmt.Sprintf(DefaultMsgSizeIsTooBigMsg+" %d bytes", DefaultMessageSizeLimit), configurationAttr.msgMsgSizeIsTooBig)
-		assert.Equal(t, DefaultReceivedMsg, configurationAttr.msgMsgReceived)
-		assert.Equal(t, DefaultMessageSizeLimit, configurationAttr.msqSizeLimit)
+		assert.Equal(t, fmt.Sprintf(defaultMsgSizeIsTooBigMsg+" %d bytes", defaultMessageSizeLimit), configurationAttr.msgMsgSizeIsTooBig)
+		assert.Equal(t, defaultReceivedMsg, configurationAttr.msgMsgReceived)
+		assert.Equal(t, defaultMessageSizeLimit, configurationAttr.msqSizeLimit)
 	})
 }

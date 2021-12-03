@@ -8,7 +8,7 @@ import (
 )
 
 // Returns time.Time with current time. Allows to stub time.Now()
-var timeNow func() time.Time = func() time.Time { return time.Now() }
+var timeNow = func() time.Time { return time.Now() }
 
 // SMTP client-server session interface
 type sessionInterface interface {
@@ -104,13 +104,13 @@ func (session *session) readRequest() (string, error) {
 	request, err := session.bufin.ReadString('\n')
 	if err == nil {
 		trimmedRequest := strings.TrimSpace(request)
-		session.logger.infoActivity(SessionRequestMsg + trimmedRequest)
+		session.logger.infoActivity(sessionRequestMsg + trimmedRequest)
 		return trimmedRequest, err
 	}
 
 	session.err = err
 	session.logger.error(err.Error())
-	return EmptyString, err
+	return emptyString, err
 }
 
 // Reades client request from the session, returns bytes.
@@ -119,7 +119,7 @@ func (session *session) readBytes() ([]byte, error) {
 	var request []byte
 	request, err := session.bufin.ReadBytes('\n')
 	if err == nil {
-		session.logger.infoActivity(SessionRequestMsg + SessionBinaryDataMsg)
+		session.logger.infoActivity(sessionRequestMsg + sessionBinaryDataMsg)
 		return request, err
 	}
 
@@ -136,7 +136,7 @@ func (session *session) writeResponse(response string) {
 		session.logger.warning(err.Error())
 	}
 	bufout.Flush()
-	session.logger.infoActivity(SessionResponseMsg + response)
+	session.logger.infoActivity(sessionResponseMsg + response)
 }
 
 // Finishes SMTP session. When error case happened triggers logger with warning level
@@ -145,5 +145,5 @@ func (session *session) finish() {
 		session.logger.warning(err.Error())
 	}
 
-	session.logger.infoActivity(SessionEndMsg)
+	session.logger.infoActivity(sessionEndMsg)
 }

@@ -67,7 +67,7 @@ func (handler *handlerRcptto) isInvalidCmdSequence(request string) bool {
 // Invalid RCPTTO command argument predicate. Returns true and writes result for case when RCPTTO
 // command argument is invalid, otherwise returns false
 func (handler *handlerRcptto) isInvalidCmdArg(request string) bool {
-	if !matchRegex(request, ValidRcpttoComplexCmdRegexPattern) {
+	if !matchRegex(request, validRcpttoComplexCmdRegexPattern) {
 		return handler.writeResult(false, request, handler.configuration.msgInvalidCmdRcpttoArg)
 	}
 
@@ -76,7 +76,7 @@ func (handler *handlerRcptto) isInvalidCmdArg(request string) bool {
 
 // Returns email from RCPTTO request
 func (handler *handlerRcptto) rcpttoEmail(request string) string {
-	return regexCaptureGroup(request, ValidRcpttoComplexCmdRegexPattern, 3)
+	return regexCaptureGroup(request, validRcpttoComplexCmdRegexPattern, 3)
 }
 
 // Custom behaviour for RCPTTO email. Returns true and writes result for case when

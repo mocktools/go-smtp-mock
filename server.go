@@ -15,8 +15,8 @@ type waitGroup interface {
 	Wait()
 }
 
-// SMTP mock server that will be listening for SMTP connections
-type server struct {
+// Server structure which implements SMTP mock server
+type Server struct {
 	configuration *configuration
 	messages      *messages
 	logger        logger
@@ -27,8 +27,8 @@ type server struct {
 }
 
 // SMTP mock server builder, creates new server
-func newServer(configuration *configuration) *server {
-	return &server{
+func newServer(configuration *configuration) *Server {
+	return &Server{
 		configuration: configuration,
 		messages:      new(messages),
 		logger:        newLogger(configuration.logToStdout, configuration.logServerActivity),
@@ -38,32 +38,25 @@ func newServer(configuration *configuration) *server {
 
 // server methods
 
-// Creates and assigns new message to server.messages
-func (server *server) newMessage() *message {
-	newMessage := new(message)
-	server.messages.append(newMessage)
-	return newMessage
-}
-
-// Binds and runs SMTP mock server on specified port
-func (server *server) Start() (err error) {
+// Start binds and runs SMTP mock server on specified port
+func (server *Server) Start() (err error) {
 	if server.isStarted {
-		return errors.New(ServerStartErrorMsg)
+		return errors.New(serverStartErrorMsg)
 	}
 
 	server.quit = make(chan interface{})
 	configuration, logger := server.configuration, server.logger
 	portNumber := configuration.portNumber
 
-	listener, err := net.Listen(NetworkProtocol, serverWithPortNumber(configuration.hostAddress, portNumber))
+	listener, err := net.Listen(networkProtocol, serverWithPortNumber(configuration.hostAddress, portNumber))
 	if err != nil {
-		errorMessage := fmt.Sprintf("%s: %d", ServerErrorMsg, server.configuration.portNumber)
+		errorMessage := fmt.Sprintf("%s: %d", serverErrorMsg, server.configuration.portNumber)
 		logger.error(errorMessage)
 		return errors.New(errorMessage)
 	}
 
 	server.listener, server.isStarted = listener, true
-	logger.infoActivity(fmt.Sprintf("%s: %d", ServerStartMsg, portNumber))
+	logger.infoActivity(fmt.Sprintf("%s: %d", serverStartMsg, portNumber))
 
 	server.addToWaitGroup()
 	go func() {
@@ -72,7 +65,7 @@ func (server *server) Start() (err error) {
 			connection, err := server.listener.Accept()
 			if err != nil {
 				if _, ok := <-server.quit; !ok {
-					logger.warning(ServerNotAcceptNewConnectionsMsg)
+					logger.warning(serverNotAcceptNewConnectionsMsg)
 				}
 				return
 			}
@@ -83,51 +76,58 @@ func (server *server) Start() (err error) {
 				server.removeFromWaitGroup()
 			}()
 
-			logger.infoActivity(SessionStartMsg)
+			logger.infoActivity(sessionStartMsg)
 		}
 	}()
 
 	return err
 }
 
-// Stops server gracefully. Returns error for case when server is not active
-func (server *server) Stop() (err error) {
+// Stop shutdowns server gracefully. Returns error for case when server is not active
+func (server *Server) Stop() (err error) {
 	if server.isStarted {
 		close(server.quit)
 		server.listener.Close()
 		server.wg.Wait()
 		server.isStarted = false
-		server.logger.infoActivity(ServerStopMsg)
+		server.logger.infoActivity(serverStopMsg)
 		return
 	}
 
-	return errors.New(ServerStopErrorMsg)
+	return errors.New(serverStopErrorMsg)
+}
+
+// Creates and assigns new message to server.messages
+func (server *Server) newMessage() *message {
+	newMessage := new(message)
+	server.messages.append(newMessage)
+	return newMessage
 }
 
 // Invalid SMTP command predicate. Returns true when command is invalid, otherwise returns false
-func (server *server) isInvalidCmd(request string) bool {
-	return !matchRegex(request, AvailableCmdsRegexPattern)
+func (server *Server) isInvalidCmd(request string) bool {
+	return !matchRegex(request, availableCmdsRegexPattern)
 }
 
 // Recognizes command implemented commands. Captures the first word divided by spaces,
 // converts it to upper case
-func (server *server) recognizeCommand(request string) string {
+func (server *Server) recognizeCommand(request string) string {
 	command := strings.Split(request, " ")[0]
 	return strings.ToUpper(command)
 }
 
 // Addes goroutine to WaitGroup
-func (server *server) addToWaitGroup() {
+func (server *Server) addToWaitGroup() {
 	server.wg.Add(1)
 }
 
 // Removes goroutine from WaitGroup
-func (server *server) removeFromWaitGroup() {
+func (server *Server) removeFromWaitGroup() {
 	server.wg.Done()
 }
 
 // SMTP client-server session handler
-func (server *server) handleSession(session sessionInterface) {
+func (server *Server) handleSession(session sessionInterface) {
 	defer session.finish()
 	message, configuration := server.newMessage(), server.configuration
 	session.writeResponse(configuration.msgGreeting)
