@@ -26,7 +26,7 @@ func TestHandlerDataRun(t *testing.T) {
 		handler := newHandlerData(session, message, configuration)
 		handler.handlerMessage = handlerMessage
 		session.On("clearError").Once().Return(nil)
-		session.On("writeResponse", DefaultReadyForReceiveMsg).Once().Return(nil)
+		session.On("writeResponse", defaultReadyForReceiveMsg).Once().Return(nil)
 		session.On("writeResponse", receivedMessage).Once().Return(nil)
 		handlerMessage.On("run").Once().Return(nil)
 		handler.run(request)

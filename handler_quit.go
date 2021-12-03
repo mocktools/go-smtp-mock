@@ -25,5 +25,5 @@ func (handler *handlerQuit) run(request string) {
 // Invalid QUIT command predicate. Returns true when request is invalid,
 // otherwise returns false.
 func (handler *handlerQuit) isInvalidRequest(request string) bool {
-	return !matchRegex(request, ValidQuitCmdRegexPattern)
+	return !matchRegex(request, validQuitCmdRegexPattern)
 }

@@ -40,7 +40,7 @@ type configuration struct {
 }
 
 // New configuration builder. Returns pointer to valid new configuration structure
-func NewConfiguration(config ConfigurationAttr) *configuration {
+func newConfiguration(config ConfigurationAttr) *configuration {
 	config.assignDefaultValues()
 
 	return &configuration{
@@ -118,86 +118,86 @@ type ConfigurationAttr struct {
 // assigns default values to ConfigurationAttr fields
 func (config *ConfigurationAttr) assignDefaultValues() {
 	// Server defaults
-	if config.hostAddress == EmptyString {
-		config.hostAddress = DefaultHostAddress
+	if config.hostAddress == emptyString {
+		config.hostAddress = defaultHostAddress
 	}
 	if config.portNumber == 0 {
-		config.portNumber = DefaultPortNuber
+		config.portNumber = defaultPortNuber
 	}
-	if config.msgGreeting == EmptyString {
-		config.msgGreeting = DefaultGreetingMsg
+	if config.msgGreeting == emptyString {
+		config.msgGreeting = defaultGreetingMsg
 	}
-	if config.msgInvalidCmd == EmptyString {
-		config.msgInvalidCmd = DefaultInvalidCmdMsg
+	if config.msgInvalidCmd == emptyString {
+		config.msgInvalidCmd = defaultInvalidCmdMsg
 	}
-	if config.msgQuitCmd == EmptyString {
-		config.msgQuitCmd = DefaultQuitMsg
+	if config.msgQuitCmd == emptyString {
+		config.msgQuitCmd = defaultQuitMsg
 	}
 	if config.sessionTimeout == 0 {
-		config.sessionTimeout = DefaultSessionTimeout
+		config.sessionTimeout = defaultSessionTimeout
 	}
 
 	// HELO defaults
-	if config.msgInvalidCmdHeloSequence == EmptyString {
-		config.msgInvalidCmdHeloSequence = DefaultInvalidCmdHeloSequenceMsg
+	if config.msgInvalidCmdHeloSequence == emptyString {
+		config.msgInvalidCmdHeloSequence = defaultInvalidCmdHeloSequenceMsg
 	}
-	if config.msgInvalidCmdHeloArg == EmptyString {
-		config.msgInvalidCmdHeloArg = DefaultInvalidCmdHeloArgMsg
+	if config.msgInvalidCmdHeloArg == emptyString {
+		config.msgInvalidCmdHeloArg = defaultInvalidCmdHeloArgMsg
 	}
-	if config.msgHeloBlacklistedDomain == EmptyString {
-		config.msgHeloBlacklistedDomain = DefaultQuitMsg
+	if config.msgHeloBlacklistedDomain == emptyString {
+		config.msgHeloBlacklistedDomain = defaultQuitMsg
 	}
-	if config.msgHeloReceived == EmptyString {
-		config.msgHeloReceived = DefaultReceivedMsg
+	if config.msgHeloReceived == emptyString {
+		config.msgHeloReceived = defaultReceivedMsg
 	}
 
 	// MAIL FROM defaults
-	if config.msgInvalidCmdMailfromSequence == EmptyString {
-		config.msgInvalidCmdMailfromSequence = DefaultInvalidCmdMailfromSequenceMsg
+	if config.msgInvalidCmdMailfromSequence == emptyString {
+		config.msgInvalidCmdMailfromSequence = defaultInvalidCmdMailfromSequenceMsg
 	}
-	if config.msgInvalidCmdMailfromArg == EmptyString {
-		config.msgInvalidCmdMailfromArg = DefaultInvalidCmdMailfromArgMsg
+	if config.msgInvalidCmdMailfromArg == emptyString {
+		config.msgInvalidCmdMailfromArg = defaultInvalidCmdMailfromArgMsg
 	}
-	if config.msgMailfromBlacklistedEmail == EmptyString {
-		config.msgMailfromBlacklistedEmail = DefaultQuitMsg
+	if config.msgMailfromBlacklistedEmail == emptyString {
+		config.msgMailfromBlacklistedEmail = defaultQuitMsg
 	}
-	if config.msgMailfromReceived == EmptyString {
-		config.msgMailfromReceived = DefaultReceivedMsg
+	if config.msgMailfromReceived == emptyString {
+		config.msgMailfromReceived = defaultReceivedMsg
 	}
 
 	// RCPT TO defaults
-	if config.msgInvalidCmdRcpttoSequence == EmptyString {
-		config.msgInvalidCmdRcpttoSequence = DefaultInvalidCmdRcpttoSequenceMsg
+	if config.msgInvalidCmdRcpttoSequence == emptyString {
+		config.msgInvalidCmdRcpttoSequence = defaultInvalidCmdRcpttoSequenceMsg
 	}
-	if config.msgInvalidCmdRcpttoArg == EmptyString {
-		config.msgInvalidCmdRcpttoArg = DefaultInvalidCmdRcpttoArgMsg
+	if config.msgInvalidCmdRcpttoArg == emptyString {
+		config.msgInvalidCmdRcpttoArg = defaultInvalidCmdRcpttoArgMsg
 	}
-	if config.msgRcpttoBlacklistedEmail == EmptyString {
-		config.msgRcpttoBlacklistedEmail = DefaultQuitMsg
+	if config.msgRcpttoBlacklistedEmail == emptyString {
+		config.msgRcpttoBlacklistedEmail = defaultQuitMsg
 	}
-	if config.msgRcpttoNotRegisteredEmail == EmptyString {
-		config.msgRcpttoNotRegisteredEmail = DefaultNotRegistredRcpttoEmailMsg
+	if config.msgRcpttoNotRegisteredEmail == emptyString {
+		config.msgRcpttoNotRegisteredEmail = defaultNotRegistredRcpttoEmailMsg
 	}
-	if config.msgRcpttoReceived == EmptyString {
-		config.msgRcpttoReceived = DefaultReceivedMsg
+	if config.msgRcpttoReceived == emptyString {
+		config.msgRcpttoReceived = defaultReceivedMsg
 	}
 
 	// DATA defaults
-	if config.msgInvalidCmdDataSequence == EmptyString {
-		config.msgInvalidCmdDataSequence = DefaultInvalidCmdDataSequenceMsg
+	if config.msgInvalidCmdDataSequence == emptyString {
+		config.msgInvalidCmdDataSequence = defaultInvalidCmdDataSequenceMsg
 	}
-	if config.msgDataReceived == EmptyString {
-		config.msgDataReceived = DefaultReadyForReceiveMsg
+	if config.msgDataReceived == emptyString {
+		config.msgDataReceived = defaultReadyForReceiveMsg
 	}
 
 	// Message defaults
 	if config.msqSizeLimit == 0 {
-		config.msqSizeLimit = DefaultMessageSizeLimit
+		config.msqSizeLimit = defaultMessageSizeLimit
 	}
-	if config.msgMsgSizeIsTooBig == EmptyString {
-		config.msgMsgSizeIsTooBig = fmt.Sprintf(DefaultMsgSizeIsTooBigMsg+" %d bytes", config.msqSizeLimit)
+	if config.msgMsgSizeIsTooBig == emptyString {
+		config.msgMsgSizeIsTooBig = fmt.Sprintf(defaultMsgSizeIsTooBigMsg+" %d bytes", config.msqSizeLimit)
 	}
-	if config.msgMsgReceived == EmptyString {
-		config.msgMsgReceived = DefaultReceivedMsg
+	if config.msgMsgReceived == emptyString {
+		config.msgMsgReceived = defaultReceivedMsg
 	}
 }

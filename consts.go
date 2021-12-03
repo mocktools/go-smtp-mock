@@ -4,60 +4,60 @@ import "log"
 
 const (
 	// SMTP mock default messages
-	DefaultGreetingMsg                   = "220 Welcome"
-	DefaultQuitMsg                       = "221 Closing connection"
-	DefaultReceivedMsg                   = "250 Received"
-	DefaultReadyForReceiveMsg            = "354 Ready for receive message. End data with <CR><LF>.<CR><LF>"
-	DefaultInvalidCmdHeloArgMsg          = "501 HELO requires domain address"
-	DefaultInvalidCmdMailfromArgMsg      = "501 MAIL FROM requires valid email address"
-	DefaultInvalidCmdRcpttoArgMsg        = "501 RCPT TO requires valid email address"
-	DefaultInvalidCmdMsg                 = "502 Command unrecognized. Available commands: HELO, EHLO, MAIL FROM:, RCPT TO:, DATA, QUIT"
-	DefaultInvalidCmdHeloSequenceMsg     = "503 Bad sequence of commands. HELO should be the first"
-	DefaultInvalidCmdMailfromSequenceMsg = "503 Bad sequence of commands. MAIL FROM should be used after HELO"
-	DefaultInvalidCmdRcpttoSequenceMsg   = "503 Bad sequence of commands. RCPT TO should be used after MAIL FROM"
-	DefaultInvalidCmdDataSequenceMsg     = "503 Bad sequence of commands. DATA should be used after RCPT TO"
-	DefaultNotRegistredRcpttoEmailMsg    = "550 User not found"
-	DefaultMsgSizeIsTooBigMsg            = "552 Message exceeded max size of"
+	defaultGreetingMsg                   = "220 Welcome"
+	defaultQuitMsg                       = "221 Closing connection"
+	defaultReceivedMsg                   = "250 Received"
+	defaultReadyForReceiveMsg            = "354 Ready for receive message. End data with <CR><LF>.<CR><LF>"
+	defaultInvalidCmdHeloArgMsg          = "501 HELO requires domain address"
+	defaultInvalidCmdMailfromArgMsg      = "501 MAIL FROM requires valid email address"
+	defaultInvalidCmdRcpttoArgMsg        = "501 RCPT TO requires valid email address"
+	defaultInvalidCmdMsg                 = "502 Command unrecognized. Available commands: HELO, EHLO, MAIL FROM:, RCPT TO:, DATA, QUIT"
+	defaultInvalidCmdHeloSequenceMsg     = "503 Bad sequence of commands. HELO should be the first"
+	defaultInvalidCmdMailfromSequenceMsg = "503 Bad sequence of commands. MAIL FROM should be used after HELO"
+	defaultInvalidCmdRcpttoSequenceMsg   = "503 Bad sequence of commands. RCPT TO should be used after MAIL FROM"
+	defaultInvalidCmdDataSequenceMsg     = "503 Bad sequence of commands. DATA should be used after RCPT TO"
+	defaultNotRegistredRcpttoEmailMsg    = "550 User not found"
+	defaultMsgSizeIsTooBigMsg            = "552 Message exceeded max size of"
 
 	// Logger
-	InfoLogLevel    = "INFO"
-	WarningLogLevel = "WARNING"
-	ErrorLogLevel   = "ERROR"
-	LogFlag         = log.Ldate | log.Lmicroseconds
+	infoLogLevel    = "INFO"
+	warningLogLevel = "WARNING"
+	errorLogLevel   = "ERROR"
+	logFlag         = log.Ldate | log.Lmicroseconds
 
 	// Session
-	SessionStartMsg      = "SMTP session started"
-	SessionRequestMsg    = "SMTP request: "
-	SessionResponseMsg   = "SMTP response: "
-	SessionEndMsg        = "SMTP session finished"
-	SessionBinaryDataMsg = "message binary data portion"
+	sessionStartMsg      = "SMTP session started"
+	sessionRequestMsg    = "SMTP request: "
+	sessionResponseMsg   = "SMTP response: "
+	sessionEndMsg        = "SMTP session finished"
+	sessionBinaryDataMsg = "message binary data portion"
 
 	// Server
-	NetworkProtocol                  = "tcp"
-	DefaultHostAddress               = "0.0.0.0"
-	DefaultPortNuber                 = 2525
-	DefaultMessageSizeLimit          = 10485760 // in bytes (10MB)
-	DefaultSessionTimeout            = 30       // in seconds
-	ServerStartMsg                   = "SMTP mock server started on port"
-	ServerStartErrorMsg              = "unable to start SMTP mock server. Server must be inactive"
-	ServerErrorMsg                   = "Failed to start SMTP mock server on port"
-	ServerStopErrorMsg               = "unable to stop SMTP mock server. Server must be active"
-	ServerNotAcceptNewConnectionsMsg = "SMTP mock server is in the shutdown mode and won't accept new connections"
-	ServerStopMsg                    = "SMTP mock server was stopped successfully"
+	networkProtocol                  = "tcp"
+	defaultHostAddress               = "0.0.0.0"
+	defaultPortNuber                 = 2525
+	defaultMessageSizeLimit          = 10485760 // in bytes (10MB)
+	defaultSessionTimeout            = 30       // in seconds
+	serverStartMsg                   = "SMTP mock server started on port"
+	serverStartErrorMsg              = "unable to start SMTP mock server. Server must be inactive"
+	serverErrorMsg                   = "Failed to start SMTP mock server on port"
+	serverStopErrorMsg               = "unable to stop SMTP mock server. Server must be active"
+	serverNotAcceptNewConnectionsMsg = "SMTP mock server is in the shutdown mode and won't accept new connections"
+	serverStopMsg                    = "SMTP mock server was stopped successfully"
 
 	// Regex patterns
-	AvailableCmdsRegexPattern          = `(?i)helo|ehlo|mail from:|rcpt to:|data|quit`
-	DomainRegexPattern                 = `(?i)([\p{L}0-9]+([\-.]{1}[\p{L}0-9]+)*\.\p{L}{2,63})`
-	EmailRegexPattern                  = `(?i)<?((.+)@` + DomainRegexPattern + `)>?`
-	ValidHeloCmdsRegexPattern          = `(?i)helo|ehlo`
-	ValidMailfromCmdRegexPattern       = `(?i)mail from:`
-	ValidRcpttoCmdRegexPattern         = `(?i)rcpt to:`
-	ValidDataCmdRegexPattern           = `\A(?i)data\z`
-	ValidQuitCmdRegexPattern           = `\A(?i)quit\z`
-	ValidHeloComplexCmdRegexPattern    = `\A(` + ValidHeloCmdsRegexPattern + `) (` + DomainRegexPattern + `)\z`
-	ValidMailromComplexCmdRegexPattern = `\A(` + ValidMailfromCmdRegexPattern + `) ?(` + EmailRegexPattern + `)\z`
-	ValidRcpttoComplexCmdRegexPattern  = `\A(` + ValidRcpttoCmdRegexPattern + `) ?(` + EmailRegexPattern + `)\z`
+	availableCmdsRegexPattern          = `(?i)helo|ehlo|mail from:|rcpt to:|data|quit`
+	domainRegexPattern                 = `(?i)([\p{L}0-9]+([\-.]{1}[\p{L}0-9]+)*\.\p{L}{2,63})`
+	emailRegexPattern                  = `(?i)<?((.+)@` + domainRegexPattern + `)>?`
+	validHeloCmdsRegexPattern          = `(?i)helo|ehlo`
+	validMailfromCmdRegexPattern       = `(?i)mail from:`
+	validRcpttoCmdRegexPattern         = `(?i)rcpt to:`
+	validDataCmdRegexPattern           = `\A(?i)data\z`
+	validQuitCmdRegexPattern           = `\A(?i)quit\z`
+	validHeloComplexCmdRegexPattern    = `\A(` + validHeloCmdsRegexPattern + `) (` + domainRegexPattern + `)\z`
+	validMailromComplexCmdRegexPattern = `\A(` + validMailfromCmdRegexPattern + `) ?(` + emailRegexPattern + `)\z`
+	validRcpttoComplexCmdRegexPattern  = `\A(` + validRcpttoCmdRegexPattern + `) ?(` + emailRegexPattern + `)\z`
 
 	// Helpers
-	EmptyString = ""
+	emptyString = ""
 )

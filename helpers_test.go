@@ -10,7 +10,7 @@ import (
 
 func TestNewRegex(t *testing.T) {
 	t.Run("valid regex pattern", func(t *testing.T) {
-		regexPattern := EmptyString
+		regexPattern := emptyString
 		actualRegex, err := newRegex(regexPattern)
 		expectedRegex, _ := regexp.Compile(regexPattern)
 
@@ -28,7 +28,7 @@ func TestNewRegex(t *testing.T) {
 
 func TestMatchRegex(t *testing.T) {
 	t.Run("valid regex pattern, matched string", func(t *testing.T) {
-		assert.True(t, matchRegex(EmptyString, EmptyString))
+		assert.True(t, matchRegex(emptyString, emptyString))
 	})
 
 	t.Run("valid regex pattern, not matched string", func(t *testing.T) {
@@ -36,7 +36,7 @@ func TestMatchRegex(t *testing.T) {
 	})
 
 	t.Run("invalid regex pattern", func(t *testing.T) {
-		assert.False(t, matchRegex(EmptyString, `\K`))
+		assert.False(t, matchRegex(emptyString, `\K`))
 	})
 }
 
@@ -48,11 +48,11 @@ func TestRegexCaptureGroup(t *testing.T) {
 	})
 
 	t.Run("returns empty string when regex not matched", func(t *testing.T) {
-		assert.Equal(t, EmptyString, regexCaptureGroup("xyz", regexPattern, 2))
+		assert.Equal(t, emptyString, regexCaptureGroup("xyz", regexPattern, 2))
 	})
 
 	t.Run("returns empty string when regex capture group not found", func(t *testing.T) {
-		assert.Equal(t, EmptyString, regexCaptureGroup(str, regexPattern, 3))
+		assert.Equal(t, emptyString, regexCaptureGroup(str, regexPattern, 3))
 	})
 }
 

@@ -15,7 +15,7 @@ func loggerMessageRegex(logLevel, logMessage string) *regexp.Regexp {
 
 // Creates configuration with default settings
 func createConfiguration() *configuration {
-	return NewConfiguration(ConfigurationAttr{})
+	return newConfiguration(ConfigurationAttr{})
 }
 
 // Creates not empty message
@@ -40,8 +40,8 @@ func createNotEmptyMessage() *message {
 }
 
 // Runs minimal successful SMTP session with target host
-func runMinimalSuccessfulSmtpSession(hostAddress string, portNumber int) error {
-	connection, _ := net.DialTimeout(NetworkProtocol, serverWithPortNumber(hostAddress, portNumber), time.Duration(2)*time.Second)
+func runMinimalSuccessfulSMTPSession(hostAddress string, portNumber int) error {
+	connection, _ := net.DialTimeout(networkProtocol, serverWithPortNumber(hostAddress, portNumber), time.Duration(2)*time.Second)
 	client, _ := smtp.NewClient(connection, hostAddress)
 
 	if err := client.Hello("example.com"); err != nil {

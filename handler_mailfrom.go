@@ -63,7 +63,7 @@ func (handler *handlerMailfrom) isInvalidCmdSequence(request string) bool {
 // Invalid MAILFROM command argument predicate. Returns true and writes result for case when
 // MAILFROM command argument is invalid, otherwise returns false
 func (handler *handlerMailfrom) isInvalidCmdArg(request string) bool {
-	if !matchRegex(request, ValidMailromComplexCmdRegexPattern) {
+	if !matchRegex(request, validMailromComplexCmdRegexPattern) {
 		return handler.writeResult(false, request, handler.configuration.msgInvalidCmdMailfromArg)
 	}
 
@@ -72,7 +72,7 @@ func (handler *handlerMailfrom) isInvalidCmdArg(request string) bool {
 
 // Returns email from MAILFROM request
 func (handler *handlerMailfrom) mailfromEmail(request string) string {
-	return regexCaptureGroup(request, ValidMailromComplexCmdRegexPattern, 3)
+	return regexCaptureGroup(request, validMailromComplexCmdRegexPattern, 3)
 }
 
 // Custom behaviour for MAILFROM email. Returns true and writes result for case when
