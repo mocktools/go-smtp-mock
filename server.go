@@ -38,7 +38,7 @@ func newServer(configuration *configuration) *Server {
 
 // server methods
 
-// Start binds and runs SMTP mock server on specified port
+// Start binds and runs SMTP mock server on specified port. Returns error for case when server is active
 func (server *Server) Start() (err error) {
 	if server.isStarted {
 		return errors.New(serverStartErrorMsg)
