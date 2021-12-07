@@ -115,14 +115,10 @@ type ConfigurationAttr struct {
 
 // ConfigurationAttr methods
 
-// assigns default values to ConfigurationAttr fields
-func (config *ConfigurationAttr) assignDefaultValues() {
-	// Server defaults
+// Assigns server defaults
+func (config *ConfigurationAttr) assignServerDefaultValues() {
 	if config.hostAddress == emptyString {
 		config.hostAddress = defaultHostAddress
-	}
-	if config.portNumber == 0 {
-		config.portNumber = defaultPortNuber
 	}
 	if config.msgGreeting == emptyString {
 		config.msgGreeting = defaultGreetingMsg
@@ -136,8 +132,10 @@ func (config *ConfigurationAttr) assignDefaultValues() {
 	if config.sessionTimeout == 0 {
 		config.sessionTimeout = defaultSessionTimeout
 	}
+}
 
-	// HELO defaults
+// Assigns handlerHelo defaults
+func (config *ConfigurationAttr) assignHandlerHeloDefaultValues() {
 	if config.msgInvalidCmdHeloSequence == emptyString {
 		config.msgInvalidCmdHeloSequence = defaultInvalidCmdHeloSequenceMsg
 	}
@@ -150,8 +148,10 @@ func (config *ConfigurationAttr) assignDefaultValues() {
 	if config.msgHeloReceived == emptyString {
 		config.msgHeloReceived = defaultReceivedMsg
 	}
+}
 
-	// MAIL FROM defaults
+// Assigns handlerMailfrom defaults
+func (config *ConfigurationAttr) assignHandlerMailfromDefaultValues() {
 	if config.msgInvalidCmdMailfromSequence == emptyString {
 		config.msgInvalidCmdMailfromSequence = defaultInvalidCmdMailfromSequenceMsg
 	}
@@ -164,8 +164,10 @@ func (config *ConfigurationAttr) assignDefaultValues() {
 	if config.msgMailfromReceived == emptyString {
 		config.msgMailfromReceived = defaultReceivedMsg
 	}
+}
 
-	// RCPT TO defaults
+// Assigns handlerRcptto defaults
+func (config *ConfigurationAttr) assignHandlerRcpttoDefaultValues() {
 	if config.msgInvalidCmdRcpttoSequence == emptyString {
 		config.msgInvalidCmdRcpttoSequence = defaultInvalidCmdRcpttoSequenceMsg
 	}
@@ -181,16 +183,20 @@ func (config *ConfigurationAttr) assignDefaultValues() {
 	if config.msgRcpttoReceived == emptyString {
 		config.msgRcpttoReceived = defaultReceivedMsg
 	}
+}
 
-	// DATA defaults
+// Assigns handlerData defaults
+func (config *ConfigurationAttr) assignHandlerDataDefaultValues() {
 	if config.msgInvalidCmdDataSequence == emptyString {
 		config.msgInvalidCmdDataSequence = defaultInvalidCmdDataSequenceMsg
 	}
 	if config.msgDataReceived == emptyString {
 		config.msgDataReceived = defaultReadyForReceiveMsg
 	}
+}
 
-	// Message defaults
+// Assigns handlerMessage defaults
+func (config *ConfigurationAttr) assignHandlerMessageDefaultValues() {
 	if config.msqSizeLimit == 0 {
 		config.msqSizeLimit = defaultMessageSizeLimit
 	}
@@ -200,4 +206,14 @@ func (config *ConfigurationAttr) assignDefaultValues() {
 	if config.msgMsgReceived == emptyString {
 		config.msgMsgReceived = defaultReceivedMsg
 	}
+}
+
+// Assigns default values to ConfigurationAttr fields
+func (config *ConfigurationAttr) assignDefaultValues() {
+	config.assignServerDefaultValues()
+	config.assignHandlerHeloDefaultValues()
+	config.assignHandlerMailfromDefaultValues()
+	config.assignHandlerRcpttoDefaultValues()
+	config.assignHandlerDataDefaultValues()
+	config.assignHandlerMessageDefaultValues()
 }
