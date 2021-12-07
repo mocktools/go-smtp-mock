@@ -22,6 +22,7 @@ func TestNewServer(t *testing.T) {
 		assert.NotNil(t, server.wg)
 		assert.Nil(t, server.quit)
 		assert.False(t, server.isStarted)
+		assert.Equal(t, 0, server.PortNumber)
 	})
 }
 
@@ -196,15 +197,31 @@ func TestServerHandleSession(t *testing.T) {
 }
 
 func TestServerStart(t *testing.T) {
-	t.Run("when no errors happens during starting and running the server", func(t *testing.T) {
+	t.Run("when no errors happens during starting and running the server with default port", func(t *testing.T) {
 		configuration := createConfiguration()
 		server := newServer(configuration)
 
 		assert.NoError(t, server.Start())
-		_ = runMinimalSuccessfulSMTPSession(configuration.hostAddress, configuration.portNumber)
+		_ = runMinimalSuccessfulSMTPSession(configuration.hostAddress, server.PortNumber)
 		assert.NotEmpty(t, server.messages)
 		assert.NotNil(t, server.quit)
 		assert.True(t, server.isStarted)
+		assert.Greater(t, server.PortNumber, 0)
+
+		_ = server.Stop()
+	})
+
+	t.Run("when no errors happens during starting and running the server with custom port", func(t *testing.T) {
+		configuration, portNumber := createConfiguration(), 2525
+		configuration.portNumber = portNumber
+		server := newServer(configuration)
+
+		assert.NoError(t, server.Start())
+		_ = runMinimalSuccessfulSMTPSession(configuration.hostAddress, portNumber)
+		assert.NotEmpty(t, server.messages)
+		assert.NotNil(t, server.quit)
+		assert.True(t, server.isStarted)
+		assert.Equal(t, portNumber, server.PortNumber)
 
 		_ = server.Stop()
 	})
@@ -213,18 +230,21 @@ func TestServerStart(t *testing.T) {
 		server := &Server{isStarted: true}
 
 		assert.EqualError(t, server.Start(), serverStartErrorMsg)
+		assert.Equal(t, 0, server.PortNumber)
 	})
 
 	t.Run("when listener error happens during starting the server doesn't start current server", func(t *testing.T) {
 		configuration := createConfiguration()
 		server, logger := newServer(configuration), new(loggerMock)
-		errorMessage := fmt.Sprintf("%s: %d", serverErrorMsg, configuration.portNumber)
-		listener, _ := net.Listen(networkProtocol, serverWithPortNumber(configuration.hostAddress, configuration.portNumber))
-		server.logger = logger
+		listener, _ := net.Listen(networkProtocol, emptyString)
+		portNumber := listener.Addr().(*net.TCPAddr).Port
+		errorMessage := fmt.Sprintf("%s: %d", serverErrorMsg, portNumber)
+		configuration.portNumber, server.logger = portNumber, logger
 		logger.On("error", errorMessage).Once().Return(nil)
 
 		assert.EqualError(t, server.Start(), errorMessage)
 		assert.False(t, server.isStarted)
+		assert.Equal(t, 0, server.PortNumber)
 		listener.Close()
 	})
 }

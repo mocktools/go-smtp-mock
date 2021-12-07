@@ -77,8 +77,9 @@ smtpmock.ConfigurationAttr{
   // Host address where smtpmock will run, it's equal to "127.0.0.1" by default
   hostAddress:                   "[::]",
 
-  // Port number on which the server will bind, it's equal to 2525 by default
-  portNumber:                    2526,
+  // Port number on which the server will bind. If it not specified, it will be
+  // assigned dynamically after server.Start() by default
+  portNumber:                    2525,
 
   // Enables/disables log to stdout. It's equal to false by default
   logToStdout:                   true,
@@ -202,12 +203,8 @@ import (
 )
 
 func main() {
-  hostAddress, portNumber := "127.0.0.1", 2525
-
   // You can pass empty smtpmock.ConfigurationAttr{}. It means that smtpmock will use default settings
   server := smtpmock.New(smtpmock.ConfigurationAttr{
-    hostAddress:       hostAddress,
-    portNumber:        portNumber,
     logToStdout:       true,
     logServerActivity: true,
   })
@@ -216,6 +213,10 @@ func main() {
   if err := server.Start(); err != nil {
     fmt.Println(err)
   }
+
+  // Server's port will be assigned dynamically after server.Start()
+  // for case when portNumber wasn't specified
+  portNumber =: server.PortNumber
 
   // Possible SMTP-client stuff for iteration with mock server
   address := fmt.Sprintf("%s:%d", hostAddress, portNumber)
