@@ -13,7 +13,6 @@ func TestNew(t *testing.T) {
 		configuration := server.configuration
 
 		assert.Equal(t, defaultHostAddress, configuration.hostAddress)
-		assert.Equal(t, defaultPortNuber, configuration.portNumber)
 		assert.False(t, configuration.logToStdout)
 		assert.False(t, configuration.isCmdFailFast)
 		assert.False(t, configuration.logServerActivity)
@@ -151,11 +150,12 @@ func TestNew(t *testing.T) {
 
 		assert.NoError(t, server.Start())
 		assert.True(t, server.isStarted)
-		_ = runMinimalSuccessfulSMTPSession(configuration.hostAddress, configuration.portNumber)
+		_ = runMinimalSuccessfulSMTPSession(configuration.hostAddress, server.PortNumber)
 		_ = server.Stop()
 
 		assert.NotEmpty(t, server.messages)
 		assert.NotNil(t, server.quit)
 		assert.False(t, server.isStarted)
+		assert.Greater(t, server.PortNumber, 0)
 	})
 }

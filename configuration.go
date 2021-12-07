@@ -120,9 +120,6 @@ func (config *ConfigurationAttr) assignServerDefaultValues() {
 	if config.hostAddress == emptyString {
 		config.hostAddress = defaultHostAddress
 	}
-	if config.portNumber == 0 {
-		config.portNumber = defaultPortNuber
-	}
 	if config.msgGreeting == emptyString {
 		config.msgGreeting = defaultGreetingMsg
 	}

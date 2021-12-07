@@ -24,6 +24,7 @@ type Server struct {
 	wg            waitGroup
 	quit          chan interface{}
 	isStarted     bool
+	PortNumber    int // Current server port number. Value is assigned after server is starting successfully
 }
 
 // SMTP mock server builder, creates new server
@@ -44,18 +45,18 @@ func (server *Server) Start() (err error) {
 		return errors.New(serverStartErrorMsg)
 	}
 
-	server.quit = make(chan interface{})
 	configuration, logger := server.configuration, server.logger
 	portNumber := configuration.portNumber
 
 	listener, err := net.Listen(networkProtocol, serverWithPortNumber(configuration.hostAddress, portNumber))
 	if err != nil {
-		errorMessage := fmt.Sprintf("%s: %d", serverErrorMsg, server.configuration.portNumber)
+		errorMessage := fmt.Sprintf("%s: %d", serverErrorMsg, portNumber)
 		logger.error(errorMessage)
 		return errors.New(errorMessage)
 	}
 
-	server.listener, server.isStarted = listener, true
+	portNumber = listener.Addr().(*net.TCPAddr).Port
+	server.listener, server.isStarted, server.quit, server.PortNumber = listener, true, make(chan interface{}), portNumber
 	logger.infoActivity(fmt.Sprintf("%s: %d", serverStartMsg, portNumber))
 
 	server.addToWaitGroup()

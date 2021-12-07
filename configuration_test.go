@@ -12,7 +12,6 @@ func TestNewConfiguration(t *testing.T) {
 		buildedConfiguration := newConfiguration(ConfigurationAttr{})
 
 		assert.Equal(t, defaultHostAddress, buildedConfiguration.hostAddress)
-		assert.Equal(t, defaultPortNuber, buildedConfiguration.portNumber)
 		assert.False(t, buildedConfiguration.logToStdout)
 		assert.False(t, buildedConfiguration.isCmdFailFast)
 		assert.False(t, buildedConfiguration.logServerActivity)
@@ -132,7 +131,6 @@ func TestConfigurationAttrAssignDefaultValues(t *testing.T) {
 		configurationAttr.assignDefaultValues()
 
 		assert.Equal(t, defaultHostAddress, configurationAttr.hostAddress)
-		assert.Equal(t, defaultPortNuber, configurationAttr.portNumber)
 		assert.Equal(t, defaultGreetingMsg, configurationAttr.msgGreeting)
 		assert.Equal(t, defaultInvalidCmdMsg, configurationAttr.msgInvalidCmd)
 		assert.Equal(t, defaultQuitMsg, configurationAttr.msgQuitCmd)

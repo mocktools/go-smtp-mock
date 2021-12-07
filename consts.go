@@ -35,7 +35,6 @@ const (
 	// Server
 	networkProtocol                  = "tcp"
 	defaultHostAddress               = "0.0.0.0"
-	defaultPortNuber                 = 2525
 	defaultMessageSizeLimit          = 10485760 // in bytes (10MB)
 	defaultSessionTimeout            = 30       // in seconds
 	serverStartMsg                   = "SMTP mock server started on port"
