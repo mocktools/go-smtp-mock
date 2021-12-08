@@ -1,14 +1,15 @@
-# ![Golang SMTP mock. Mimic SMTP server behaviour for your test environment and even more](https://repository-images.githubusercontent.com/401721985/848bc1dd-fc35-4d78-8bd9-0ac3430270d8)
+# ![SMTP mock server written on Golang. Mimic any SMTP server behaviour for your test environment with fake SMTP server](https://repository-images.githubusercontent.com/401721985/848bc1dd-fc35-4d78-8bd9-0ac3430270d8)
 
+[![Go Report Card](https://goreportcard.com/badge/github.com/mocktools/go-smtp-mock)](https://goreportcard.com/report/github.com/mocktools/go-smtp-mock)
+[![Codecov](https://codecov.io/gh/mocktools/go-smtp-mock/branch/master/graph/badge.svg)](https://codecov.io/gh/mocktools/go-smtp-mock)
 [![CircleCI](https://circleci.com/gh/mocktools/go-smtp-mock/tree/master.svg?style=svg)](https://circleci.com/gh/mocktools/go-smtp-mock/tree/master)
 [![GitHub release (latest by date)](https://img.shields.io/github/v/release/mocktools/go-smtp-mock)](https://github.com/mocktools/go-smtp-mock/releases)
-[![Codecov](https://codecov.io/gh/mocktools/go-smtp-mock/branch/master/graph/badge.svg)](https://codecov.io/gh/mocktools/go-smtp-mock)
-[![Go Report Card](https://goreportcard.com/badge/github.com/mocktools/go-smtp-mock)](https://goreportcard.com/report/github.com/mocktools/go-smtp-mock)
 [![PkgGoDev](https://pkg.go.dev/badge/github.com/mocktools/go-smtp-mock)](https://pkg.go.dev/github.com/mocktools/go-smtp-mock)
+[![Mentioned in Awesome Go](https://awesome.re/mentioned-badge.svg)](https://github.com/avelino/awesome-go)
 [![GitHub](https://img.shields.io/github/license/mocktools/go-smtp-mock)](LICENSE.txt)
 [![Contributor Covenant](https://img.shields.io/badge/Contributor%20Covenant-v1.4%20adopted-ff69b4.svg)](CODE_OF_CONDUCT.md)
 
-Golang SMTP mock. Mimic SMTP server behaviour for your test environment and even more. It's lightweight configurable multithreaded SMTP server package written in Go. It meets the minimum requirements specified by [RFC 2821](https://datatracker.ietf.org/doc/html/rfc2821) & [RFC 5321](https://datatracker.ietf.org/doc/html/rfc5321).
+`smtpmock` is lightweight configurable multithreaded fake SMTP server written in Go. It meets the minimum requirements specified by [RFC 2821](https://datatracker.ietf.org/doc/html/rfc2821) & [RFC 5321](https://datatracker.ietf.org/doc/html/rfc5321). Allows to mimic any SMTP server behaviour for your test environment and even more 🚀
 
 ## Table of Contents
 
@@ -189,7 +190,7 @@ smtpmock.ConfigurationAttr{
 
 ### Example of usage
 
-You have to create your SMTP mock server using `smtpmock.New()` and `smtpmock.ConfigurationAttr{}` to iterate with it first.
+You have to create your SMTP mock server using `smtpmock.New()` and `smtpmock.ConfigurationAttr{}` to start interaction with it.
 
 ```go
 package main
@@ -216,7 +217,7 @@ func main() {
 
   // Server's port will be assigned dynamically after server.Start()
   // for case when portNumber wasn't specified
-  portNumber =: server.PortNumber
+  hostAddress, portNumber =: server.PortNumber, "127.0.0.1"
 
   // Possible SMTP-client stuff for iteration with mock server
   address := fmt.Sprintf("%s:%d", hostAddress, portNumber)
