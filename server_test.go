@@ -150,7 +150,7 @@ func TestServerHandleSession(t *testing.T) {
 	})
 
 	t.Run("when invalid command, session error, fail fast scenario enabled", func(t *testing.T) {
-		session, configuration := &sessionMock{}, newConfiguration(ConfigurationAttr{isCmdFailFast: true})
+		session, configuration := &sessionMock{}, newConfiguration(ConfigurationAttr{IsCmdFailFast: true})
 		server, errorMessage := newServer(configuration), configuration.msgInvalidCmdHeloArg
 
 		session.On("writeResponse", configuration.msgGreeting).Once().Return(nil)
@@ -172,7 +172,7 @@ func TestServerHandleSession(t *testing.T) {
 	})
 
 	t.Run("when server quit channel was closed", func(t *testing.T) {
-		session, configuration := &sessionMock{}, newConfiguration(ConfigurationAttr{isCmdFailFast: true})
+		session, configuration := &sessionMock{}, newConfiguration(ConfigurationAttr{IsCmdFailFast: true})
 		server := newServer(configuration)
 		server.quit = make(chan interface{})
 		close(server.quit)
@@ -184,7 +184,7 @@ func TestServerHandleSession(t *testing.T) {
 	})
 
 	t.Run("when read request session error", func(t *testing.T) {
-		session, configuration := &sessionMock{}, newConfiguration(ConfigurationAttr{isCmdFailFast: true})
+		session, configuration := &sessionMock{}, newConfiguration(ConfigurationAttr{IsCmdFailFast: true})
 		server := newServer(configuration)
 
 		session.On("writeResponse", configuration.msgGreeting).Once().Return(nil)

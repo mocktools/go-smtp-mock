@@ -24,7 +24,7 @@ type Server struct {
 	wg            waitGroup
 	quit          chan interface{}
 	isStarted     bool
-	PortNumber    int // Current server port number. Value is assigned after server is starting successfully
+	PortNumber    int
 }
 
 // SMTP mock server builder, creates new server
@@ -39,7 +39,8 @@ func newServer(configuration *configuration) *Server {
 
 // server methods
 
-// Start binds and runs SMTP mock server on specified port. Returns error for case when server is active
+// Start binds and runs SMTP mock server on specified port or random free port. Returns error for
+// case when server is active. Server port number will be assigned after successful start only
 func (server *Server) Start() (err error) {
 	if server.isStarted {
 		return errors.New(serverStartErrorMsg)
