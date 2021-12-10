@@ -32,7 +32,7 @@ func TestHandlerMessageRun(t *testing.T) {
 	})
 
 	t.Run("when message size limit reached", func(t *testing.T) {
-		session, message, configuration := new(sessionMock), new(message), newConfiguration(ConfigurationAttr{msqSizeLimit: 1})
+		session, message, configuration := new(sessionMock), new(message), newConfiguration(ConfigurationAttr{MsqSizeLimit: 1})
 		errorMessage := configuration.msgMsgSizeIsTooBig
 		handler, err := newHandlerMessage(session, message, configuration), errors.New(errorMessage)
 		session.On("readBytes").Once().Return([]uint8("some message"), nil)

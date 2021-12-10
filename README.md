@@ -76,20 +76,20 @@ smtpmock.ConfigurationAttr{
   // Customizing server behaviour
   // ---------------------------------------------------------------------
   // Host address where smtpmock will run, it's equal to "127.0.0.1" by default
-  hostAddress:                   "[::]",
+  HostAddress:                   "[::]",
 
   // Port number on which the server will bind. If it not specified, it will be
   // assigned dynamically after server.Start() by default
-  portNumber:                    2525,
+  PortNumber:                    2525,
 
   // Enables/disables log to stdout. It's equal to false by default
-  logToStdout:                   true,
+  LogToStdout:                   true,
 
   // Enables/disables log server activity. It's equal to false by default
-  logServerActivity:             true,
+  LogServerActivity:             true,
 
   // Ability to specify session timeout. It's equal to 30 seconds by default
-  sessionTimeout:                42,
+  SessionTimeout:                42,
 
 
   // Customizing SMTP command handlers behaviour
@@ -97,94 +97,94 @@ smtpmock.ConfigurationAttr{
   // Ability to configure fail fast scenario. It means that server will
   // close client session for case when command was inconsistent or failed.
   // It's equal to false by default
-  isCmdFailFast:                 true,
+  IsCmdFailFast:                 true,
 
   // Ability to specify blacklisted HELO domains. It's equal to empty []string
-  blacklistedHeloDomains:        []string{"example1.com", "example2.com"},
+  BlacklistedHeloDomains:        []string{"example1.com", "example2.com"},
 
   // Ability to specify blacklisted MAIL FROM emails. It's equal to empty []string
-  blacklistedMailfromEmails:     []string{"bot@olo.com", "robot@molo.com"},
+  BlacklistedMailfromEmails:     []string{"bot@olo.com", "robot@molo.com"},
 
   // Ability to specify blacklisted RCPT TO emails. It's equal to empty []string
-  blacklistedRcpttoEmails:       []string{"blacklisted@olo.com", "blacklisted@molo.com"},
+  BlacklistedRcpttoEmails:       []string{"blacklisted@olo.com", "blacklisted@molo.com"},
 
   // Ability to specify not registered (non-existent) RCPT TO emails.
   // It's equal to empty []string
-  notRegisteredEmails:           []string{"nobody@olo.com", "non-existent@email.com"},
+  NotRegisteredEmails:           []string{"nobody@olo.com", "non-existent@email.com"},
 
   // Ability to specify message body size limit. It's equal to 10485760 bytes (10MB) by default
-  msqSizeLimit:                  5,
+  MsqSizeLimit:                  5,
   
 
   // Customazing SMTP command handler messages context
   // ---------------------------------------------------------------------
   // Custom server greeting message. Base on defaultGreetingMsg by default
-  msgGreeting:                   "msgGreeting",
+  MsgGreeting:                   "msgGreeting",
 
   // Custom invalid command message. Based on defaultInvalidCmdMsg by default
-  msgInvalidCmd:                 "msgInvalidCmd",
+  MsgInvalidCmd:                 "msgInvalidCmd",
 
   // Custom invalid command HELO sequence message.
   // Based on defaultInvalidCmdHeloSequenceMsg by default
-  msgInvalidCmdHeloSequence:     "msgInvalidCmdHeloSequence",
+  MsgInvalidCmdHeloSequence:     "msgInvalidCmdHeloSequence",
 
   // Custom invalid command HELO argument message.
   // Based on defaultInvalidCmdHeloArgMsg by default
-  msgInvalidCmdHeloArg:          "msgInvalidCmdHeloArg",
+  MsgInvalidCmdHeloArg:          "msgInvalidCmdHeloArg",
 
   // Custom HELO blacklisted domain message. Based on defaultQuitMsg by default
-  msgHeloBlacklistedDomain:      "msgHeloBlacklistedDomain",
+  MsgHeloBlacklistedDomain:      "msgHeloBlacklistedDomain",
 
   // Custom HELO received message. Based on defaultReceivedMsg by default
-  msgHeloReceived:               "msgHeloReceived",
+  MsgHeloReceived:               "msgHeloReceived",
 
   // Custom invalid command MAIL FROM sequence message.
   // Based on defaultInvalidCmdMailfromSequenceMsg by default
-  msgInvalidCmdMailfromSequence: "msgInvalidCmdMailfromSequence",
+  MsgInvalidCmdMailfromSequence: "msgInvalidCmdMailfromSequence",
 
   // Custom invalid command MAIL FROM argument message.
   // Based on defaultInvalidCmdMailfromArgMsg by default
-  msgInvalidCmdMailfromArg:      "msgInvalidCmdMailfromArg",
+  MsgInvalidCmdMailfromArg:      "msgInvalidCmdMailfromArg",
 
   // Custom MAIL FROM blacklisted domain message. Based on defaultQuitMsg by default
-  msgMailfromBlacklistedEmail:   "msgMailfromBlacklistedEmail",
+  MsgMailfromBlacklistedEmail:   "msgMailfromBlacklistedEmail",
 
   // Custom MAIL FROM received message. Based on defaultReceivedMsg by default
-  msgMailfromReceived:           "msgMailfromReceived",
+  MsgMailfromReceived:           "msgMailfromReceived",
 
   // Custom invalid command RCPT TO sequence message.
   // Based on defaultInvalidCmdRcpttoSequenceMsg by default
-  msgInvalidCmdRcpttoSequence:   "msgInvalidCmdRcpttoSequence",
+  MsgInvalidCmdRcpttoSequence:   "msgInvalidCmdRcpttoSequence",
 
   // Custom invalid command RCPT TO argument message.
   // Based on defaultInvalidCmdRcpttoArgMsg by default
-  msgInvalidCmdRcpttoArg:        "msgInvalidCmdRcpttoArg",
+  MsgInvalidCmdRcpttoArg:        "msgInvalidCmdRcpttoArg",
 
   // Custom RCPT TO not registered email message.
   // Based on defaultNotRegistredRcpttoEmailMsg by default
-  msgRcpttoNotRegisteredEmail:   "msgRcpttoNotRegisteredEmail",
+  MsgRcpttoNotRegisteredEmail:   "msgRcpttoNotRegisteredEmail",
 
   // Custom RCPT TO blacklisted email message. Based on defaultQuitMsg by default
-  msgRcpttoBlacklistedEmail:     "msgRcpttoBlacklistedEmail",
+  MsgRcpttoBlacklistedEmail:     "msgRcpttoBlacklistedEmail",
 
   // Custom RCPT TO received message. Based on defaultReceivedMsg by default
-  msgRcpttoReceived:             "msgRcpttoReceived",
+  MsgRcpttoReceived:             "msgRcpttoReceived",
 
   // Custom invalid command DATA sequence message.
   // Based on defaultInvalidCmdDataSequenceMsg by default
-  msgInvalidCmdDataSequence:     "msgInvalidCmdDataSequence",
+  MsgInvalidCmdDataSequence:     "msgInvalidCmdDataSequence",
 
   // Custom DATA received message. Based on defaultReadyForReceiveMsg by default
-  msgDataReceived:              "msgDataReceived",
+  MsgDataReceived:               "msgDataReceived",
 
   // Custom size is too big message. Based on defaultMsgSizeIsTooBigMsg by default
-  msgMsgSizeIsTooBig:            "msgMsgSizeIsTooBig",
+  MsgMsgSizeIsTooBig:            "msgMsgSizeIsTooBig",
 
   // Custom received message body message. Based on defaultReceivedMsg by default
-  msgMsgReceived:                "msgMsgReceived",
+  MsgMsgReceived:                "msgMsgReceived",
 
   // Custom quit command message. Based on defaultQuitMsg by default
-  msgQuitCmd:                    "msgQuitCmd",
+  MsgQuitCmd:                    "msgQuitCmd",
 }
 ```
 
@@ -206,8 +206,8 @@ import (
 func main() {
   // You can pass empty smtpmock.ConfigurationAttr{}. It means that smtpmock will use default settings
   server := smtpmock.New(smtpmock.ConfigurationAttr{
-    logToStdout:       true,
-    logServerActivity: true,
+    LogToStdout:       true,
+    LogServerActivity: true,
   })
 
   // To start server use Start() method
