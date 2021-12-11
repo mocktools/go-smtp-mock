@@ -41,7 +41,7 @@ func TestNewConfiguration(t *testing.T) {
 
 		assert.Equal(t, fmt.Sprintf(defaultMsgSizeIsTooBigMsg+" %d bytes", defaultMessageSizeLimit), buildedConfiguration.msgMsgSizeIsTooBig)
 		assert.Equal(t, defaultReceivedMsg, buildedConfiguration.msgMsgReceived)
-		assert.Equal(t, defaultMessageSizeLimit, buildedConfiguration.msqSizeLimit)
+		assert.Equal(t, defaultMessageSizeLimit, buildedConfiguration.msgSizeLimit)
 
 		assert.Empty(t, buildedConfiguration.blacklistedHeloDomains)
 		assert.Empty(t, buildedConfiguration.blacklistedMailfromEmails)
@@ -80,7 +80,7 @@ func TestNewConfiguration(t *testing.T) {
 			BlacklistedMailfromEmails:     []string{},
 			NotRegisteredEmails:           []string{},
 			BlacklistedRcpttoEmails:       []string{},
-			MsqSizeLimit:                  42,
+			MsgSizeLimit:                  42,
 			SessionTimeout:                120,
 		}
 		buildedConfiguration := newConfiguration(configAttr)
@@ -114,9 +114,9 @@ func TestNewConfiguration(t *testing.T) {
 		assert.Equal(t, configAttr.MsgInvalidCmdDataSequence, buildedConfiguration.msgInvalidCmdDataSequence)
 		assert.Equal(t, configAttr.MsgDataReceived, buildedConfiguration.msgDataReceived)
 
-		assert.Equal(t, fmt.Sprintf(defaultMsgSizeIsTooBigMsg+" %d bytes", configAttr.MsqSizeLimit), buildedConfiguration.msgMsgSizeIsTooBig)
+		assert.Equal(t, fmt.Sprintf(defaultMsgSizeIsTooBigMsg+" %d bytes", configAttr.MsgSizeLimit), buildedConfiguration.msgMsgSizeIsTooBig)
 		assert.Equal(t, configAttr.MsgMsgReceived, buildedConfiguration.msgMsgReceived)
-		assert.Equal(t, configAttr.MsqSizeLimit, buildedConfiguration.msqSizeLimit)
+		assert.Equal(t, configAttr.MsgSizeLimit, buildedConfiguration.msgSizeLimit)
 
 		assert.Equal(t, configAttr.BlacklistedHeloDomains, buildedConfiguration.blacklistedHeloDomains)
 		assert.Equal(t, configAttr.BlacklistedMailfromEmails, buildedConfiguration.blacklistedMailfromEmails)
@@ -157,6 +157,6 @@ func TestConfigurationAttrAssignDefaultValues(t *testing.T) {
 
 		assert.Equal(t, fmt.Sprintf(defaultMsgSizeIsTooBigMsg+" %d bytes", defaultMessageSizeLimit), configurationAttr.MsgMsgSizeIsTooBig)
 		assert.Equal(t, defaultReceivedMsg, configurationAttr.MsgMsgReceived)
-		assert.Equal(t, defaultMessageSizeLimit, configurationAttr.MsqSizeLimit)
+		assert.Equal(t, defaultMessageSizeLimit, configurationAttr.MsgSizeLimit)
 	})
 }
