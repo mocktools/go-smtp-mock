@@ -143,7 +143,7 @@ func (config *ConfigurationAttr) assignHandlerHeloDefaultValues() {
 		config.MsgInvalidCmdHeloArg = defaultInvalidCmdHeloArgMsg
 	}
 	if config.MsgHeloBlacklistedDomain == emptyString {
-		config.MsgHeloBlacklistedDomain = defaultQuitMsg
+		config.MsgHeloBlacklistedDomain = defaultTransientNegativeMsg
 	}
 	if config.MsgHeloReceived == emptyString {
 		config.MsgHeloReceived = defaultReceivedMsg
@@ -159,7 +159,7 @@ func (config *ConfigurationAttr) assignHandlerMailfromDefaultValues() {
 		config.MsgInvalidCmdMailfromArg = defaultInvalidCmdMailfromArgMsg
 	}
 	if config.MsgMailfromBlacklistedEmail == emptyString {
-		config.MsgMailfromBlacklistedEmail = defaultQuitMsg
+		config.MsgMailfromBlacklistedEmail = defaultTransientNegativeMsg
 	}
 	if config.MsgMailfromReceived == emptyString {
 		config.MsgMailfromReceived = defaultReceivedMsg
@@ -175,7 +175,7 @@ func (config *ConfigurationAttr) assignHandlerRcpttoDefaultValues() {
 		config.MsgInvalidCmdRcpttoArg = defaultInvalidCmdRcpttoArgMsg
 	}
 	if config.MsgRcpttoBlacklistedEmail == emptyString {
-		config.MsgRcpttoBlacklistedEmail = defaultQuitMsg
+		config.MsgRcpttoBlacklistedEmail = defaultTransientNegativeMsg
 	}
 	if config.MsgRcpttoNotRegisteredEmail == emptyString {
 		config.MsgRcpttoNotRegisteredEmail = defaultNotRegistredRcpttoEmailMsg

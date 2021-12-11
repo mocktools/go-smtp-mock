@@ -8,6 +8,7 @@ const (
 	defaultQuitMsg                       = "221 Closing connection"
 	defaultReceivedMsg                   = "250 Received"
 	defaultReadyForReceiveMsg            = "354 Ready for receive message. End data with <CR><LF>.<CR><LF>"
+	defaultTransientNegativeMsg          = "421 Service not available"
 	defaultInvalidCmdHeloArgMsg          = "501 HELO requires domain address"
 	defaultInvalidCmdMailfromArgMsg      = "501 MAIL FROM requires valid email address"
 	defaultInvalidCmdRcpttoArgMsg        = "501 RCPT TO requires valid email address"
