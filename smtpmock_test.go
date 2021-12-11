@@ -23,17 +23,17 @@ func TestNew(t *testing.T) {
 
 		assert.Equal(t, defaultInvalidCmdHeloSequenceMsg, configuration.msgInvalidCmdHeloSequence)
 		assert.Equal(t, defaultInvalidCmdHeloArgMsg, configuration.msgInvalidCmdHeloArg)
-		assert.Equal(t, defaultQuitMsg, configuration.msgHeloBlacklistedDomain)
+		assert.Equal(t, defaultTransientNegativeMsg, configuration.msgHeloBlacklistedDomain)
 		assert.Equal(t, defaultReceivedMsg, configuration.msgHeloReceived)
 
 		assert.Equal(t, defaultInvalidCmdMailfromSequenceMsg, configuration.msgInvalidCmdMailfromSequence)
 		assert.Equal(t, defaultInvalidCmdMailfromArgMsg, configuration.msgInvalidCmdMailfromArg)
-		assert.Equal(t, defaultQuitMsg, configuration.msgMailfromBlacklistedEmail)
+		assert.Equal(t, defaultTransientNegativeMsg, configuration.msgMailfromBlacklistedEmail)
 		assert.Equal(t, defaultReceivedMsg, configuration.msgMailfromReceived)
 
 		assert.Equal(t, defaultInvalidCmdRcpttoSequenceMsg, configuration.msgInvalidCmdRcpttoSequence)
 		assert.Equal(t, defaultInvalidCmdRcpttoArgMsg, configuration.msgInvalidCmdRcpttoArg)
-		assert.Equal(t, defaultQuitMsg, configuration.msgRcpttoBlacklistedEmail)
+		assert.Equal(t, defaultTransientNegativeMsg, configuration.msgRcpttoBlacklistedEmail)
 		assert.Equal(t, defaultNotRegistredRcpttoEmailMsg, configuration.msgRcpttoNotRegisteredEmail)
 		assert.Equal(t, defaultReceivedMsg, configuration.msgRcpttoReceived)
 

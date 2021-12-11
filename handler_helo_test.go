@@ -163,7 +163,7 @@ func TestHandlerHeloIsBlacklistedDomain(t *testing.T) {
 	t.Run("when request includes blacklisted domain name", func(t *testing.T) {
 		session, message, configuration := new(sessionMock), new(message), createConfiguration()
 		configuration.blacklistedHeloDomains = []string{domainName}
-		errorMessage := configuration.msgQuitCmd
+		errorMessage := configuration.msgHeloBlacklistedDomain
 		handler, err := newHandlerHelo(session, message, configuration), errors.New(errorMessage)
 		session.On("addError", err).Once().Return(nil)
 		session.On("writeResponse", errorMessage).Once().Return(nil)
