@@ -217,7 +217,7 @@ func main() {
 
   // Server's port will be assigned dynamically after server.Start()
   // for case when portNumber wasn't specified
-  hostAddress, portNumber =: server.PortNumber, "127.0.0.1"
+  hostAddress, portNumber =: "127.0.0.1", server.PortNumber
 
   // Possible SMTP-client stuff for iteration with mock server
   address := fmt.Sprintf("%s:%d", hostAddress, portNumber)
