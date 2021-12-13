@@ -54,7 +54,7 @@ const (
 	validRcpttoCmdRegexPattern         = `(?i)rcpt to:`
 	validDataCmdRegexPattern           = `\A(?i)data\z`
 	validQuitCmdRegexPattern           = `\A(?i)quit\z`
-	validHeloComplexCmdRegexPattern    = `\A(` + validHeloCmdsRegexPattern + `) (` + domainRegexPattern + `)\z`
+	validHeloComplexCmdRegexPattern    = `\A(` + validHeloCmdsRegexPattern + `) (` + domainRegexPattern + `|localhost)\z`
 	validMailromComplexCmdRegexPattern = `\A(` + validMailfromCmdRegexPattern + `) ?(` + emailRegexPattern + `)\z`
 	validRcpttoComplexCmdRegexPattern  = `\A(` + validRcpttoCmdRegexPattern + `) ?(` + emailRegexPattern + `)\z`
 

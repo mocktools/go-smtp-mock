@@ -100,7 +100,7 @@ smtpmock.ConfigurationAttr{
   IsCmdFailFast:                 true,
 
   // Ability to specify blacklisted HELO domains. It's equal to empty []string
-  BlacklistedHeloDomains:        []string{"example1.com", "example2.com"},
+  BlacklistedHeloDomains:        []string{"example1.com", "example2.com", "localhost"},
 
   // Ability to specify blacklisted MAIL FROM emails. It's equal to empty []string
   BlacklistedMailfromEmails:     []string{"bot@olo.com", "robot@molo.com"},
