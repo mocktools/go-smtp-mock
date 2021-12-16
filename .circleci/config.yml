@@ -46,17 +46,10 @@ jobs:
 
   release:
     docker:
-      - image: golang:1.15
-    working_directory: /go/src/github.com/mocktools/go-smtp-mock
+      - image: cimg/go:1.17
     steps:
       - checkout
-      - run:
-          name: Installing Goreleaser
-          command: go get github.com/goreleaser/goreleaser
-
-      - run:
-          name: Compiling and deploying binaries
-          command: goreleaser
+      - run: curl -sL https://git.io/goreleaser | bash
 
 workflows:
   build:
