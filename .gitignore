@@ -1,4 +1,5 @@
 # Ignore compiled binaries 
 
-/cmd/smtpmock
-smtpmock
+dist/
+cmd/main
+main
