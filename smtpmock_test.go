@@ -42,7 +42,7 @@ func TestNew(t *testing.T) {
 
 		assert.Equal(t, fmt.Sprintf(defaultMsgSizeIsTooBigMsg+" %d bytes", defaultMessageSizeLimit), configuration.msgMsgSizeIsTooBig)
 		assert.Equal(t, defaultReceivedMsg, configuration.msgMsgReceived)
-		assert.Equal(t, defaultMessageSizeLimit, configuration.msqSizeLimit)
+		assert.Equal(t, defaultMessageSizeLimit, configuration.msgSizeLimit)
 
 		assert.Empty(t, configuration.blacklistedHeloDomains)
 		assert.Empty(t, configuration.blacklistedMailfromEmails)
@@ -87,7 +87,7 @@ func TestNew(t *testing.T) {
 			BlacklistedMailfromEmails:     []string{},
 			NotRegisteredEmails:           []string{},
 			BlacklistedRcpttoEmails:       []string{},
-			MsqSizeLimit:                  42,
+			MsgSizeLimit:                  42,
 			SessionTimeout:                120,
 		}
 		server := New(configAttr)
@@ -122,9 +122,9 @@ func TestNew(t *testing.T) {
 		assert.Equal(t, configAttr.MsgInvalidCmdDataSequence, configuration.msgInvalidCmdDataSequence)
 		assert.Equal(t, configAttr.MsgDataReceived, configuration.msgDataReceived)
 
-		assert.Equal(t, fmt.Sprintf(defaultMsgSizeIsTooBigMsg+" %d bytes", configAttr.MsqSizeLimit), configuration.msgMsgSizeIsTooBig)
+		assert.Equal(t, fmt.Sprintf(defaultMsgSizeIsTooBigMsg+" %d bytes", configAttr.MsgSizeLimit), configuration.msgMsgSizeIsTooBig)
 		assert.Equal(t, configAttr.MsgMsgReceived, configuration.msgMsgReceived)
-		assert.Equal(t, configAttr.MsqSizeLimit, configuration.msqSizeLimit)
+		assert.Equal(t, configAttr.MsgSizeLimit, configuration.msgSizeLimit)
 
 		assert.Equal(t, configAttr.BlacklistedHeloDomains, configuration.blacklistedHeloDomains)
 		assert.Equal(t, configAttr.BlacklistedMailfromEmails, configuration.blacklistedMailfromEmails)

@@ -17,8 +17,11 @@
 - [Requirements](#requirements)
 - [Installation](#installation)
 - [Usage](#usage)
-  - [Configuring](#configuring)
-  - [Example of usage](#example-of-usage)
+  - [Inside of Golang ecosystem](#inside-of-golang-ecosystem)
+    - [Configuring](#configuring)
+    - [Manipulation with server](#manipulation-with-server)
+  - [Outside of Golang ecosystem](#outside-of-golang-ecosystem)
+    - [Configuring with command line arguments](#configuring-with-command-line-arguments)
 - [Contributing](#contributing)
 - [License](#license)
 - [Code of Conduct](#code-of-conduct)
@@ -39,6 +42,7 @@
 - No authentication support
 - Zero runtime dependencies
 - Simple and intuitive DSL
+- Ability to run server as binary with command line arguments
 
 ## Requirements
 
@@ -63,10 +67,17 @@ import "github.com/mocktools/go-smtp-mock"
 
 ## Usage
 
-- [Configuring](#configuring)
-- [Starting-stopping server](#starting-stopping-server)
+- [Inside of Golang ecosystem](#inside-of-golang-ecosystem)
+  - [Configuring](#configuring)
+  - [Manipulation with server](#manipulation-with-server)
+- [Outside of Golang ecosystem](#outside-of-golang-ecosystem)
+  - [Configuring with command line arguments](#configuring-with-command-line-arguments)
 
-### Configuring
+### Inside of Golang ecosystem
+
+You have to create your SMTP mock server using `smtpmock.New()` and `smtpmock.ConfigurationAttr{}` to start interaction with it.
+
+#### Configuring
 
 `smtpmock` is SMTP server for test environment with configurable behaviour. It comes with default settings out of the box. But you can override any default behaviour if you need.
 
@@ -113,7 +124,7 @@ smtpmock.ConfigurationAttr{
   NotRegisteredEmails:           []string{"nobody@olo.com", "non-existent@email.com"},
 
   // Ability to specify message body size limit. It's equal to 10485760 bytes (10MB) by default
-  MsqSizeLimit:                  5,
+  MsgSizeLimit:                  5,
   
 
   // Customazing SMTP command handler messages context
@@ -146,7 +157,7 @@ smtpmock.ConfigurationAttr{
   // Based on defaultInvalidCmdMailfromArgMsg by default
   MsgInvalidCmdMailfromArg:      "msgInvalidCmdMailfromArg",
 
-  // Custom MAIL FROM blacklisted domain message. Based on defaultQuitMsg by default
+  // Custom MAIL FROM blacklisted email message. Based on defaultQuitMsg by default
   MsgMailfromBlacklistedEmail:   "msgMailfromBlacklistedEmail",
 
   // Custom MAIL FROM received message. Based on defaultReceivedMsg by default
@@ -188,9 +199,7 @@ smtpmock.ConfigurationAttr{
 }
 ```
 
-### Example of usage
-
-You have to create your SMTP mock server using `smtpmock.New()` and `smtpmock.ConfigurationAttr{}` to start interaction with it.
+#### Manipulation with server
 
 ```go
 package main
@@ -252,6 +261,51 @@ INFO: 2021/11/30 22:07:30.555732 SMTP session finished
 WARNING: 2021/11/30 22:07:30.555801 SMTP mock server is in the shutdown mode and won't accept new connections
 INFO: 2021/11/30 22:07:30.555808 SMTP mock server was stopped successfully
 ```
+
+### Outside of Golang ecosystem
+
+You can use `smtpmock` as binary. Just compile or download binary from latest release. For start server just run command with needed arguments. In example below we have started the server, interact with it and shutdowns it by Ctrl+C:
+
+```bash
+./smtpmock -port=2525 -log
+```
+
+#### Configuring with command line arguments
+
+`smtpmock` configuration is available as command line arguments specified in the list below:
+
+| Flag description | Example of usage |
+| --- | --- |
+| `-host` - host address where smtpmock will run. It's equal to 127.0.0.1 by default | `-host=localhost` |
+| `-port` - server port number. If not specified it will be assigned dynamically | `-port=2525` |
+| `-log` - enables log server activity. Disabled by default | `-log` |
+| `-sessionTimeout` - session timeout in seconds. It's equal to 30 seconds by default | `-sessionTimeout=60` |
+| `-failFast` - enables fail fast scenario. Disabled by default | `-failFast` |
+| `-blacklistedHeloDomains` - blacklisted `HELO` domains, separated by commas | `-blacklistedHeloDomains="example1.com,example2.com"` |
+| `-blacklistedMailfromEmails` - blacklisted `MAIL FROM` emails, separated by commas | `-blacklistedMailfromEmails="a@example1.com,b@example2.com"` |
+| `-blacklistedRcpttoEmails` - blacklisted `RCPT TO` emails, separated by commas | `-blacklistedRcpttoEmails="a@example1.com,b@example2.com"` |
+| `-notRegisteredEmails` - not registered (non-existent) `RCPT TO` emails, separated by commas | `-notRegisteredEmails="a@example1.com,b@example2.com"` |
+| `-msgSizeLimit` - message body size limit in bytes. It's equal to 10485760 bytes | `-msgSizeLimit=42` |
+| `-msgGreeting` - custom server greeting message | `-msgGreeting="Greeting message"` |
+| `-msgInvalidCmd` - custom invalid command message | `-msgInvalidCmd="Invalid command message"` |
+| `-msgInvalidCmdHeloSequence` - custom invalid command `HELO` sequence message | `-msgInvalidCmdHeloSequence="Invalid command HELO sequence message"` |
+| `-msgInvalidCmdHeloArg` - custom invalid command `HELO` argument message | `-msgInvalidCmdHeloArg="Invalid command HELO argument message"` |
+| `-msgHeloBlacklistedDomain` - custom `HELO` blacklisted domain message | `-msgHeloBlacklistedDomain="Blacklisted domain message"` |
+| `-msgHeloReceived` - custom `HELO` received message | `-msgHeloReceived="HELO received message"` |
+| `-msgInvalidCmdMailfromSequence` - custom invalid command `MAIL FROM` sequence message | `-msgInvalidCmdMailfromSequence="Invalid command MAIL FROM sequence message"` |
+| `-msgInvalidCmdMailfromArg` - custom invalid command `MAIL FROM` argument message | `-msgInvalidCmdMailfromArg="Invalid command MAIL FROM argument message"` |
+| `-msgMailfromBlacklistedEmail` - custom `MAIL FROM` blacklisted email message | `-msgMailfromBlacklistedEmail="Blacklisted email message"` |
+| `-msgMailfromReceived`- custom `MAIL FROM` received message | `-msgMailfromReceived="MAIL FROM received message"` |
+| `-msgInvalidCmdRcpttoSequence` - custom invalid command `RCPT TO` sequence message | `-msgInvalidCmdRcpttoSequence="Invalid command RCPT TO sequence message"` |
+| `-msgInvalidCmdRcpttoArg` - custom invalid command `RCPT TO` argument message | `-msgInvalidCmdRcpttoArg="Invalid command RCPT TO argument message"` |
+| `-msgRcpttoNotRegisteredEmail` - custom `RCPT TO` not registered email message | `-msgRcpttoNotRegisteredEmail="Not registered email message"` |
+| `-msgRcpttoBlacklistedEmail` - custom `RCPT TO` blacklisted email message | `-msgRcpttoBlacklistedEmail="Blacklisted email message"` |
+| `-msgRcpttoReceived` - custom `RCPT TO` received message | `-msgRcpttoReceived="RCPT TO received message"` |
+| `-msgInvalidCmdDataSequence` - custom invalid command `DATA` sequence message | `-msgInvalidCmdDataSequence="Invalid command DATA sequence message"` |
+| `-msgDataReceived` - custom `DATA` received message | `-msgDataReceived="DATA received message"` |
+| `-msgMsgSizeIsTooBig` - custom size is too big message | `-msgMsgSizeIsTooBig="Message size is too big"` |
+| `-msgMsgReceived` - custom received message body message | `-msgMsgReceived="Message has been received"` |
+| `-msgQuitCmd` - custom quit command message | `-msgQuitCmd="Quit command message"` |
 
 ## Contributing
 
