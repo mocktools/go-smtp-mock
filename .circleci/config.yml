@@ -64,9 +64,6 @@ workflows:
       - linters
       - test
       - release:
-          requires:
-            - test
-            - linters
           filters:
             branches:
               ignore: /.*/
