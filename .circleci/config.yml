@@ -52,7 +52,7 @@ jobs:
       - checkout
       - run:
           name: Installing Goreleaser
-          command: go install github.com/goreleaser/goreleaser@latest
+          command: go get github.com/goreleaser/goreleaser
 
       - run:
           name: Compiling and deploying binaries
