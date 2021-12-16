@@ -44,8 +44,21 @@ jobs:
           command: |
             bash <(curl -s https://codecov.io/bash) -f coverage_report
 
+  release:
+    docker:
+      - image: cimg/go:1.17
+    steps:
+      - checkout
+      - run: curl -sL https://git.io/goreleaser | bash
+
 workflows:
   build:
     jobs:
       - linters
       - test
+      - release:
+          filters:
+            branches:
+              ignore: /.*/
+            tags:
+              only: /v[0-9]+(\.[0-9]+)*(-.*)*/

@@ -45,7 +45,7 @@ func (handler *handlerMessage) run() {
 		}
 
 		// Enforces the maximum message size limit
-		if len(msgData)+len(line) > configuration.msqSizeLimit {
+		if len(msgData)+len(line) > configuration.msgSizeLimit {
 			session.discardBufin()
 			handler.writeResult(false, request, configuration.msgMsgSizeIsTooBig)
 			return

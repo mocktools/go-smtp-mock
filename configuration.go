@@ -33,7 +33,7 @@ type configuration struct {
 	blacklistedMailfromEmails     []string
 	blacklistedRcpttoEmails       []string
 	notRegisteredEmails           []string
-	msqSizeLimit                  int
+	msgSizeLimit                  int
 	sessionTimeout                int
 
 	// TODO: add ability to send 221 response before end of session for case when fail fast scenario enabled
@@ -73,7 +73,7 @@ func newConfiguration(config ConfigurationAttr) *configuration {
 		blacklistedMailfromEmails:     config.BlacklistedMailfromEmails,
 		blacklistedRcpttoEmails:       config.BlacklistedRcpttoEmails,
 		notRegisteredEmails:           config.NotRegisteredEmails,
-		msqSizeLimit:                  config.MsqSizeLimit,
+		msgSizeLimit:                  config.MsgSizeLimit,
 		sessionTimeout:                config.SessionTimeout,
 	}
 }
@@ -109,7 +109,7 @@ type ConfigurationAttr struct {
 	BlacklistedMailfromEmails     []string
 	BlacklistedRcpttoEmails       []string
 	NotRegisteredEmails           []string
-	MsqSizeLimit                  int
+	MsgSizeLimit                  int
 	SessionTimeout                int
 }
 
@@ -197,11 +197,11 @@ func (config *ConfigurationAttr) assignHandlerDataDefaultValues() {
 
 // Assigns handlerMessage defaults
 func (config *ConfigurationAttr) assignHandlerMessageDefaultValues() {
-	if config.MsqSizeLimit == 0 {
-		config.MsqSizeLimit = defaultMessageSizeLimit
+	if config.MsgSizeLimit == 0 {
+		config.MsgSizeLimit = defaultMessageSizeLimit
 	}
 	if config.MsgMsgSizeIsTooBig == emptyString {
-		config.MsgMsgSizeIsTooBig = fmt.Sprintf(defaultMsgSizeIsTooBigMsg+" %d bytes", config.MsqSizeLimit)
+		config.MsgMsgSizeIsTooBig = fmt.Sprintf(defaultMsgSizeIsTooBigMsg+" %d bytes", config.MsgSizeLimit)
 	}
 	if config.MsgMsgReceived == emptyString {
 		config.MsgMsgReceived = defaultReceivedMsg
