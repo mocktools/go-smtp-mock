@@ -35,6 +35,7 @@ type configuration struct {
 	notRegisteredEmails           []string
 	msgSizeLimit                  int
 	sessionTimeout                int
+	shutdownTimeout               int
 
 	// TODO: add ability to send 221 response before end of session for case when fail fast scenario enabled
 }
@@ -75,6 +76,7 @@ func newConfiguration(config ConfigurationAttr) *configuration {
 		notRegisteredEmails:           config.NotRegisteredEmails,
 		msgSizeLimit:                  config.MsgSizeLimit,
 		sessionTimeout:                config.SessionTimeout,
+		shutdownTimeout:               config.ShutdownTimeout,
 	}
 }
 
@@ -111,6 +113,7 @@ type ConfigurationAttr struct {
 	NotRegisteredEmails           []string
 	MsgSizeLimit                  int
 	SessionTimeout                int
+	ShutdownTimeout               int
 }
 
 // ConfigurationAttr methods
@@ -131,6 +134,9 @@ func (config *ConfigurationAttr) assignServerDefaultValues() {
 	}
 	if config.SessionTimeout == 0 {
 		config.SessionTimeout = defaultSessionTimeout
+	}
+	if config.ShutdownTimeout == 0 {
+		config.ShutdownTimeout = defaultShutdownTimeout
 	}
 }
 

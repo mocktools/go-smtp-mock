@@ -6,6 +6,7 @@ import (
 	"net"
 	"strings"
 	"sync"
+	"time"
 )
 
 // WaitGroup interface
@@ -25,6 +26,7 @@ type Server struct {
 	quit          chan interface{}
 	isStarted     bool
 	PortNumber    int
+	quitTimeout   chan interface{}
 }
 
 // SMTP mock server builder, creates new server
@@ -57,7 +59,8 @@ func (server *Server) Start() (err error) {
 	}
 
 	portNumber = listener.Addr().(*net.TCPAddr).Port
-	server.listener, server.isStarted, server.quit, server.PortNumber = listener, true, make(chan interface{}), portNumber
+	server.listener, server.isStarted, server.PortNumber = listener, true, portNumber
+	server.quit, server.quitTimeout = make(chan interface{}), make(chan interface{})
 	logger.infoActivity(fmt.Sprintf("%s: %d", serverStartMsg, portNumber))
 
 	server.addToWaitGroup()
@@ -85,14 +88,27 @@ func (server *Server) Start() (err error) {
 	return err
 }
 
-// Stop shutdowns server gracefully. Returns error for case when server is not active
+// Stop shutdowns server gracefully or force by timeout.
+// Returns error for case when server is not active
 func (server *Server) Stop() (err error) {
 	if server.isStarted {
 		close(server.quit)
 		server.listener.Close()
-		server.wg.Wait()
-		server.isStarted = false
-		server.logger.infoActivity(serverStopMsg)
+
+		go func() {
+			server.wg.Wait()
+			server.quitTimeout <- true
+			server.isStarted = false
+			server.logger.infoActivity(serverStopMsg)
+		}()
+
+		select {
+		case <-server.quitTimeout:
+		case <-time.After(time.Duration(server.configuration.shutdownTimeout) * time.Second):
+			server.isStarted = false
+			server.logger.infoActivity(serverForceStopMsg)
+		}
+
 		return
 	}
 

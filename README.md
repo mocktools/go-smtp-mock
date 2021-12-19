@@ -38,7 +38,7 @@
 - Ability to override previous SMTP commands
 - Fail fast scenario (ability to close client session for case when command was inconsistent or failed)
 - Mock-server activity logger
-- Ability to do graceful shutdown of SMTP mock server
+- Ability to do graceful/force shutdown of SMTP mock server
 - No authentication support
 - Zero runtime dependencies
 - Simple and intuitive DSL
@@ -101,6 +101,9 @@ smtpmock.ConfigurationAttr{
 
   // Ability to specify session timeout. It's equal to 30 seconds by default
   SessionTimeout:                42,
+
+  // Ability to specify graceful shutdown timeout. It's equal to 1 second by default
+  ShutdownTimeout:               5,
 
 
   // Customizing SMTP command handlers behaviour
@@ -280,6 +283,7 @@ You can use `smtpmock` as binary. Just compile or download binary from latest re
 | `-port` - server port number. If not specified it will be assigned dynamically | `-port=2525` |
 | `-log` - enables log server activity. Disabled by default | `-log` |
 | `-sessionTimeout` - session timeout in seconds. It's equal to 30 seconds by default | `-sessionTimeout=60` |
+| `-shutdownTimeout` - graceful shutdown timeout in seconds. It's equal to 1 second by default | `-shutdownTimeout=5` |
 | `-failFast` - enables fail fast scenario. Disabled by default | `-failFast` |
 | `-blacklistedHeloDomains` - blacklisted `HELO` domains, separated by commas | `-blacklistedHeloDomains="example1.com,example2.com"` |
 | `-blacklistedMailfromEmails` - blacklisted `MAIL FROM` emails, separated by commas | `-blacklistedMailfromEmails="a@example1.com,b@example2.com"` |

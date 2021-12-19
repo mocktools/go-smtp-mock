@@ -62,6 +62,7 @@ func configurationAttrFromCommandLine(args []string, options ...flag.ErrorHandli
 		port                          = flags.Int("port", 0, "Server port number. If not specified it will be assigned dynamically")
 		log                           = flags.Bool("log", false, "Enables log server activity. Disabled by default")
 		sessionTimeout                = flags.Int("sessionTimeout", 0, "Session timeout in seconds. It's equal to 30 seconds by default")
+		shutdownTimeout               = flags.Int("shutdownTimeout", 0, "Graceful shutdown timeout in seconds. It's equal to 1 second by default")
 		failFast                      = flags.Bool("failFast", false, "Enables fail fast scenario. Disabled by default")
 		blacklistedHeloDomains        = flags.String("blacklistedHeloDomains", "", "Blacklisted HELO domains, separated by commas")
 		blacklistedMailfromEmails     = flags.String("blacklistedMailfromEmails", "", "Blacklisted MAIL FROM emails, separated by commas")
@@ -99,6 +100,7 @@ func configurationAttrFromCommandLine(args []string, options ...flag.ErrorHandli
 		LogToStdout:                   *log,
 		LogServerActivity:             *log,
 		SessionTimeout:                *sessionTimeout,
+		ShutdownTimeout:               *shutdownTimeout,
 		IsCmdFailFast:                 *failFast,
 		BlacklistedHeloDomains:        toSlice(*blacklistedHeloDomains),
 		BlacklistedMailfromEmails:     toSlice(*blacklistedMailfromEmails),

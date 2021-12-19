@@ -205,6 +205,7 @@ func TestServerStart(t *testing.T) {
 		_ = runMinimalSuccessfulSMTPSession(configuration.hostAddress, server.PortNumber)
 		assert.NotEmpty(t, server.messages)
 		assert.NotNil(t, server.quit)
+		assert.NotNil(t, server.quitTimeout)
 		assert.True(t, server.isStarted)
 		assert.Greater(t, server.PortNumber, 0)
 
@@ -220,6 +221,7 @@ func TestServerStart(t *testing.T) {
 		_ = runMinimalSuccessfulSMTPSession(configuration.hostAddress, portNumber)
 		assert.NotEmpty(t, server.messages)
 		assert.NotNil(t, server.quit)
+		assert.NotNil(t, server.quitTimeout)
 		assert.True(t, server.isStarted)
 		assert.Equal(t, portNumber, server.PortNumber)
 
@@ -250,12 +252,40 @@ func TestServerStart(t *testing.T) {
 }
 
 func TestServerStop(t *testing.T) {
-	t.Run("when server active stops current server", func(t *testing.T) {
+	t.Run("when server active stops current server, graceful shutdown case", func(t *testing.T) {
 		logger, listener, waitGroup, quitChannel := new(loggerMock), new(listenerMock), new(waitGroupMock), make(chan interface{})
-		server := &Server{logger: logger, listener: listener, wg: waitGroup, quit: quitChannel, isStarted: true}
+		server := &Server{
+			configuration: createConfiguration(),
+			logger:        logger,
+			listener:      listener,
+			wg:            waitGroup,
+			quit:          quitChannel,
+			isStarted:     true,
+			quitTimeout:   make(chan interface{}),
+		}
 		listener.On("Close").Once().Return(nil)
 		waitGroup.On("Wait").Once().Return(nil)
 		logger.On("infoActivity", serverStopMsg).Once().Return(nil)
+
+		assert.NoError(t, server.Stop())
+		assert.False(t, server.isStarted)
+		_, isChannelOpened := <-server.quit
+		assert.False(t, isChannelOpened)
+	})
+
+	t.Run("when server active stops current server, force shutdown case", func(t *testing.T) {
+		logger, listener, waitGroup, quitChannel := new(loggerMock), new(listenerMock), new(waitGroupMock), make(chan interface{})
+		server := &Server{
+			configuration: createConfiguration(),
+			logger:        logger,
+			listener:      listener,
+			wg:            waitGroup,
+			quit:          quitChannel,
+			isStarted:     true,
+		}
+		listener.On("Close").Once().Return(nil)
+		waitGroup.On("Wait").Once().Return(nil)
+		logger.On("infoActivity", serverForceStopMsg).Once().Return(nil)
 
 		assert.NoError(t, server.Stop())
 		assert.False(t, server.isStarted)
