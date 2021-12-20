@@ -2,6 +2,38 @@
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/), and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.4.0] - 2021-12-20
+
+### Added
+
+- Implemented ability to do force stop by timeout
+
+### Updated
+
+- Updated `configuration`, tests
+- Updated `server`, tests
+- Updated `main`, tests
+- Updated consts, package documentation
+
+## [1.3.5] - 2021-12-16
+
+### Updated
+
+- Updated CircleCI config
+- Updated goreleaser config
+
+## [1.3.4] - 2021-12-16
+
+### Updated
+
+- Updated CircleCI config
+
+## [1.3.3] - 2021-12-16
+
+### Updated
+
+- Updated CircleCI config
+
 ## [1.3.2] - 2021-12-16
 
 ### Updated

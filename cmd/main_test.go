@@ -57,6 +57,7 @@ func TestConfigurationAttrFromCommandLine(t *testing.T) {
 		hostAddress := "0"
 		portNumber := 42
 		sessionTimeout := 12
+		shutdownTimeout := 5
 		blacklistedHeloDomains := "a.com,b.com"
 		blacklistedMailfromEmails := "a@a.com,b@b.com"
 		blacklistedRcpttoEmails := "c@a.com,d@b.com"
@@ -89,6 +90,7 @@ func TestConfigurationAttrFromCommandLine(t *testing.T) {
 				"-port=" + strconv.Itoa(portNumber),
 				"-log",
 				"-sessionTimeout=" + strconv.Itoa(sessionTimeout),
+				"-shutdownTimeout=" + strconv.Itoa(shutdownTimeout),
 				"-failFast",
 				"-blacklistedHeloDomains=" + blacklistedHeloDomains,
 				"-blacklistedMailfromEmails=" + blacklistedMailfromEmails,
@@ -123,6 +125,7 @@ func TestConfigurationAttrFromCommandLine(t *testing.T) {
 		assert.True(t, configAttr.LogToStdout)
 		assert.True(t, configAttr.LogServerActivity)
 		assert.Equal(t, sessionTimeout, configAttr.SessionTimeout)
+		assert.Equal(t, shutdownTimeout, configAttr.ShutdownTimeout)
 		assert.True(t, configAttr.IsCmdFailFast)
 		assert.Equal(t, toSlice(blacklistedHeloDomains), configAttr.BlacklistedHeloDomains)
 		assert.Equal(t, toSlice(blacklistedMailfromEmails), configAttr.BlacklistedMailfromEmails)

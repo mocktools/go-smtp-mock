@@ -38,12 +38,14 @@ const (
 	defaultHostAddress               = "0.0.0.0"
 	defaultMessageSizeLimit          = 10485760 // in bytes (10MB)
 	defaultSessionTimeout            = 30       // in seconds
+	defaultShutdownTimeout           = 1        // in seconds
 	serverStartMsg                   = "SMTP mock server started on port"
 	serverStartErrorMsg              = "unable to start SMTP mock server. Server must be inactive"
 	serverErrorMsg                   = "Failed to start SMTP mock server on port"
 	serverStopErrorMsg               = "unable to stop SMTP mock server. Server must be active"
 	serverNotAcceptNewConnectionsMsg = "SMTP mock server is in the shutdown mode and won't accept new connections"
 	serverStopMsg                    = "SMTP mock server was stopped successfully"
+	serverForceStopMsg               = "SMTP mock server was force stopped by timeout"
 
 	// Regex patterns
 	availableCmdsRegexPattern          = `(?i)helo|ehlo|mail from:|rcpt to:|data|quit`

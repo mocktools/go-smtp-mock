@@ -19,6 +19,7 @@ func TestNewConfiguration(t *testing.T) {
 		assert.Equal(t, defaultInvalidCmdMsg, buildedConfiguration.msgInvalidCmd)
 		assert.Equal(t, defaultQuitMsg, buildedConfiguration.msgQuitCmd)
 		assert.Equal(t, defaultSessionTimeout, buildedConfiguration.sessionTimeout)
+		assert.Equal(t, defaultShutdownTimeout, buildedConfiguration.shutdownTimeout)
 
 		assert.Equal(t, defaultInvalidCmdHeloSequenceMsg, buildedConfiguration.msgInvalidCmdHeloSequence)
 		assert.Equal(t, defaultInvalidCmdHeloArgMsg, buildedConfiguration.msgInvalidCmdHeloArg)
@@ -82,6 +83,7 @@ func TestNewConfiguration(t *testing.T) {
 			BlacklistedRcpttoEmails:       []string{},
 			MsgSizeLimit:                  42,
 			SessionTimeout:                120,
+			ShutdownTimeout:               2,
 		}
 		buildedConfiguration := newConfiguration(configAttr)
 
@@ -94,6 +96,7 @@ func TestNewConfiguration(t *testing.T) {
 		assert.Equal(t, configAttr.MsgInvalidCmd, buildedConfiguration.msgInvalidCmd)
 		assert.Equal(t, configAttr.MsgQuitCmd, buildedConfiguration.msgQuitCmd)
 		assert.Equal(t, configAttr.SessionTimeout, buildedConfiguration.sessionTimeout)
+		assert.Equal(t, configAttr.ShutdownTimeout, buildedConfiguration.shutdownTimeout)
 
 		assert.Equal(t, configAttr.MsgInvalidCmdHeloSequence, buildedConfiguration.msgInvalidCmdHeloSequence)
 		assert.Equal(t, configAttr.MsgInvalidCmdHeloArg, buildedConfiguration.msgInvalidCmdHeloArg)
@@ -135,6 +138,7 @@ func TestConfigurationAttrAssignDefaultValues(t *testing.T) {
 		assert.Equal(t, defaultInvalidCmdMsg, configurationAttr.MsgInvalidCmd)
 		assert.Equal(t, defaultQuitMsg, configurationAttr.MsgQuitCmd)
 		assert.Equal(t, defaultSessionTimeout, configurationAttr.SessionTimeout)
+		assert.Equal(t, defaultShutdownTimeout, configurationAttr.ShutdownTimeout)
 
 		assert.Equal(t, defaultInvalidCmdHeloSequenceMsg, configurationAttr.MsgInvalidCmdHeloSequence)
 		assert.Equal(t, defaultInvalidCmdHeloArgMsg, configurationAttr.MsgInvalidCmdHeloArg)
