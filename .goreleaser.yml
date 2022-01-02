@@ -14,7 +14,7 @@ archives:
   - id: smtpmock-archive
     builds:
       - smtpmock-build
-    name_template: "smtpmock_{{ .Version }}_{{ .Os }}_{{ .Arch }}"
+    name_template: "smtpmock_{{ .Os }}_{{ .Arch }}"
     replacements:
       darwin: Darwin
       linux: Linux
