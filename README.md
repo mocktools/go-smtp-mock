@@ -267,9 +267,10 @@ INFO: 2021/11/30 22:07:30.555808 SMTP mock server was stopped successfully
 
 ### Outside of Golang ecosystem
 
-You can use `smtpmock` as binary. Just compile or download binary from latest release. For start server just run command with needed arguments. In example below we have started the server, interact with it and shutdowns it by Ctrl+C:
+You can use `smtpmock` as binary. Just download the pre-compiled binary from the [releases page](https://github.com/mocktools/go-smtp-mock/releases) and copy them to the desired location. For start server run command with needed arguments. You can use our bash script for automation this process like in the example below:
 
 ```bash
+curl -sL https://raw.githubusercontent.com/mocktools/go-smtp-mock/master/script/download.sh | bash
 ./smtpmock -port=2525 -log
 ```
 
