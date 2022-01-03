@@ -2,8 +2,9 @@
 set -e
 
 RELEASES_URL="https://github.com/mocktools/go-smtp-mock/releases"
+BINARY_NAME="smtpmock"
 ARCH_TYPE=".tar.gz"
-TAR_FILE="smtpmock$ARCH_TYPE"
+TAR_FILE="$BINARY_NAME$ARCH_TYPE"
 
 latest_release() {
   curl -sL -o /dev/null -w %{url_effective} "$RELEASES_URL/latest" | rev | cut -f1 -d'/'| rev
@@ -24,7 +25,7 @@ download() {
 }
 
 extract() {
-  tar -xf "$TAR_FILE" -C "."
+  tar -zxf "$TAR_FILE" "$BINARY_NAME"
   remove_tmp_download
 }
 
