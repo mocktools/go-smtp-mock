@@ -229,7 +229,7 @@ func main() {
 
   // Server's port will be assigned dynamically after server.Start()
   // for case when portNumber wasn't specified
-  hostAddress, portNumber =: "127.0.0.1", server.PortNumber
+  hostAddress, portNumber := "127.0.0.1", server.PortNumber
 
   // Possible SMTP-client stuff for iteration with mock server
   address := fmt.Sprintf("%s:%d", hostAddress, portNumber)
@@ -314,7 +314,7 @@ curl -sL https://raw.githubusercontent.com/mocktools/go-smtp-mock/master/script/
 
 ## Contributing
 
-Bug reports and pull requests are welcome on GitHub at <https://github.com/mocktools/go-smtp-mock>. This project is intended to be a safe, welcoming space for collaboration, and contributors are expected to adhere to the [Contributor Covenant](http://contributor-covenant.org) code of conduct. Please check the [open tikets](https://github.com/mocktools/go-smtp-mock/issues). Be shure to follow Contributor Code of Conduct below and our [Contributing Guidelines](CONTRIBUTING.md).
+Bug reports and pull requests are welcome on GitHub at <https://github.com/mocktools/go-smtp-mock>. This project is intended to be a safe, welcoming space for collaboration, and contributors are expected to adhere to the [Contributor Covenant](http://contributor-covenant.org) code of conduct. Please check the [open tickets](https://github.com/mocktools/go-smtp-mock/issues). Be sure to follow Contributor Code of Conduct below and our [Contributing Guidelines](CONTRIBUTING.md).
 
 ## License
 
