@@ -2,6 +2,8 @@ package main
 
 import (
 	"flag"
+	"fmt"
+	"io"
 	"log"
 	"os"
 	"os/signal"
@@ -9,6 +11,7 @@ import (
 	"syscall"
 
 	smtpmock "github.com/mocktools/go-smtp-mock"
+	version "github.com/mocktools/go-smtp-mock/cmd/version"
 )
 
 var signals, logFatalf = make(chan os.Signal, 1), log.Fatalf
@@ -27,9 +30,14 @@ func run(args []string, options ...flag.ErrorHandling) error {
 		failureScenario = options[0]
 	}
 
-	configAttr, err := configurationAttrFromCommandLine(args, failureScenario)
+	ver, configAttr, err := attrFromCommandLine(args, failureScenario)
 	if err != nil {
 		return err
+	}
+
+	if ver {
+		printVersionData(os.Stdout)
+		return nil
 	}
 
 	server := smtpmock.New(*configAttr)
@@ -49,8 +57,19 @@ func toSlice(str string) []string {
 	return strings.Split(str, ",")
 }
 
+// Prints to stdout current smtpmock version data
+func printVersionData(writer io.Writer) {
+	for key, value := range map[string]string{
+		"smtpmock": version.Version,
+		"commit":   version.GitCommit,
+		"built at": version.BuildTime,
+	} {
+		fmt.Fprintf(writer, "%s: %s\n", key, value)
+	}
+}
+
 // Creates pointer to ConfigurationAttr based on passed command line arguments
-func configurationAttrFromCommandLine(args []string, options ...flag.ErrorHandling) (*smtpmock.ConfigurationAttr, error) {
+func attrFromCommandLine(args []string, options ...flag.ErrorHandling) (bool, *smtpmock.ConfigurationAttr, error) {
 	failureScenario := flag.ExitOnError
 	if len(options) > 0 {
 		failureScenario = options[0]
@@ -58,6 +77,7 @@ func configurationAttrFromCommandLine(args []string, options ...flag.ErrorHandli
 
 	flags := flag.NewFlagSet(args[0], failureScenario)
 	var (
+		ver                           = flags.Bool("v", false, "Prints current smtpmock version")
 		host                          = flags.String("host", "", "Host address where smtpmock will run. It's equal to 127.0.0.1 by default")
 		port                          = flags.Int("port", 0, "Server port number. If not specified it will be assigned dynamically")
 		log                           = flags.Bool("log", false, "Enables log server activity. Disabled by default")
@@ -91,10 +111,10 @@ func configurationAttrFromCommandLine(args []string, options ...flag.ErrorHandli
 		msgQuitCmd                    = flags.String("msgQuitCmd", "", "Custom quit command message")
 	)
 	if err := flags.Parse(args[1:]); err != nil {
-		return nil, err
+		return *ver, nil, err
 	}
 
-	return &smtpmock.ConfigurationAttr{
+	return *ver, &smtpmock.ConfigurationAttr{
 		HostAddress:                   *host,
 		PortNumber:                    *port,
 		LogToStdout:                   *log,

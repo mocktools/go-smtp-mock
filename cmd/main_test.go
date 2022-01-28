@@ -1,6 +1,7 @@
 package main
 
 import (
+	"bytes"
 	"errors"
 	"flag"
 	"log"
@@ -9,6 +10,7 @@ import (
 	"syscall"
 	"testing"
 
+	version "github.com/mocktools/go-smtp-mock/cmd/version"
 	"github.com/stretchr/testify/assert"
 )
 
@@ -31,18 +33,24 @@ func TestMain(t *testing.T) {
 }
 
 func TestRun(t *testing.T) {
+	path := "some-path-to-the-program"
+
 	t.Run("when command line argument error", func(t *testing.T) {
-		assert.Error(t, run([]string{"some-path-to-the-program", "-port=a"}, flag.ContinueOnError))
+		assert.Error(t, run([]string{path, "-port=a"}, flag.ContinueOnError))
 	})
 
 	t.Run("when server starting error", func(t *testing.T) {
-		assert.Error(t, run([]string{"some-path-to-the-program", "-host=a"}))
+		assert.Error(t, run([]string{path, "-host=a"}))
 	})
 
 	t.Run("when server was started successfully, terminate signal received", func(t *testing.T) {
 		signals <- syscall.SIGINT
 
-		assert.NoError(t, run([]string{"some-path-to-the-program"}))
+		assert.NoError(t, run([]string{path}))
+	})
+
+	t.Run("when version flag passed", func(t *testing.T) {
+		assert.NoError(t, run([]string{path, "-v"}))
 	})
 }
 
@@ -52,7 +60,19 @@ func TestToSlice(t *testing.T) {
 	})
 }
 
-func TestConfigurationAttrFromCommandLine(t *testing.T) {
+func TestPrintVersionData(t *testing.T) {
+	t.Run("", func(t *testing.T) {
+		bytesBuffer := new(bytes.Buffer)
+		printVersionData(bytesBuffer)
+		ver := "smtpmock: " + version.Version + "\n"
+		commit := "commit: " + version.GitCommit + "\n"
+		builtAt := "built at: " + version.BuildTime + "\n"
+		versionData := ver + commit + builtAt
+		assert.Equal(t, versionData, bytesBuffer.String())
+	})
+}
+
+func TestAttrFromCommandLine(t *testing.T) {
 	t.Run("when known flags found creates pointer to ConfigurationAttr based on passed command line arguments", func(t *testing.T) {
 		hostAddress := "0"
 		portNumber := 42
@@ -83,9 +103,10 @@ func TestConfigurationAttrFromCommandLine(t *testing.T) {
 		msgMsgSizeIsTooBig := "msgMsgSizeIsTooBig"
 		msgMsgReceived := "msgMsgReceived"
 		msgQuitCmd := "msgQuitCmd"
-		configAttr, err := configurationAttrFromCommandLine(
+		ver, configAttr, err := attrFromCommandLine(
 			[]string{
 				"some-path-to-the-program",
+				"-v",
 				"-host=" + hostAddress,
 				"-port=" + strconv.Itoa(portNumber),
 				"-log",
@@ -120,6 +141,7 @@ func TestConfigurationAttrFromCommandLine(t *testing.T) {
 			},
 		)
 
+		assert.True(t, ver)
 		assert.Equal(t, hostAddress, configAttr.HostAddress)
 		assert.Equal(t, portNumber, configAttr.PortNumber)
 		assert.True(t, configAttr.LogToStdout)
@@ -156,8 +178,9 @@ func TestConfigurationAttrFromCommandLine(t *testing.T) {
 	})
 
 	t.Run("when unknown flags found sends exit signal", func(t *testing.T) {
-		configAttr, err := configurationAttrFromCommandLine([]string{"some-path-to-the-program", "-notKnownFlag"}, flag.ContinueOnError)
+		ver, configAttr, err := attrFromCommandLine([]string{"some-path-to-the-program", "-notKnownFlag"}, flag.ContinueOnError)
 
+		assert.False(t, ver)
 		assert.Nil(t, configAttr)
 		assert.Error(t, err)
 	})

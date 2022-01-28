@@ -10,6 +10,11 @@ builds:
       - darwin
     goarch:
       - amd64
+    ldflags:
+      - -s -w
+      - -X github.com/mocktools/go-smtp-mock/cmd/version.Version={{.Version}}
+      - -X github.com/mocktools/go-smtp-mock/cmd/version.GitCommit={{.Commit}}
+      - -X github.com/mocktools/go-smtp-mock/cmd/version.BuildTime={{.Date}}
 archives:
   - id: smtpmock-archive
     builds:
