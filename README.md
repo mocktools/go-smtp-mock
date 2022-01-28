@@ -280,7 +280,8 @@ curl -sL https://raw.githubusercontent.com/mocktools/go-smtp-mock/master/script/
 
 | Flag description | Example of usage |
 | --- | --- |
-| `-host` - host address where smtpmock will run. It's equal to 127.0.0.1 by default | `-host=localhost` |
+| `-v` - prints current `smtpmock` build data (version, commit, datetime) | `-v` |
+| `-host` - host address where smtpmock will run. It's equal to `127.0.0.1` by default | `-host=localhost` |
 | `-port` - server port number. If not specified it will be assigned dynamically | `-port=2525` |
 | `-log` - enables log server activity. Disabled by default | `-log` |
 | `-sessionTimeout` - session timeout in seconds. It's equal to 30 seconds by default | `-sessionTimeout=60` |
@@ -290,7 +291,7 @@ curl -sL https://raw.githubusercontent.com/mocktools/go-smtp-mock/master/script/
 | `-blacklistedMailfromEmails` - blacklisted `MAIL FROM` emails, separated by commas | `-blacklistedMailfromEmails="a@example1.com,b@example2.com"` |
 | `-blacklistedRcpttoEmails` - blacklisted `RCPT TO` emails, separated by commas | `-blacklistedRcpttoEmails="a@example1.com,b@example2.com"` |
 | `-notRegisteredEmails` - not registered (non-existent) `RCPT TO` emails, separated by commas | `-notRegisteredEmails="a@example1.com,b@example2.com"` |
-| `-msgSizeLimit` - message body size limit in bytes. It's equal to 10485760 bytes | `-msgSizeLimit=42` |
+| `-msgSizeLimit` - message body size limit in bytes. It's equal to `10485760` bytes | `-msgSizeLimit=42` |
 | `-msgGreeting` - custom server greeting message | `-msgGreeting="Greeting message"` |
 | `-msgInvalidCmd` - custom invalid command message | `-msgInvalidCmd="Invalid command message"` |
 | `-msgInvalidCmdHeloSequence` - custom invalid command `HELO` sequence message | `-msgInvalidCmdHeloSequence="Invalid command HELO sequence message"` |

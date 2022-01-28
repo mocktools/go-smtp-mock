@@ -2,6 +2,18 @@
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/), and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.5.0] - 2022-01-28
+
+### Added
+
+- Added build data (version, commit, built at time) for compiled `smtpmock` binary
+- Added `-v` flag
+
+### Updated
+
+- Updated goreleaser config
+- Updated package documentation
+
 ## [1.4.2] - 2022-01-03
 
 ### Updated
