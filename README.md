@@ -21,8 +21,7 @@
     - [Configuring](#configuring)
     - [Manipulation with server](#manipulation-with-server)
   - [Inside of Ruby ecosystem](#inside-of-ruby-ecosystem)
-    - [Configuring](#configuring)
-    - [Manipulation with server](#manipulation-with-server)
+    - [Example of usage](#example-of-usage)
   - [Inside of any ecosystem](#inside-of-any-ecosystem)
     - [Configuring with command line arguments](#configuring-with-command-line-arguments)
     - [Other options](#other-options)
@@ -75,8 +74,7 @@ import "github.com/mocktools/go-smtp-mock"
   - [Configuring](#configuring)
   - [Manipulation with server](#manipulation-with-server)
 - [Inside of Ruby ecosystem](#inside-of-ruby-ecosystem)
-  - [Configuring](#configuring)
-  - [Manipulation with server](#manipulation-with-server)
+  - [Example of usage](#example-of-usage)
 - [Inside of any ecosystem](#inside-of-any-ecosystem)
   - [Configuring with command line arguments](#configuring-with-command-line-arguments)
   - [Other options](#other-options)
@@ -277,15 +275,7 @@ INFO: 2021/11/30 22:07:30.555808 SMTP mock server was stopped successfully
 
 In Ruby ecosystem `smtpmock` is available as [`smtp_mock`](https://github.com/mocktools/ruby-smtp-mock) gem. It's flexible Ruby wrapper over `smtpmock` binary.
 
-#### Configuring
-
-It comes with default settings out of the box. List of all [available server options](https://github.com/mocktools/ruby-smtp-mock#available-server-options). Configure only what you need, for example:
-
-```ruby
-configuration = { not_registered_emails: %w[user@olo.com user@molo.com] }
-```
-
-#### Manipulation with server
+#### Example of usage
 
 First, you should install `smtp_mock` gem and `smtpmock` as system dependency:
 
@@ -294,12 +284,14 @@ gem install smtp_mock
 bundle exec smtp_mock -i ~
 ```
 
-Now, you can create and interact with your `smtpmock` instance natively from Ruby ecosystem:
+Now, you can create and interact with your `smtpmock` instance natively from Ruby ecosystem. It comes with default settings out of the box. Configure only what you need, for example:
 
 ```ruby
 require 'smtp_mock'
 
-smtp_mock_server = SmtpMock.start_server(**configuration)
+# List of all available server options:
+# https://github.com/mocktools/ruby-smtp-mock#available-server-options
+smtp_mock_server = SmtpMock.start_server(not_registered_emails: %w[user@olo.com user@molo.com])
 
 # returns current smtp mock server port
 smtp_mock_server.port # => 55640
