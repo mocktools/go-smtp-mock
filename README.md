@@ -20,8 +20,12 @@
   - [Inside of Golang ecosystem](#inside-of-golang-ecosystem)
     - [Configuring](#configuring)
     - [Manipulation with server](#manipulation-with-server)
-  - [Outside of Golang ecosystem](#outside-of-golang-ecosystem)
+  - [Inside of Ruby ecosystem](#inside-of-ruby-ecosystem)
+    - [Configuring](#configuring)
+    - [Manipulation with server](#manipulation-with-server)
+  - [Inside of any ecosystem](#inside-of-any-ecosystem)
     - [Configuring with command line arguments](#configuring-with-command-line-arguments)
+    - [Other options](#other-options)
 - [Contributing](#contributing)
 - [License](#license)
 - [Code of Conduct](#code-of-conduct)
@@ -70,8 +74,12 @@ import "github.com/mocktools/go-smtp-mock"
 - [Inside of Golang ecosystem](#inside-of-golang-ecosystem)
   - [Configuring](#configuring)
   - [Manipulation with server](#manipulation-with-server)
-- [Outside of Golang ecosystem](#outside-of-golang-ecosystem)
+- [Inside of Ruby ecosystem](#inside-of-ruby-ecosystem)
+  - [Configuring](#configuring)
+  - [Manipulation with server](#manipulation-with-server)
+- [Inside of any ecosystem](#inside-of-any-ecosystem)
   - [Configuring with command line arguments](#configuring-with-command-line-arguments)
+  - [Other options](#other-options)
 
 ### Inside of Golang ecosystem
 
@@ -265,7 +273,42 @@ WARNING: 2021/11/30 22:07:30.555801 SMTP mock server is in the shutdown mode and
 INFO: 2021/11/30 22:07:30.555808 SMTP mock server was stopped successfully
 ```
 
-### Outside of Golang ecosystem
+### Inside of Ruby ecosystem
+
+In Ruby ecosystem `smtpmock` is available as [`smtp_mock`](https://github.com/mocktools/ruby-smtp-mock) gem. It's flexible Ruby wrapper over `smtpmock` binary.
+
+#### Configuring
+
+It comes with default settings out of the box. List of all [available server options](https://github.com/mocktools/ruby-smtp-mock#available-server-options). Configure only what you need, for example:
+
+```ruby
+configuration = { not_registered_emails: %w[user@olo.com user@molo.com] }
+```
+
+#### Manipulation with server
+
+First, you should install `smtp_mock` gem and `smtpmock` as system dependency:
+
+```bash
+gem install smtp_mock
+bundle exec smtp_mock -i ~
+```
+
+Now, you can create and interact with your `smtpmock` instance natively from Ruby ecosystem:
+
+```ruby
+require 'smtp_mock'
+
+smtp_mock_server = SmtpMock.start_server(**configuration)
+
+# returns current smtp mock server port
+smtp_mock_server.port # => 55640
+
+# interface for force shutdown current smtp mock server
+smtp_mock_server.stop! # => true
+```
+
+### Inside of any ecosystem
 
 You can use `smtpmock` as binary. Just download the pre-compiled binary from the [releases page](https://github.com/mocktools/go-smtp-mock/releases) and copy them to the desired location. For start server run command with needed arguments. You can use our bash script for automation this process like in the example below:
 
@@ -280,7 +323,6 @@ curl -sL https://raw.githubusercontent.com/mocktools/go-smtp-mock/master/script/
 
 | Flag description | Example of usage |
 | --- | --- |
-| `-v` - prints current `smtpmock` build data (version, commit, datetime) | `-v` |
 | `-host` - host address where smtpmock will run. It's equal to `127.0.0.1` by default | `-host=localhost` |
 | `-port` - server port number. If not specified it will be assigned dynamically | `-port=2525` |
 | `-log` - enables log server activity. Disabled by default | `-log` |
@@ -312,6 +354,14 @@ curl -sL https://raw.githubusercontent.com/mocktools/go-smtp-mock/master/script/
 | `-msgMsgSizeIsTooBig` - custom size is too big message | `-msgMsgSizeIsTooBig="Message size is too big"` |
 | `-msgMsgReceived` - custom received message body message | `-msgMsgReceived="Message has been received"` |
 | `-msgQuitCmd` - custom quit command message | `-msgQuitCmd="Quit command message"` |
+
+#### Other options
+
+Available not configuration `smtpmock` options:
+
+| Flag description | Example of usage |
+| --- | --- |
+| `-v` - Just prints current `smtpmock` binary build data (version, commit, datetime). Doesn't run the server. | `-v` |
 
 ## Contributing
 

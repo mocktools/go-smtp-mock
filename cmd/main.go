@@ -59,12 +59,12 @@ func toSlice(str string) []string {
 
 // Prints to stdout current smtpmock version data
 func printVersionData(writer io.Writer) {
-	for key, value := range map[string]string{
-		"smtpmock": version.Version,
-		"commit":   version.GitCommit,
-		"built at": version.BuildTime,
+	for _, item := range [3]string{
+		"smtpmock: " + version.Version,
+		"commit: " + version.GitCommit,
+		"built at: " + version.BuildTime,
 	} {
-		fmt.Fprintf(writer, "%s: %s\n", key, value)
+		fmt.Fprintln(writer, item)
 	}
 }
 
