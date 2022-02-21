@@ -43,8 +43,20 @@ func TestRun(t *testing.T) {
 		assert.Error(t, run([]string{path, "-host=a"}))
 	})
 
-	t.Run("when server was started successfully, terminate signal received", func(t *testing.T) {
+	t.Run("when server was started successfully, interrupt signal (exit 2) received", func(t *testing.T) {
 		signals <- syscall.SIGINT
+
+		assert.NoError(t, run([]string{path}))
+	})
+
+	t.Run("when server was started successfully, quit signal (exit 3) received", func(t *testing.T) {
+		signals <- syscall.SIGQUIT
+
+		assert.NoError(t, run([]string{path}))
+	})
+
+	t.Run("when server was started successfully, terminated signal (exit 15) received", func(t *testing.T) {
+		signals <- syscall.SIGTERM
 
 		assert.NoError(t, run([]string{path}))
 	})
