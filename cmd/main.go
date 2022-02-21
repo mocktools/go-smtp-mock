@@ -41,7 +41,7 @@ func run(args []string, options ...flag.ErrorHandling) error {
 	}
 
 	server := smtpmock.New(*configAttr)
-	signal.Notify(signals, syscall.SIGINT, syscall.SIGTERM)
+	signal.Notify(signals, syscall.SIGINT, syscall.SIGQUIT, syscall.SIGTERM)
 
 	if err := server.Start(); err != nil {
 		return err

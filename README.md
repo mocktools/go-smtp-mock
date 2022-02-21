@@ -25,6 +25,7 @@
   - [Inside of any ecosystem](#inside-of-any-ecosystem)
     - [Configuring with command line arguments](#configuring-with-command-line-arguments)
     - [Other options](#other-options)
+    - [Stopping server](#stopping-server)
 - [Contributing](#contributing)
 - [License](#license)
 - [Code of Conduct](#code-of-conduct)
@@ -354,6 +355,10 @@ Available not configuration `smtpmock` options:
 | Flag description | Example of usage |
 | --- | --- |
 | `-v` - Just prints current `smtpmock` binary build data (version, commit, datetime). Doesn't run the server. | `-v` |
+
+#### Stopping server
+
+`smtpmock` accepts 3 shutdown signals: `SIGINT`, `SIGQUIT`, `SIGTERM`.
 
 ## Contributing
 
