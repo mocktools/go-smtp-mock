@@ -39,7 +39,7 @@ func TestHandlerMessageRun(t *testing.T) {
 		session.On("readBytes").Once().Return([]uint8(".\r\n"), nil)
 		session.On("discardBufin").Once().Return(nil)
 		session.On("addError", err).Once().Return(nil)
-		session.On("writeResponse", errorMessage).Once().Return(nil)
+		session.On("writeResponse", errorMessage, configuration.responseDelayMessage).Once().Return(nil)
 		handler.run()
 
 		assert.False(t, message.msg)
@@ -52,7 +52,7 @@ func TestHandlerMessageRun(t *testing.T) {
 		handler, msgContext := newHandlerMessage(session, message, configuration), "some message"
 		session.On("readBytes").Once().Return([]uint8("."+msgContext), nil)
 		session.On("readBytes").Once().Return([]uint8(".\r\n"), nil)
-		session.On("writeResponse", defaultReceivedMsg).Once().Return(nil)
+		session.On("writeResponse", defaultReceivedMsg, configuration.responseDelayMessage).Once().Return(nil)
 		handler.run()
 
 		assert.True(t, message.msg)
@@ -68,7 +68,7 @@ func TestHandlerMessageWriteResult(t *testing.T) {
 	t.Run("when successful request received", func(t *testing.T) {
 		message := new(message)
 		handler := newHandlerMessage(session, message, configuration)
-		session.On("writeResponse", response).Once().Return(nil)
+		session.On("writeResponse", response, configuration.responseDelayMessage).Once().Return(nil)
 
 		assert.True(t, handler.writeResult(true, request, response))
 		assert.True(t, message.msg)
@@ -80,7 +80,7 @@ func TestHandlerMessageWriteResult(t *testing.T) {
 		message, err := new(message), errors.New(response)
 		handler := newHandlerMessage(session, message, configuration)
 		session.On("addError", err).Once().Return(nil)
-		session.On("writeResponse", response).Once().Return(nil)
+		session.On("writeResponse", response, configuration.responseDelayMessage).Once().Return(nil)
 
 		assert.True(t, handler.writeResult(false, request, response))
 		assert.False(t, message.msg)

@@ -64,7 +64,7 @@ func (handler *handlerData) writeResult(isSuccessful bool, request, response str
 	}
 
 	message.dataRequest, message.dataResponse, message.data = request, response, isSuccessful
-	session.writeResponse(response)
+	session.writeResponse(response, handler.configuration.responseDelayData)
 	return true
 }
 

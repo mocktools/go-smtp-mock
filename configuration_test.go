@@ -48,6 +48,13 @@ func TestNewConfiguration(t *testing.T) {
 		assert.Empty(t, buildedConfiguration.blacklistedMailfromEmails)
 		assert.Empty(t, buildedConfiguration.blacklistedRcpttoEmails)
 		assert.Empty(t, buildedConfiguration.notRegisteredEmails)
+
+		assert.Equal(t, defaultSessionResponseDelay, buildedConfiguration.responseDelayHelo)
+		assert.Equal(t, defaultSessionResponseDelay, buildedConfiguration.responseDelayMailfrom)
+		assert.Equal(t, defaultSessionResponseDelay, buildedConfiguration.responseDelayRcptto)
+		assert.Equal(t, defaultSessionResponseDelay, buildedConfiguration.responseDelayData)
+		assert.Equal(t, defaultSessionResponseDelay, buildedConfiguration.responseDelayMessage)
+		assert.Equal(t, defaultSessionResponseDelay, buildedConfiguration.responseDelayQuit)
 	})
 
 	t.Run("creates new configuration with custom settings", func(t *testing.T) {
@@ -81,6 +88,12 @@ func TestNewConfiguration(t *testing.T) {
 			BlacklistedMailfromEmails:     []string{},
 			NotRegisteredEmails:           []string{},
 			BlacklistedRcpttoEmails:       []string{},
+			ResponseDelayHelo:             2,
+			ResponseDelayMailfrom:         2,
+			ResponseDelayRcptto:           2,
+			ResponseDelayData:             2,
+			ResponseDelayMessage:          2,
+			ResponseDelayQuit:             2,
 			MsgSizeLimit:                  42,
 			SessionTimeout:                120,
 			ShutdownTimeout:               2,
@@ -125,6 +138,13 @@ func TestNewConfiguration(t *testing.T) {
 		assert.Equal(t, configAttr.BlacklistedMailfromEmails, buildedConfiguration.blacklistedMailfromEmails)
 		assert.Equal(t, configAttr.BlacklistedRcpttoEmails, buildedConfiguration.blacklistedRcpttoEmails)
 		assert.Equal(t, configAttr.NotRegisteredEmails, buildedConfiguration.notRegisteredEmails)
+
+		assert.Equal(t, configAttr.ResponseDelayHelo, buildedConfiguration.responseDelayHelo)
+		assert.Equal(t, configAttr.ResponseDelayMailfrom, buildedConfiguration.responseDelayMailfrom)
+		assert.Equal(t, configAttr.ResponseDelayRcptto, buildedConfiguration.responseDelayRcptto)
+		assert.Equal(t, configAttr.ResponseDelayData, buildedConfiguration.responseDelayData)
+		assert.Equal(t, configAttr.ResponseDelayMessage, buildedConfiguration.responseDelayMessage)
+		assert.Equal(t, configAttr.ResponseDelayQuit, buildedConfiguration.responseDelayQuit)
 	})
 }
 

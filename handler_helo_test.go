@@ -25,7 +25,7 @@ func TestHandlerHeloRun(t *testing.T) {
 		receivedMessage := configuration.msgHeloReceived
 		handler := newHandlerHelo(session, message, configuration)
 		session.On("clearError").Once().Return(nil)
-		session.On("writeResponse", receivedMessage).Once().Return(nil)
+		session.On("writeResponse", receivedMessage, configuration.responseDelayHelo).Once().Return(nil)
 		handler.run(request)
 
 		assert.True(t, message.helo)
@@ -41,7 +41,7 @@ func TestHandlerHeloRun(t *testing.T) {
 		handler, err := newHandlerHelo(session, message, configuration), errors.New(errorMessage)
 		session.On("clearError").Once().Return(nil)
 		session.On("addError", err).Once().Return(nil)
-		session.On("writeResponse", errorMessage).Once().Return(nil)
+		session.On("writeResponse", errorMessage, configuration.responseDelayHelo).Once().Return(nil)
 		handler.run(request)
 
 		assert.False(t, message.helo)
@@ -60,7 +60,7 @@ func TestHandlerHeloRun(t *testing.T) {
 		session.On("clearError").Once().Return(nil)
 		session.On("readRequest").Once().Return(request, nil)
 		session.On("addError", err).Once().Return(nil)
-		session.On("writeResponse", errorMessage).Once().Return(nil)
+		session.On("writeResponse", errorMessage, configuration.responseDelayHelo).Once().Return(nil)
 		handler.run(request)
 
 		assert.False(t, message.helo)
@@ -93,7 +93,7 @@ func TestHandlerHeloWriteResult(t *testing.T) {
 	t.Run("when successful request received", func(t *testing.T) {
 		message := new(message)
 		handler := newHandlerHelo(session, message, configuration)
-		session.On("writeResponse", response).Once().Return(nil)
+		session.On("writeResponse", response, configuration.responseDelayHelo).Once().Return(nil)
 
 		assert.True(t, handler.writeResult(true, request, response))
 		assert.True(t, message.helo)
@@ -105,7 +105,7 @@ func TestHandlerHeloWriteResult(t *testing.T) {
 		message, err := new(message), errors.New(response)
 		handler := newHandlerHelo(session, message, configuration)
 		session.On("addError", err).Once().Return(nil)
-		session.On("writeResponse", response).Once().Return(nil)
+		session.On("writeResponse", response, configuration.responseDelayHelo).Once().Return(nil)
 
 		assert.True(t, handler.writeResult(false, request, response))
 		assert.False(t, message.helo)
@@ -121,7 +121,7 @@ func TestHandlerHeloIsInvalidCmdArg(t *testing.T) {
 		request, message, errorMessage := "HELO name.zone42", new(message), configuration.msgInvalidCmdHeloArg
 		handler, err := newHandlerHelo(session, message, configuration), errors.New(errorMessage)
 		session.On("addError", err).Once().Return(nil)
-		session.On("writeResponse", errorMessage).Once().Return(nil)
+		session.On("writeResponse", errorMessage, configuration.responseDelayHelo).Once().Return(nil)
 
 		assert.True(t, handler.isInvalidCmdArg(request))
 		assert.False(t, message.helo)
@@ -172,7 +172,7 @@ func TestHandlerHeloIsBlacklistedDomain(t *testing.T) {
 		errorMessage := configuration.msgHeloBlacklistedDomain
 		handler, err := newHandlerHelo(session, message, configuration), errors.New(errorMessage)
 		session.On("addError", err).Once().Return(nil)
-		session.On("writeResponse", errorMessage).Once().Return(nil)
+		session.On("writeResponse", errorMessage, configuration.responseDelayHelo).Once().Return(nil)
 
 		assert.True(t, handler.isBlacklistedDomain(request))
 		assert.False(t, message.helo)
@@ -199,7 +199,7 @@ func TestHandlerHeloIsInvalidRequest(t *testing.T) {
 		session, message, errorMessage := new(sessionMock), new(message), configuration.msgInvalidCmdHeloArg
 		handler, err := newHandlerHelo(session, message, configuration), errors.New(errorMessage)
 		session.On("addError", err).Once().Return(nil)
-		session.On("writeResponse", errorMessage).Once().Return(nil)
+		session.On("writeResponse", errorMessage, configuration.responseDelayHelo).Once().Return(nil)
 
 		assert.True(t, handler.isInvalidRequest(request))
 		assert.False(t, message.helo)
@@ -230,7 +230,7 @@ func TestHandlerHeloIsInvalidRequest(t *testing.T) {
 			configuration.blacklistedHeloDomains = heloDomains
 			handler, err := newHandlerHelo(session, message, configuration), errors.New(errorMessage)
 			session.On("addError", err).Once().Return(nil)
-			session.On("writeResponse", errorMessage).Once().Return(nil)
+			session.On("writeResponse", errorMessage, configuration.responseDelayHelo).Once().Return(nil)
 
 			assert.True(t, handler.isInvalidRequest(request))
 			assert.False(t, message.helo)

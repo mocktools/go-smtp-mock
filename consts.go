@@ -27,11 +27,12 @@ const (
 	logFlag         = log.Ldate | log.Lmicroseconds
 
 	// Session
-	sessionStartMsg      = "SMTP session started"
-	sessionRequestMsg    = "SMTP request: "
-	sessionResponseMsg   = "SMTP response: "
-	sessionEndMsg        = "SMTP session finished"
-	sessionBinaryDataMsg = "message binary data portion"
+	sessionStartMsg         = "SMTP session started"
+	sessionRequestMsg       = "SMTP request: "
+	sessionResponseMsg      = "SMTP response: "
+	sessionResponseDelayMsg = "SMTP response delay"
+	sessionEndMsg           = "SMTP session finished"
+	sessionBinaryDataMsg    = "message binary data portion"
 
 	// Server
 	networkProtocol                  = "tcp"
@@ -39,6 +40,7 @@ const (
 	defaultMessageSizeLimit          = 10485760 // in bytes (10MB)
 	defaultSessionTimeout            = 30       // in seconds
 	defaultShutdownTimeout           = 1        // in seconds
+	defaultSessionResponseDelay      = 0        // in seconds
 	serverStartMsg                   = "SMTP mock server started on port"
 	serverStartErrorMsg              = "unable to start SMTP mock server. Server must be inactive"
 	serverErrorMsg                   = "Failed to start SMTP mock server on port"

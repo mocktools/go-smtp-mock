@@ -4,6 +4,7 @@ import (
 	"bufio"
 	"bytes"
 	"errors"
+	"fmt"
 	"strings"
 	"testing"
 	"time"
@@ -14,6 +15,14 @@ import (
 func TestTimeNow(t *testing.T) {
 	t.Run("wrappes time.Now() in function", func(t *testing.T) {
 		assert.Equal(t, time.Now().Day(), timeNow().Day())
+	})
+}
+
+func TestTimeSleep(t *testing.T) {
+	t.Run("wrappes time.Sleep() in function, returns delay", func(t *testing.T) {
+		delay := 0
+
+		assert.Equal(t, delay, timeSleep(delay))
 	})
 }
 
@@ -167,14 +176,43 @@ func TestSessionReadBytes(t *testing.T) {
 	})
 }
 
+func TestSessionResponseDelay(t *testing.T) {
+	t.Run("when default session response delay", func(t *testing.T) {
+		assert.Equal(t, defaultSessionResponseDelay, new(session).responseDelay(0))
+	})
+
+	t.Run("when custom session response delay", func(t *testing.T) {
+		timeSleep = func(delay int) int { return delay }
+		delay, logger := 42, new(loggerMock)
+		logger.On("infoActivity", fmt.Sprintf("%s: %d sec", sessionResponseDelayMsg, delay)).Once().Return(nil)
+		session := &session{logger: logger}
+
+		assert.Equal(t, delay, session.responseDelay(delay))
+	})
+}
+
 func TestSessionWriteResponse(t *testing.T) {
-	t.Run("writes server response to bufout without error", func(t *testing.T) {
+	t.Run("writes server response to bufout without response delay and error", func(t *testing.T) {
 		response := "some response"
 		binaryData := bytes.NewBufferString("")
 		bufout, logger := bufio.NewWriter(binaryData), new(loggerMock)
 		logger.On("infoActivity", sessionResponseMsg+response).Once().Return(nil)
 		session := &session{bufout: bufout, logger: logger}
-		session.writeResponse(response)
+		session.writeResponse(response, defaultSessionResponseDelay)
+
+		assert.Equal(t, response+"\r\n", binaryData.String())
+		assert.NoError(t, session.err)
+	})
+
+	t.Run("writes server response to bufout with response delay and without error", func(t *testing.T) {
+		timeSleep = func(delay int) int { return delay }
+		response, delay := "some response", 42
+		binaryData := bytes.NewBufferString("")
+		bufout, logger := bufio.NewWriter(binaryData), new(loggerMock)
+		logger.On("infoActivity", sessionResponseMsg+response).Once().Return(nil)
+		logger.On("infoActivity", fmt.Sprintf("%s: %d sec", sessionResponseDelayMsg, delay)).Once().Return(nil)
+		session := &session{bufout: bufout, logger: logger}
+		session.writeResponse(response, delay)
 
 		assert.Equal(t, response+"\r\n", binaryData.String())
 		assert.NoError(t, session.err)
@@ -188,7 +226,7 @@ func TestSessionWriteResponse(t *testing.T) {
 		logger.On("warning", errorMessage).Once().Return(nil)
 		logger.On("infoActivity", sessionResponseMsg+response).Once().Return(nil)
 		session := &session{bufout: bufout, logger: logger}
-		session.writeResponse(response)
+		session.writeResponse(response, defaultSessionResponseDelay)
 
 		assert.NoError(t, session.err)
 	})
