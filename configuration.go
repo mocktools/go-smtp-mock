@@ -33,6 +33,12 @@ type configuration struct {
 	blacklistedMailfromEmails     []string
 	blacklistedRcpttoEmails       []string
 	notRegisteredEmails           []string
+	responseDelayHelo             int
+	responseDelayMailfrom         int
+	responseDelayRcptto           int
+	responseDelayData             int
+	responseDelayMessage          int
+	responseDelayQuit             int
 	msgSizeLimit                  int
 	sessionTimeout                int
 	shutdownTimeout               int
@@ -74,6 +80,12 @@ func newConfiguration(config ConfigurationAttr) *configuration {
 		blacklistedMailfromEmails:     config.BlacklistedMailfromEmails,
 		blacklistedRcpttoEmails:       config.BlacklistedRcpttoEmails,
 		notRegisteredEmails:           config.NotRegisteredEmails,
+		responseDelayHelo:             config.ResponseDelayHelo,
+		responseDelayMailfrom:         config.ResponseDelayMailfrom,
+		responseDelayRcptto:           config.ResponseDelayRcptto,
+		responseDelayData:             config.ResponseDelayData,
+		responseDelayMessage:          config.ResponseDelayMessage,
+		responseDelayQuit:             config.ResponseDelayQuit,
 		msgSizeLimit:                  config.MsgSizeLimit,
 		sessionTimeout:                config.SessionTimeout,
 		shutdownTimeout:               config.ShutdownTimeout,
@@ -111,6 +123,12 @@ type ConfigurationAttr struct {
 	BlacklistedMailfromEmails     []string
 	BlacklistedRcpttoEmails       []string
 	NotRegisteredEmails           []string
+	ResponseDelayHelo             int
+	ResponseDelayMailfrom         int
+	ResponseDelayRcptto           int
+	ResponseDelayData             int
+	ResponseDelayMessage          int
+	ResponseDelayQuit             int
 	MsgSizeLimit                  int
 	SessionTimeout                int
 	ShutdownTimeout               int

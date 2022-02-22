@@ -133,9 +133,33 @@ smtpmock.ConfigurationAttr{
   // It's equal to empty []string
   NotRegisteredEmails:           []string{"nobody@olo.com", "non-existent@email.com"},
 
+  // Ability to specify HELO response delay in seconds. It runs immediately,
+  // equals to 0 seconds by default
+  ResponseDelayHelo:             2,
+
+  // Ability to specify MAIL FROM response delay in seconds. It runs immediately,
+  // equals to 0 seconds by default
+  ResponseDelayMailfrom:         2,
+
+  // Ability to specify RCPT TO response delay in seconds. It runs immediately,
+  // equals to 0 seconds by default
+  ResponseDelayRcptto:           2,
+
+  // Ability to specify DATA response delay in seconds. It runs immediately,
+  // equals to 0 seconds by default
+  ResponseDelayData:             2,
+
+  // Ability to specify message response delay in seconds. It runs immediately,
+  // equals to 0 seconds by default
+  ResponseDelayMessage:          2,
+
+  // Ability to specify QUIT response delay in seconds. It runs immediately,
+  // equals to 0 seconds by default
+  ResponseDelayQuit:             2,
+
   // Ability to specify message body size limit. It's equal to 10485760 bytes (10MB) by default
   MsgSizeLimit:                  5,
-  
+
 
   // Customazing SMTP command handler messages context
   // ---------------------------------------------------------------------
@@ -326,6 +350,12 @@ curl -sL https://raw.githubusercontent.com/mocktools/go-smtp-mock/master/script/
 | `-blacklistedMailfromEmails` - blacklisted `MAIL FROM` emails, separated by commas | `-blacklistedMailfromEmails="a@example1.com,b@example2.com"` |
 | `-blacklistedRcpttoEmails` - blacklisted `RCPT TO` emails, separated by commas | `-blacklistedRcpttoEmails="a@example1.com,b@example2.com"` |
 | `-notRegisteredEmails` - not registered (non-existent) `RCPT TO` emails, separated by commas | `-notRegisteredEmails="a@example1.com,b@example2.com"` |
+| `-responseDelayHelo` - `HELO` response delay in seconds. It's equal to 0 seconds by default | `-responseDelayHelo=2` |
+| `-responseDelayMailfrom` - `MAIL FROM` response delay in seconds. It's equal to 0 seconds by default | `-responseDelayMailfrom=2` |
+| `-responseDelayRcptto` - `RCPT TO` response delay in seconds. It's equal to 0 seconds by default | `-responseDelayRcptto=2` |
+| `-responseDelayData` - `DATA` response delay in seconds. It's equal to 0 seconds by default | `-responseDelayData=2` |
+| `-responseDelayMessage` - Message response delay in seconds. It's equal to 0 seconds by default | `-responseDelayMessage=2` |
+| `-responseDelayQuit` - `QUIT` response delay in seconds. It's equal to 0 seconds by default | `-responseDelayQuit=2` |
 | `-msgSizeLimit` - message body size limit in bytes. It's equal to `10485760` bytes | `-msgSizeLimit=42` |
 | `-msgGreeting` - custom server greeting message | `-msgGreeting="Greeting message"` |
 | `-msgInvalidCmd` - custom invalid command message | `-msgInvalidCmd="Invalid command message"` |

@@ -40,7 +40,7 @@ func (handler *handlerHelo) writeResult(isSuccessful bool, request, response str
 	}
 
 	message.heloRequest, message.heloResponse, message.helo = request, response, isSuccessful
-	session.writeResponse(response)
+	session.writeResponse(response, handler.configuration.responseDelayHelo)
 	return true
 }
 

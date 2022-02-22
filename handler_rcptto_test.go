@@ -26,7 +26,7 @@ func TestHandlerRcpttoRun(t *testing.T) {
 		message.helo, message.mailfrom = true, true
 		handler := newHandlerRcptto(session, message, configuration)
 		session.On("clearError").Once().Return(nil)
-		session.On("writeResponse", receivedMessage).Once().Return(nil)
+		session.On("writeResponse", receivedMessage, configuration.responseDelayRcptto).Once().Return(nil)
 		handler.run(request)
 
 		assert.True(t, message.rcptto)
@@ -42,7 +42,7 @@ func TestHandlerRcpttoRun(t *testing.T) {
 		handler, err := newHandlerRcptto(session, message, configuration), errors.New(errorMessage)
 		session.On("clearError").Once().Return(nil)
 		session.On("addError", err).Once().Return(nil)
-		session.On("writeResponse", errorMessage).Once().Return(nil)
+		session.On("writeResponse", errorMessage, configuration.responseDelayRcptto).Once().Return(nil)
 		handler.run(request)
 
 		assert.False(t, message.rcptto)
@@ -59,7 +59,7 @@ func TestHandlerRcpttoRun(t *testing.T) {
 		handler, err := newHandlerRcptto(session, message, configuration), errors.New(errorMessage)
 		session.On("clearError").Once().Return(nil)
 		session.On("addError", err).Once().Return(nil)
-		session.On("writeResponse", errorMessage).Once().Return(nil)
+		session.On("writeResponse", errorMessage, configuration.responseDelayRcptto).Once().Return(nil)
 		handler.run(request)
 
 		assert.False(t, message.rcptto)
@@ -78,7 +78,7 @@ func TestHandlerRcpttoRun(t *testing.T) {
 		handler, err := newHandlerRcptto(session, message, configuration), errors.New(errorMessage)
 		session.On("clearError").Once().Return(nil)
 		session.On("addError", err).Once().Return(nil)
-		session.On("writeResponse", errorMessage).Once().Return(nil)
+		session.On("writeResponse", errorMessage, configuration.responseDelayRcptto).Once().Return(nil)
 		handler.run(request)
 
 		assert.False(t, message.rcptto)
@@ -97,7 +97,7 @@ func TestHandlerRcpttoRun(t *testing.T) {
 		handler, err := newHandlerRcptto(session, message, configuration), errors.New(errorMessage)
 		session.On("clearError").Once().Return(nil)
 		session.On("addError", err).Once().Return(nil)
-		session.On("writeResponse", errorMessage).Once().Return(nil)
+		session.On("writeResponse", errorMessage, configuration.responseDelayRcptto).Once().Return(nil)
 		handler.run(request)
 
 		assert.False(t, message.rcptto)
@@ -138,7 +138,7 @@ func TestHandlerRcpttoWriteResult(t *testing.T) {
 	t.Run("when successful request received", func(t *testing.T) {
 		message := new(message)
 		handler := newHandlerRcptto(session, message, configuration)
-		session.On("writeResponse", response).Once().Return(nil)
+		session.On("writeResponse", response, configuration.responseDelayRcptto).Once().Return(nil)
 
 		assert.True(t, handler.writeResult(true, request, response))
 		assert.True(t, message.rcptto)
@@ -150,7 +150,7 @@ func TestHandlerRcpttoWriteResult(t *testing.T) {
 		message, err := new(message), errors.New(response)
 		handler := newHandlerRcptto(session, message, configuration)
 		session.On("addError", err).Once().Return(nil)
-		session.On("writeResponse", response).Once().Return(nil)
+		session.On("writeResponse", response, configuration.responseDelayRcptto).Once().Return(nil)
 
 		assert.True(t, handler.writeResult(false, request, response))
 		assert.False(t, message.rcptto)
@@ -166,7 +166,7 @@ func TestHandlerRcpttoIsInvalidCmdSequence(t *testing.T) {
 		message, errorMessage := new(message), configuration.msgInvalidCmdRcpttoSequence
 		handler, err := newHandlerRcptto(session, message, configuration), errors.New(errorMessage)
 		session.On("addError", err).Once().Return(nil)
-		session.On("writeResponse", errorMessage).Once().Return(nil)
+		session.On("writeResponse", errorMessage, configuration.responseDelayRcptto).Once().Return(nil)
 
 		assert.True(t, handler.isInvalidCmdSequence(request))
 		assert.False(t, message.rcptto)
@@ -179,7 +179,7 @@ func TestHandlerRcpttoIsInvalidCmdSequence(t *testing.T) {
 		message.helo = true
 		handler, err := newHandlerRcptto(session, message, configuration), errors.New(errorMessage)
 		session.On("addError", err).Once().Return(nil)
-		session.On("writeResponse", errorMessage).Once().Return(nil)
+		session.On("writeResponse", errorMessage, configuration.responseDelayRcptto).Once().Return(nil)
 
 		assert.True(t, handler.isInvalidCmdSequence(request))
 		assert.False(t, message.rcptto)
@@ -206,7 +206,7 @@ func TestHandlerRcpttoIsInvalidCmdArg(t *testing.T) {
 		request, message, errorMessage := "RCPT TO: email@invalid", new(message), configuration.msgInvalidCmdRcpttoArg
 		handler, err := newHandlerRcptto(session, message, configuration), errors.New(errorMessage)
 		session.On("addError", err).Once().Return(nil)
-		session.On("writeResponse", errorMessage).Once().Return(nil)
+		session.On("writeResponse", errorMessage, configuration.responseDelayRcptto).Once().Return(nil)
 
 		assert.True(t, handler.isInvalidCmdArg(request))
 		assert.False(t, message.rcptto)
@@ -287,7 +287,7 @@ func TestHandlerRcpttoIsBlacklistedEmail(t *testing.T) {
 		errorMessage := configuration.msgRcpttoBlacklistedEmail
 		handler, err := newHandlerRcptto(session, message, configuration), errors.New(errorMessage)
 		session.On("addError", err).Once().Return(nil)
-		session.On("writeResponse", errorMessage).Once().Return(nil)
+		session.On("writeResponse", errorMessage, configuration.responseDelayRcptto).Once().Return(nil)
 
 		assert.True(t, handler.isBlacklistedEmail(request))
 		assert.False(t, message.rcptto)
@@ -316,7 +316,7 @@ func TestHandlerRcpttoIsNotRegisteredEmail(t *testing.T) {
 		errorMessage := configuration.msgRcpttoNotRegisteredEmail
 		handler, err := newHandlerRcptto(session, message, configuration), errors.New(errorMessage)
 		session.On("addError", err).Once().Return(nil)
-		session.On("writeResponse", errorMessage).Once().Return(nil)
+		session.On("writeResponse", errorMessage, configuration.responseDelayRcptto).Once().Return(nil)
 
 		assert.True(t, handler.isNotRegisteredEmail(request))
 		assert.False(t, message.rcptto)
@@ -343,7 +343,7 @@ func TestHandlerRcpttoIsInvalidRequest(t *testing.T) {
 		session, message, errorMessage := new(sessionMock), new(message), configuration.msgInvalidCmdRcpttoSequence
 		handler, err := newHandlerRcptto(session, message, configuration), errors.New(errorMessage)
 		session.On("addError", err).Once().Return(nil)
-		session.On("writeResponse", errorMessage).Once().Return(nil)
+		session.On("writeResponse", errorMessage, configuration.responseDelayRcptto).Once().Return(nil)
 
 		assert.True(t, handler.isInvalidRequest(request))
 		assert.False(t, message.rcptto)
@@ -357,7 +357,7 @@ func TestHandlerRcpttoIsInvalidRequest(t *testing.T) {
 		message.helo, message.mailfrom = true, true
 		handler, err := newHandlerRcptto(session, message, configuration), errors.New(errorMessage)
 		session.On("addError", err).Once().Return(nil)
-		session.On("writeResponse", errorMessage).Once().Return(nil)
+		session.On("writeResponse", errorMessage, configuration.responseDelayRcptto).Once().Return(nil)
 
 		assert.True(t, handler.isInvalidRequest(request))
 		assert.False(t, message.rcptto)
@@ -373,7 +373,7 @@ func TestHandlerRcpttoIsInvalidRequest(t *testing.T) {
 		message.helo, message.mailfrom = true, true
 		handler, err := newHandlerRcptto(session, message, configuration), errors.New(errorMessage)
 		session.On("addError", err).Once().Return(nil)
-		session.On("writeResponse", errorMessage).Once().Return(nil)
+		session.On("writeResponse", errorMessage, configuration.responseDelayRcptto).Once().Return(nil)
 
 		assert.True(t, handler.isInvalidRequest(request))
 		assert.False(t, message.rcptto)
@@ -389,7 +389,7 @@ func TestHandlerRcpttoIsInvalidRequest(t *testing.T) {
 		message.helo, message.mailfrom = true, true
 		handler, err := newHandlerRcptto(session, message, configuration), errors.New(errorMessage)
 		session.On("addError", err).Once().Return(nil)
-		session.On("writeResponse", errorMessage).Once().Return(nil)
+		session.On("writeResponse", errorMessage, configuration.responseDelayRcptto).Once().Return(nil)
 
 		assert.True(t, handler.isInvalidRequest(request))
 		assert.False(t, message.rcptto)

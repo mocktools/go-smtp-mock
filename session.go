@@ -2,6 +2,7 @@ package smtpmock
 
 import (
 	"bufio"
+	"fmt"
 	"net"
 	"strings"
 	"time"
@@ -10,11 +11,17 @@ import (
 // Returns time.Time with current time. Allows to stub time.Now()
 var timeNow = func() time.Time { return time.Now() }
 
+// Allows to stub time.Sleep()
+var timeSleep = func(delay int) int {
+	time.Sleep(time.Duration(delay) * time.Second)
+	return int(delay)
+}
+
 // SMTP client-server session interface
 type sessionInterface interface {
 	setTimeout(int)
 	readRequest() (string, error)
-	writeResponse(string)
+	writeResponse(string, int)
 	addError(error)
 	clearError()
 	discardBufin()
@@ -128,9 +135,21 @@ func (session *session) readBytes() ([]byte, error) {
 	return request, err
 }
 
+// Activates session response delay for case when delay > 0.
+// Otherwise skipes this feature
+func (session *session) responseDelay(delay int) int {
+	if delay == defaultSessionResponseDelay {
+		return delay
+	}
+
+	session.logger.infoActivity(fmt.Sprintf("%s: %d sec", sessionResponseDelayMsg, delay))
+	return timeSleep(delay)
+}
+
 // Writes server response to the client session. When error case happened triggers
 // logger with warning level
-func (session *session) writeResponse(response string) {
+func (session *session) writeResponse(response string, responseDelay int) {
+	session.responseDelay(responseDelay)
 	bufout := session.bufout
 	if _, err := bufout.WriteString(response + "\r\n"); err != nil {
 		session.logger.warning(err.Error())

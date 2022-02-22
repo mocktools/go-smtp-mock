@@ -84,45 +84,45 @@ func TestServerHandleSession(t *testing.T) {
 		session, configuration := &sessionMock{}, createConfiguration()
 		server := newServer(configuration)
 
-		session.On("writeResponse", configuration.msgGreeting).Once().Return(nil)
+		session.On("writeResponse", configuration.msgGreeting, defaultSessionResponseDelay).Once().Return(nil)
 
 		session.On("setTimeout", defaultSessionTimeout).Once().Return(nil)
 		session.On("readRequest").Once().Return("helo example.com", nil)
 		session.On("clearError").Once().Return(nil)
-		session.On("writeResponse", configuration.msgHeloReceived).Once().Return(nil)
+		session.On("writeResponse", configuration.msgHeloReceived, configuration.responseDelayHelo).Once().Return(nil)
 		session.On("isErrorFound").Once().Return(false)
 
 		session.On("setTimeout", defaultSessionTimeout).Once().Return(nil)
 		session.On("readRequest").Once().Return("ehlo example.com", nil)
 		session.On("clearError").Once().Return(nil)
-		session.On("writeResponse", configuration.msgHeloReceived).Once().Return(nil)
+		session.On("writeResponse", configuration.msgHeloReceived, configuration.responseDelayHelo).Once().Return(nil)
 		session.On("isErrorFound").Once().Return(false)
 
 		session.On("setTimeout", defaultSessionTimeout).Once().Return(nil)
 		session.On("readRequest").Once().Return("mail from: receiver@example.com", nil)
 		session.On("clearError").Once().Return(nil)
-		session.On("writeResponse", configuration.msgMailfromReceived).Once().Return(nil)
+		session.On("writeResponse", configuration.msgMailfromReceived, configuration.responseDelayMailfrom).Once().Return(nil)
 		session.On("isErrorFound").Once().Return(false)
 
 		session.On("setTimeout", defaultSessionTimeout).Once().Return(nil)
 		session.On("readRequest").Once().Return("rcpt to: sender@example.com", nil)
 		session.On("clearError").Once().Return(nil)
-		session.On("writeResponse", configuration.msgRcpttoReceived).Once().Return(nil)
+		session.On("writeResponse", configuration.msgRcpttoReceived, configuration.responseDelayRcptto).Once().Return(nil)
 		session.On("isErrorFound").Once().Return(false)
 
 		session.On("setTimeout", defaultSessionTimeout).Once().Return(nil)
 		session.On("readRequest").Once().Return("data", nil)
 		session.On("clearError").Once().Return(nil)
-		session.On("writeResponse", configuration.msgDataReceived).Once().Return(nil)
+		session.On("writeResponse", configuration.msgDataReceived, configuration.responseDelayData).Once().Return(nil)
 		session.On("isErrorFound").Once().Return(false)
 
 		session.On("readBytes").Once().Return([]uint8(".some message"), nil)
 		session.On("readBytes").Once().Return([]uint8(".\r\n"), nil)
-		session.On("writeResponse", configuration.msgMsgReceived).Once().Return(nil)
+		session.On("writeResponse", configuration.msgMsgReceived, configuration.responseDelayMessage).Once().Return(nil)
 
 		session.On("setTimeout", defaultSessionTimeout).Once().Return(nil)
 		session.On("readRequest").Once().Return("quit", nil)
-		session.On("writeResponse", configuration.msgQuitCmd).Once().Return(nil)
+		session.On("writeResponse", configuration.msgQuitCmd, configuration.responseDelayQuit).Once().Return(nil)
 		session.On("isErrorFound").Once().Return(false)
 
 		session.On("finish").Once().Return(nil)
@@ -134,15 +134,15 @@ func TestServerHandleSession(t *testing.T) {
 		session, configuration := &sessionMock{}, createConfiguration()
 		server := newServer(configuration)
 
-		session.On("writeResponse", configuration.msgGreeting).Once().Return(nil)
+		session.On("writeResponse", configuration.msgGreeting, defaultSessionResponseDelay).Once().Return(nil)
 
 		session.On("setTimeout", defaultSessionTimeout).Once().Return(nil)
 		session.On("readRequest").Once().Return("not implemented command", nil)
-		session.On("writeResponse", configuration.msgInvalidCmd).Once().Return(nil)
+		session.On("writeResponse", configuration.msgInvalidCmd, defaultSessionResponseDelay).Once().Return(nil)
 
 		session.On("setTimeout", defaultSessionTimeout).Once().Return(nil)
 		session.On("readRequest").Once().Return("quit", nil)
-		session.On("writeResponse", configuration.msgQuitCmd).Once().Return(nil)
+		session.On("writeResponse", configuration.msgQuitCmd, configuration.responseDelayQuit).Once().Return(nil)
 
 		session.On("finish").Once().Return(nil)
 
@@ -153,17 +153,17 @@ func TestServerHandleSession(t *testing.T) {
 		session, configuration := &sessionMock{}, newConfiguration(ConfigurationAttr{IsCmdFailFast: true})
 		server, errorMessage := newServer(configuration), configuration.msgInvalidCmdHeloArg
 
-		session.On("writeResponse", configuration.msgGreeting).Once().Return(nil)
+		session.On("writeResponse", configuration.msgGreeting, defaultSessionResponseDelay).Once().Return(nil)
 
 		session.On("setTimeout", defaultSessionTimeout).Once().Return(nil)
 		session.On("readRequest").Once().Return("not implemented command", nil)
-		session.On("writeResponse", configuration.msgInvalidCmd).Once().Return(nil)
+		session.On("writeResponse", configuration.msgInvalidCmd, defaultSessionResponseDelay).Once().Return(nil)
 
 		session.On("setTimeout", defaultSessionTimeout).Once().Return(nil)
 		session.On("readRequest").Once().Return("helo 42", nil)
 		session.On("clearError").Once().Return(nil)
 		session.On("addError", errors.New(errorMessage)).Once().Return(nil)
-		session.On("writeResponse", errorMessage).Once().Return(nil)
+		session.On("writeResponse", errorMessage, defaultSessionResponseDelay).Once().Return(nil)
 
 		session.On("isErrorFound").Once().Return(true)
 		session.On("finish").Once().Return(nil)
@@ -177,7 +177,7 @@ func TestServerHandleSession(t *testing.T) {
 		server.quit = make(chan interface{})
 		close(server.quit)
 
-		session.On("writeResponse", configuration.msgGreeting).Once().Return(nil)
+		session.On("writeResponse", configuration.msgGreeting, defaultSessionResponseDelay).Once().Return(nil)
 		session.On("finish").Once().Return(nil)
 
 		server.handleSession(session)
@@ -187,7 +187,7 @@ func TestServerHandleSession(t *testing.T) {
 		session, configuration := &sessionMock{}, newConfiguration(ConfigurationAttr{IsCmdFailFast: true})
 		server := newServer(configuration)
 
-		session.On("writeResponse", configuration.msgGreeting).Once().Return(nil)
+		session.On("writeResponse", configuration.msgGreeting, defaultSessionResponseDelay).Once().Return(nil)
 		session.On("setTimeout", defaultSessionTimeout).Once().Return(nil)
 		session.On("readRequest").Once().Return(emptyString, errors.New("some read request error"))
 		session.On("finish").Once().Return(nil)

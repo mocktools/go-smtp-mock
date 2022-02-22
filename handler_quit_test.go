@@ -22,7 +22,7 @@ func TestHandlerQuitRun(t *testing.T) {
 		request, session, message, configuration := "QUIT", new(sessionMock), new(message), createConfiguration()
 		receivedMessage := configuration.msgQuitCmd
 		handler := newHandlerQuit(session, message, configuration)
-		session.On("writeResponse", receivedMessage).Once().Return(nil)
+		session.On("writeResponse", receivedMessage, configuration.responseDelayQuit).Once().Return(nil)
 		handler.run(request)
 
 		assert.True(t, message.quitSent)

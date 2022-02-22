@@ -148,7 +148,7 @@ func (server *Server) removeFromWaitGroup() {
 func (server *Server) handleSession(session sessionInterface) {
 	defer session.finish()
 	message, configuration := server.newMessage(), server.configuration
-	session.writeResponse(configuration.msgGreeting)
+	session.writeResponse(configuration.msgGreeting, defaultSessionResponseDelay)
 
 	for {
 		select {
@@ -162,7 +162,7 @@ func (server *Server) handleSession(session sessionInterface) {
 			}
 
 			if server.isInvalidCmd(request) {
-				session.writeResponse(configuration.msgInvalidCmd)
+				session.writeResponse(configuration.msgInvalidCmd, defaultSessionResponseDelay)
 				continue
 			}
 

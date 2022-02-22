@@ -23,11 +23,11 @@ func TestHandlerDataRun(t *testing.T) {
 		request, session, message, configuration := "DATA", new(sessionMock), new(message), createConfiguration()
 		handlerMessage, receivedMessage := &handlerMessageMock{}, configuration.msgDataReceived
 		message.helo, message.mailfrom, message.rcptto = true, true, true
-		handler := newHandlerData(session, message, configuration)
+		handler, responseDelay := newHandlerData(session, message, configuration), configuration.responseDelayData
 		handler.handlerMessage = handlerMessage
 		session.On("clearError").Once().Return(nil)
-		session.On("writeResponse", defaultReadyForReceiveMsg).Once().Return(nil)
-		session.On("writeResponse", receivedMessage).Once().Return(nil)
+		session.On("writeResponse", defaultReadyForReceiveMsg, responseDelay).Once().Return(nil)
+		session.On("writeResponse", receivedMessage, responseDelay).Once().Return(nil)
 		handlerMessage.On("run").Once().Return(nil)
 		handler.run(request)
 
@@ -44,7 +44,7 @@ func TestHandlerDataRun(t *testing.T) {
 		handler, err := newHandlerData(session, message, configuration), errors.New(errorMessage)
 		session.On("clearError").Once().Return(nil)
 		session.On("addError", err).Once().Return(nil)
-		session.On("writeResponse", errorMessage).Once().Return(nil)
+		session.On("writeResponse", errorMessage, configuration.responseDelayData).Once().Return(nil)
 		handler.run(request)
 
 		assert.False(t, message.data)
@@ -61,7 +61,7 @@ func TestHandlerDataRun(t *testing.T) {
 		handler, err := newHandlerData(session, message, configuration), errors.New(errorMessage)
 		session.On("clearError").Once().Return(nil)
 		session.On("addError", err).Once().Return(nil)
-		session.On("writeResponse", errorMessage).Once().Return(nil)
+		session.On("writeResponse", errorMessage, configuration.responseDelayData).Once().Return(nil)
 		handler.run(request)
 
 		assert.False(t, message.data)
@@ -113,7 +113,7 @@ func TestHandlerDataWriteResult(t *testing.T) {
 	t.Run("when successful request received", func(t *testing.T) {
 		message := new(message)
 		handler := newHandlerData(session, message, configuration)
-		session.On("writeResponse", response).Once().Return(nil)
+		session.On("writeResponse", response, configuration.responseDelayData).Once().Return(nil)
 
 		assert.True(t, handler.writeResult(true, request, response))
 		assert.True(t, message.data)
@@ -125,7 +125,7 @@ func TestHandlerDataWriteResult(t *testing.T) {
 		message, err := new(message), errors.New(response)
 		handler := newHandlerData(session, message, configuration)
 		session.On("addError", err).Once().Return(nil)
-		session.On("writeResponse", response).Once().Return(nil)
+		session.On("writeResponse", response, configuration.responseDelayData).Once().Return(nil)
 
 		assert.True(t, handler.writeResult(false, request, response))
 		assert.False(t, message.data)
@@ -141,7 +141,7 @@ func TestHandlerDataIsInvalidCmdSequence(t *testing.T) {
 		message, errorMessage := new(message), configuration.msgInvalidCmdDataSequence
 		handler, err := newHandlerData(session, message, configuration), errors.New(errorMessage)
 		session.On("addError", err).Once().Return(nil)
-		session.On("writeResponse", errorMessage).Once().Return(nil)
+		session.On("writeResponse", errorMessage, configuration.responseDelayData).Once().Return(nil)
 
 		assert.True(t, handler.isInvalidCmdSequence(request))
 		assert.False(t, message.data)
@@ -154,7 +154,7 @@ func TestHandlerDataIsInvalidCmdSequence(t *testing.T) {
 		message.helo, message.mailfrom = true, true
 		handler, err := newHandlerData(session, message, configuration), errors.New(errorMessage)
 		session.On("addError", err).Once().Return(nil)
-		session.On("writeResponse", errorMessage).Once().Return(nil)
+		session.On("writeResponse", errorMessage, configuration.responseDelayData).Once().Return(nil)
 
 		assert.True(t, handler.isInvalidCmdSequence(request))
 		assert.False(t, message.data)
@@ -167,7 +167,7 @@ func TestHandlerDataIsInvalidCmdSequence(t *testing.T) {
 		message.helo = true
 		handler, err := newHandlerData(session, message, configuration), errors.New(errorMessage)
 		session.On("addError", err).Once().Return(nil)
-		session.On("writeResponse", errorMessage).Once().Return(nil)
+		session.On("writeResponse", errorMessage, configuration.responseDelayData).Once().Return(nil)
 
 		assert.True(t, handler.isInvalidCmdSequence(request))
 		assert.False(t, message.data)
@@ -194,7 +194,7 @@ func TestHandlerDataIsInvalidCmd(t *testing.T) {
 		request, message, errorMessage := "DATA ", new(message), configuration.msgInvalidCmdDataSequence
 		handler, err := newHandlerData(session, message, configuration), errors.New(errorMessage)
 		session.On("addError", err).Once().Return(nil)
-		session.On("writeResponse", errorMessage).Once().Return(nil)
+		session.On("writeResponse", errorMessage, configuration.responseDelayData).Once().Return(nil)
 
 		assert.True(t, handler.isInvalidCmdSequence(request))
 		assert.False(t, message.data)
@@ -220,7 +220,7 @@ func TestHandlerDataIsInvalidRequest(t *testing.T) {
 		message, errorMessage := new(message), configuration.msgInvalidCmdDataSequence
 		handler, err := newHandlerData(session, message, configuration), errors.New(errorMessage)
 		session.On("addError", err).Once().Return(nil)
-		session.On("writeResponse", errorMessage).Once().Return(nil)
+		session.On("writeResponse", errorMessage, configuration.responseDelayData).Once().Return(nil)
 
 		assert.True(t, handler.isInvalidRequest(request))
 		assert.False(t, message.data)
@@ -233,7 +233,7 @@ func TestHandlerDataIsInvalidRequest(t *testing.T) {
 		message.helo, message.mailfrom, message.rcptto = true, true, true
 		handler, err := newHandlerData(session, message, configuration), errors.New(errorMessage)
 		session.On("addError", err).Once().Return(nil)
-		session.On("writeResponse", errorMessage).Once().Return(nil)
+		session.On("writeResponse", errorMessage, configuration.responseDelayData).Once().Return(nil)
 
 		assert.True(t, handler.isInvalidRequest(request))
 		assert.False(t, message.data)

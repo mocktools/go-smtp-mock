@@ -144,8 +144,8 @@ func (session *sessionMock) readRequest() (string, error) {
 	return args.String(0), args.Error(1)
 }
 
-func (session *sessionMock) writeResponse(response string) {
-	session.Called(response)
+func (session *sessionMock) writeResponse(response string, responseDelay int) {
+	session.Called(response, responseDelay)
 }
 
 func (session *sessionMock) addError(err error) {

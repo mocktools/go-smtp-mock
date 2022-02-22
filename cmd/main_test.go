@@ -94,6 +94,12 @@ func TestAttrFromCommandLine(t *testing.T) {
 		blacklistedMailfromEmails := "a@a.com,b@b.com"
 		blacklistedRcpttoEmails := "c@a.com,d@b.com"
 		notRegisteredEmails := "non-existent@a.com"
+		responseDelayHelo := 1
+		responseDelayMailfrom := 2
+		responseDelayRcptto := 3
+		responseDelayData := 4
+		responseDelayMessage := 5
+		responseDelayQuit := 6
 		msgSizeLimit := 1000
 		msgGreeting := "msgGreeting"
 		msgInvalidCmd := "msgInvalidCmd"
@@ -129,6 +135,12 @@ func TestAttrFromCommandLine(t *testing.T) {
 				"-blacklistedMailfromEmails=" + blacklistedMailfromEmails,
 				"-blacklistedRcpttoEmails=" + blacklistedRcpttoEmails,
 				"-notRegisteredEmails=" + notRegisteredEmails,
+				"-responseDelayHelo=" + strconv.Itoa(responseDelayHelo),
+				"-responseDelayMailfrom=" + strconv.Itoa(responseDelayMailfrom),
+				"-responseDelayRcptto=" + strconv.Itoa(responseDelayRcptto),
+				"-responseDelayData=" + strconv.Itoa(responseDelayData),
+				"-responseDelayMessage=" + strconv.Itoa(responseDelayMessage),
+				"-responseDelayQuit=" + strconv.Itoa(responseDelayQuit),
 				"-msgSizeLimit=" + strconv.Itoa(msgSizeLimit),
 				"-msgGreeting=" + msgGreeting,
 				"-msgInvalidCmd=" + msgInvalidCmd,
@@ -165,6 +177,12 @@ func TestAttrFromCommandLine(t *testing.T) {
 		assert.Equal(t, toSlice(blacklistedMailfromEmails), configAttr.BlacklistedMailfromEmails)
 		assert.Equal(t, toSlice(blacklistedRcpttoEmails), configAttr.BlacklistedRcpttoEmails)
 		assert.Equal(t, toSlice(notRegisteredEmails), configAttr.NotRegisteredEmails)
+		assert.Equal(t, responseDelayHelo, configAttr.ResponseDelayHelo)
+		assert.Equal(t, responseDelayMailfrom, configAttr.ResponseDelayMailfrom)
+		assert.Equal(t, responseDelayRcptto, configAttr.ResponseDelayRcptto)
+		assert.Equal(t, responseDelayData, configAttr.ResponseDelayData)
+		assert.Equal(t, responseDelayMessage, configAttr.ResponseDelayMessage)
+		assert.Equal(t, responseDelayQuit, configAttr.ResponseDelayQuit)
 		assert.Equal(t, msgSizeLimit, configAttr.MsgSizeLimit)
 		assert.Equal(t, msgGreeting, configAttr.MsgGreeting)
 		assert.Equal(t, msgInvalidCmd, configAttr.MsgInvalidCmd)
