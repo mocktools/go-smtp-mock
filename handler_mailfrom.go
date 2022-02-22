@@ -46,7 +46,7 @@ func (handler *handlerMailfrom) writeResult(isSuccessful bool, request, response
 	}
 
 	message.mailfromRequest, message.mailfromResponse, message.mailfrom = request, response, isSuccessful
-	session.writeResponse(response)
+	session.writeResponse(response, handler.configuration.responseDelayMailfrom)
 	return true
 }
 

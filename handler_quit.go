@@ -19,7 +19,8 @@ func (handler *handlerQuit) run(request string) {
 	}
 
 	handler.message.quitSent = true
-	handler.session.writeResponse(handler.configuration.msgQuitCmd)
+	configuration := handler.configuration
+	handler.session.writeResponse(configuration.msgQuitCmd, configuration.responseDelayQuit)
 }
 
 // Invalid QUIT command predicate. Returns true when request is invalid,

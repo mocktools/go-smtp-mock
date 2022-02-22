@@ -49,7 +49,7 @@ func (handler *handlerRcptto) writeResult(isSuccessful bool, request, response s
 	}
 
 	message.rcpttoRequest, message.rcpttoResponse, message.rcptto = request, response, isSuccessful
-	session.writeResponse(response)
+	session.writeResponse(response, handler.configuration.responseDelayRcptto)
 	return true
 }
 

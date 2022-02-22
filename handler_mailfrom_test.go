@@ -26,7 +26,7 @@ func TestHandlerMailfromRun(t *testing.T) {
 		message.helo = true
 		handler := newHandlerMailfrom(session, message, configuration)
 		session.On("clearError").Once().Return(nil)
-		session.On("writeResponse", receivedMessage).Once().Return(nil)
+		session.On("writeResponse", receivedMessage, configuration.responseDelayMailfrom).Once().Return(nil)
 		handler.run(request)
 
 		assert.True(t, message.mailfrom)
@@ -42,7 +42,7 @@ func TestHandlerMailfromRun(t *testing.T) {
 		handler, err := newHandlerMailfrom(session, message, configuration), errors.New(errorMessage)
 		session.On("clearError").Once().Return(nil)
 		session.On("addError", err).Once().Return(nil)
-		session.On("writeResponse", errorMessage).Once().Return(nil)
+		session.On("writeResponse", errorMessage, configuration.responseDelayMailfrom).Once().Return(nil)
 		handler.run(request)
 
 		assert.False(t, message.mailfrom)
@@ -59,7 +59,7 @@ func TestHandlerMailfromRun(t *testing.T) {
 		handler, err := newHandlerMailfrom(session, message, configuration), errors.New(errorMessage)
 		session.On("clearError").Once().Return(nil)
 		session.On("addError", err).Once().Return(nil)
-		session.On("writeResponse", errorMessage).Once().Return(nil)
+		session.On("writeResponse", errorMessage, configuration.responseDelayMailfrom).Once().Return(nil)
 		handler.run(request)
 
 		assert.False(t, message.mailfrom)
@@ -78,7 +78,7 @@ func TestHandlerMailfromRun(t *testing.T) {
 		session.On("clearError").Once().Return(nil)
 		session.On("readRequest").Once().Return(request, nil)
 		session.On("addError", err).Once().Return(nil)
-		session.On("writeResponse", errorMessage).Once().Return(nil)
+		session.On("writeResponse", errorMessage, configuration.responseDelayMailfrom).Once().Return(nil)
 		handler.run(request)
 
 		assert.False(t, message.mailfrom)
@@ -116,7 +116,7 @@ func TestHandlerMailfromWriteResult(t *testing.T) {
 	t.Run("when successful request received", func(t *testing.T) {
 		message := new(message)
 		handler := newHandlerMailfrom(session, message, configuration)
-		session.On("writeResponse", response).Once().Return(nil)
+		session.On("writeResponse", response, configuration.responseDelayMailfrom).Once().Return(nil)
 
 		assert.True(t, handler.writeResult(true, request, response))
 		assert.True(t, message.mailfrom)
@@ -128,7 +128,7 @@ func TestHandlerMailfromWriteResult(t *testing.T) {
 		message, err := new(message), errors.New(response)
 		handler := newHandlerMailfrom(session, message, configuration)
 		session.On("addError", err).Once().Return(nil)
-		session.On("writeResponse", response).Once().Return(nil)
+		session.On("writeResponse", response, configuration.responseDelayMailfrom).Once().Return(nil)
 
 		assert.True(t, handler.writeResult(false, request, response))
 		assert.False(t, message.mailfrom)
@@ -144,7 +144,7 @@ func TestHandlerMailfromIsInvalidCmdSequence(t *testing.T) {
 		message, errorMessage := new(message), configuration.msgInvalidCmdMailfromSequence
 		handler, err := newHandlerMailfrom(session, message, configuration), errors.New(errorMessage)
 		session.On("addError", err).Once().Return(nil)
-		session.On("writeResponse", errorMessage).Once().Return(nil)
+		session.On("writeResponse", errorMessage, configuration.responseDelayMailfrom).Once().Return(nil)
 
 		assert.True(t, handler.isInvalidCmdSequence(request))
 		assert.False(t, message.mailfrom)
@@ -171,7 +171,7 @@ func TestHandlerMaifromIsInvalidCmdArg(t *testing.T) {
 		request, message, errorMessage := "MAIL FROM: email@invalid", new(message), configuration.msgInvalidCmdMailfromArg
 		handler, err := newHandlerMailfrom(session, message, configuration), errors.New(errorMessage)
 		session.On("addError", err).Once().Return(nil)
-		session.On("writeResponse", errorMessage).Once().Return(nil)
+		session.On("writeResponse", errorMessage, configuration.responseDelayMailfrom).Once().Return(nil)
 
 		assert.True(t, handler.isInvalidCmdArg(request))
 		assert.False(t, message.mailfrom)
@@ -252,7 +252,7 @@ func TestHandlerHeloIsBlacklistedEmail(t *testing.T) {
 		errorMessage := configuration.msgMailfromBlacklistedEmail
 		handler, err := newHandlerMailfrom(session, message, configuration), errors.New(errorMessage)
 		session.On("addError", err).Once().Return(nil)
-		session.On("writeResponse", errorMessage).Once().Return(nil)
+		session.On("writeResponse", errorMessage, configuration.responseDelayMailfrom).Once().Return(nil)
 
 		assert.True(t, handler.isBlacklistedEmail(request))
 		assert.False(t, message.mailfrom)
@@ -279,7 +279,7 @@ func TestHandlerMailfromIsInvalidRequest(t *testing.T) {
 		session, message, errorMessage := new(sessionMock), new(message), configuration.msgInvalidCmdMailfromSequence
 		handler, err := newHandlerMailfrom(session, message, configuration), errors.New(errorMessage)
 		session.On("addError", err).Once().Return(nil)
-		session.On("writeResponse", errorMessage).Once().Return(nil)
+		session.On("writeResponse", errorMessage, configuration.responseDelayMailfrom).Once().Return(nil)
 
 		assert.True(t, handler.isInvalidRequest(request))
 		assert.False(t, message.mailfrom)
@@ -293,7 +293,7 @@ func TestHandlerMailfromIsInvalidRequest(t *testing.T) {
 		message.helo = true
 		handler, err := newHandlerMailfrom(session, message, configuration), errors.New(errorMessage)
 		session.On("addError", err).Once().Return(nil)
-		session.On("writeResponse", errorMessage).Once().Return(nil)
+		session.On("writeResponse", errorMessage, configuration.responseDelayMailfrom).Once().Return(nil)
 
 		assert.True(t, handler.isInvalidRequest(request))
 		assert.False(t, message.mailfrom)
@@ -308,7 +308,7 @@ func TestHandlerMailfromIsInvalidRequest(t *testing.T) {
 		configuration.blacklistedMailfromEmails, message.helo = []string{blacklistedEmail}, true
 		handler, err := newHandlerMailfrom(session, message, configuration), errors.New(errorMessage)
 		session.On("addError", err).Once().Return(nil)
-		session.On("writeResponse", errorMessage).Once().Return(nil)
+		session.On("writeResponse", errorMessage, configuration.responseDelayMailfrom).Once().Return(nil)
 
 		assert.True(t, handler.isInvalidRequest(request))
 		assert.False(t, message.mailfrom)

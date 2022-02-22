@@ -2,6 +2,27 @@
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/), and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.7.0] - 2022-02-22
+
+### Added
+
+- Ability to specify session response delay for each SMTP command
+
+### Updated
+
+- Updated `configuration`, `ConfigurationAttr` tests
+- Updated consts
+- Updated `session` structure methods, tests
+- Updated `server#handleSession`, tests
+- Updated `handlerHelo#writeResult`, tests
+- Updated `handlerMailfrom#writeResult`, tests
+- Updated `handlerRcptto#writeResult`, tests
+- Updated `handlerData#writeResult`, tests
+- Updated `handlerMessage#writeResult`, tests
+- Updated `handlerQuit#writeResult`, tests
+- Updated `main.attrFromCommandLine()`, tests
+- Updated package documentation
+
 ## [1.6.0] - 2022-02-21
 
 ### Added

@@ -14,6 +14,10 @@ import (
 	version "github.com/mocktools/go-smtp-mock/cmd/version"
 )
 
+const (
+	responseDelayFlagInfo = " response delay in seconds. It runs immediately (equals to 0 seconds) by default"
+)
+
 var signals, logFatalf = make(chan os.Signal, 1), log.Fatalf
 
 // Main entrypoint
@@ -88,6 +92,12 @@ func attrFromCommandLine(args []string, options ...flag.ErrorHandling) (bool, *s
 		blacklistedMailfromEmails     = flags.String("blacklistedMailfromEmails", "", "Blacklisted MAIL FROM emails, separated by commas")
 		blacklistedRcpttoEmails       = flags.String("blacklistedRcpttoEmails", "", "Blacklisted RCPT TO emails, separated by commas")
 		notRegisteredEmails           = flags.String("notRegisteredEmails", "", "Not registered (non-existent) RCPT TO emails, separated by commas")
+		responseDelayHelo             = flags.Int("responseDelayHelo", 0, "HELO"+responseDelayFlagInfo)
+		responseDelayMailfrom         = flags.Int("responseDelayMailfrom", 0, "MAIL FROM"+responseDelayFlagInfo)
+		responseDelayRcptto           = flags.Int("responseDelayRcptto", 0, "RCPT TO"+responseDelayFlagInfo)
+		responseDelayData             = flags.Int("responseDelayData", 0, "DATA"+responseDelayFlagInfo)
+		responseDelayMessage          = flags.Int("responseDelayMessage", 0, "Message"+responseDelayFlagInfo)
+		responseDelayQuit             = flags.Int("responseDelayQuit", 0, "QUIT"+responseDelayFlagInfo)
 		msgSizeLimit                  = flags.Int("msgSizeLimit", 0, "Message body size limit in bytes. It's equal to 10485760 bytes")
 		msgGreeting                   = flags.String("msgGreeting", "", "Custom server greeting message")
 		msgInvalidCmd                 = flags.String("msgInvalidCmd", "", "Custom invalid command message")
@@ -126,6 +136,12 @@ func attrFromCommandLine(args []string, options ...flag.ErrorHandling) (bool, *s
 		BlacklistedMailfromEmails:     toSlice(*blacklistedMailfromEmails),
 		BlacklistedRcpttoEmails:       toSlice(*blacklistedRcpttoEmails),
 		NotRegisteredEmails:           toSlice(*notRegisteredEmails),
+		ResponseDelayHelo:             *responseDelayHelo,
+		ResponseDelayMailfrom:         *responseDelayMailfrom,
+		ResponseDelayRcptto:           *responseDelayRcptto,
+		ResponseDelayData:             *responseDelayData,
+		ResponseDelayMessage:          *responseDelayMessage,
+		ResponseDelayQuit:             *responseDelayQuit,
 		MsgSizeLimit:                  *msgSizeLimit,
 		MsgGreeting:                   *msgGreeting,
 		MsgInvalidCmd:                 *msgInvalidCmd,
