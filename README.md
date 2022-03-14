@@ -79,6 +79,7 @@ import "github.com/mocktools/go-smtp-mock"
 - [Inside of any ecosystem](#inside-of-any-ecosystem)
   - [Configuring with command line arguments](#configuring-with-command-line-arguments)
   - [Other options](#other-options)
+  - [Stopping server](#stopping-server)
 
 ### Inside of Golang ecosystem
 
