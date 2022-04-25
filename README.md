@@ -273,6 +273,10 @@ func main() {
   client.Quit()
   client.Close()
 
+  // Each result of SMTP session will be saved as message.
+  // To get access to server messages use Messages() method
+  server.Messages()
+
   // To stop the server use Stop() method. Please note, smtpmock uses graceful shutdown.
   // It means that smtpmock will end all sessions after client responses or by session
   // timeouts immediately.
