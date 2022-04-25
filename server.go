@@ -115,6 +115,12 @@ func (server *Server) Stop() (err error) {
 	return errors.New(serverStopErrorMsg)
 }
 
+// Public interface to get access to server messages
+// Returns slice of message pointers
+func (server *Server) Messages() []*message {
+	return server.messages.items
+}
+
 // Creates and assigns new message to server.messages
 func (server *Server) newMessage() *message {
 	newMessage := new(message)
