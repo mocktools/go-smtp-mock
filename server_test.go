@@ -297,3 +297,20 @@ func TestServerStop(t *testing.T) {
 		assert.EqualError(t, new(Server).Stop(), serverStopErrorMsg)
 	})
 }
+
+func TestServerMessages(t *testing.T) {
+	configuration := createConfiguration()
+
+	t.Run("when there are no messages on the server", func(t *testing.T) {
+		server := newServer(configuration)
+
+		assert.Empty(t, server.Messages())
+	})
+
+	t.Run("when there are messages on the server", func(t *testing.T) {
+		server := newServer(configuration)
+		server.newMessage()
+
+		assert.NotEmpty(t, server.Messages())
+	})
+}
