@@ -45,6 +45,7 @@
 - Ability to do graceful/force shutdown of SMTP mock server
 - No authentication support
 - Zero runtime dependencies
+- Ability to access to server messages
 - Simple and intuitive DSL
 - Ability to run server as binary with command line arguments
 
