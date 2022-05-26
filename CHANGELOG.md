@@ -2,6 +2,12 @@
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/), and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.8.1] - 2022-05-26
+
+### Fixed
+
+- Updated `yaml.v3` indirect dependency. An issue in the Unmarshal function in Go-Yaml v3 causes the program to crash when attempting to deserialize invalid input, [CVE-2022-28948](https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2022-28948)
+
 ## [1.8.0] - 2022-04-25
 
 ### Added
