@@ -4,12 +4,13 @@ import "sync"
 
 // Structure for storing the result of SMTP client-server interaction
 type message struct {
-	heloRequest, heloResponse                            string
-	mailfromRequest, mailfromResponse                    string
-	rcpttoRequest, rcpttoResponse                        string
-	dataRequest, dataResponse                            string
-	msgRequest, msgResponse                              string
-	helo, mailfrom, rcptto, data, msg, cleared, quitSent bool
+	heloRequest, heloResponse                                  string
+	mailfromRequest, mailfromResponse                          string
+	rcpttoRequest, rcpttoResponse                              string
+	dataRequest, dataResponse                                  string
+	msgRequest, msgResponse                                    string
+	rsetRequest, rsetResponse                                  string
+	helo, mailfrom, rcptto, data, msg, cleared, quitSent, rset bool
 }
 
 // message methods
@@ -94,6 +95,16 @@ func (message *message) Msg() bool {
 // Getter for quitSent field
 func (message *message) QuitSent() bool {
 	return message.quitSent
+}
+
+// Getter for rsetRequest
+func (message *message) RsetRequest() string {
+	return message.rsetRequest
+}
+
+// Getter for rsetResponse
+func (message *message) RsetResponse() string {
+	return message.rsetResponse
 }
 
 // Cleared status predicate. Returns true for case when message struct

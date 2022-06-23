@@ -33,6 +33,7 @@ func (handler *handlerMailfrom) clearMessage() {
 		heloRequest:  messageWithData.heloRequest,
 		heloResponse: messageWithData.heloResponse,
 		helo:         messageWithData.helo,
+		rset:         messageWithData.rset,
 		cleared:      true,
 	}
 	*messageWithData = *clearedMessage
@@ -53,7 +54,7 @@ func (handler *handlerMailfrom) writeResult(isSuccessful bool, request, response
 // Invalid MAILFROM command sequence predicate. Returns true and writes result for case when
 // MAILFROM command sequence is invalid (HELO command was failure), otherwise returns false
 func (handler *handlerMailfrom) isInvalidCmdSequence(request string) bool {
-	if !handler.message.helo {
+	if !handler.message.helo && !handler.message.rset {
 		return handler.writeResult(false, request, handler.configuration.msgInvalidCmdMailfromSequence)
 	}
 

@@ -39,6 +39,7 @@ func TestNewConfiguration(t *testing.T) {
 
 		assert.Equal(t, defaultInvalidCmdDataSequenceMsg, buildedConfiguration.msgInvalidCmdDataSequence)
 		assert.Equal(t, defaultReadyForReceiveMsg, buildedConfiguration.msgDataReceived)
+		assert.Equal(t, defaultRsetMsg, buildedConfiguration.msgRsetReceived)
 
 		assert.Equal(t, fmt.Sprintf(defaultMsgSizeIsTooBigMsg+" %d bytes", defaultMessageSizeLimit), buildedConfiguration.msgMsgSizeIsTooBig)
 		assert.Equal(t, defaultReceivedMsg, buildedConfiguration.msgMsgReceived)
@@ -80,6 +81,7 @@ func TestNewConfiguration(t *testing.T) {
 			MsgRcpttoNotRegisteredEmail:   "msgRcpttoNotRegisteredEmail",
 			MsgRcpttoBlacklistedEmail:     "msgRcpttoBlacklistedEmail",
 			MsgRcpttoReceived:             "msgRcpttoReceived",
+			MsgRsetReceived:               "msgRetReceived",
 			MsgInvalidCmdDataSequence:     "msgInvalidCmdDataSequence",
 			MsgDataReceived:               "msgDataReceived",
 			MsgMsgSizeIsTooBig:            emptyString,

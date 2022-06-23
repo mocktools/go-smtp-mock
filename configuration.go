@@ -16,6 +16,7 @@ type configuration struct {
 	msgInvalidCmdHeloArg          string
 	msgHeloBlacklistedDomain      string
 	msgHeloReceived               string
+	msgRsetReceived               string
 	msgInvalidCmdMailfromSequence string
 	msgInvalidCmdMailfromArg      string
 	msgMailfromBlacklistedEmail   string
@@ -39,6 +40,7 @@ type configuration struct {
 	responseDelayData             int
 	responseDelayMessage          int
 	responseDelayQuit             int
+	responseDelayRset             int
 	msgSizeLimit                  int
 	sessionTimeout                int
 	shutdownTimeout               int
@@ -75,6 +77,7 @@ func newConfiguration(config ConfigurationAttr) *configuration {
 		msgDataReceived:               config.MsgDataReceived,
 		msgMsgSizeIsTooBig:            config.MsgMsgSizeIsTooBig,
 		msgMsgReceived:                config.MsgMsgReceived,
+		msgRsetReceived:               config.MsgRsetReceived,
 		msgQuitCmd:                    config.MsgQuitCmd,
 		blacklistedHeloDomains:        config.BlacklistedHeloDomains,
 		blacklistedMailfromEmails:     config.BlacklistedMailfromEmails,
@@ -115,6 +118,7 @@ type ConfigurationAttr struct {
 	MsgRcpttoNotRegisteredEmail   string
 	MsgRcpttoBlacklistedEmail     string
 	MsgRcpttoReceived             string
+	MsgRsetReceived               string
 	MsgInvalidCmdDataSequence     string
 	MsgDataReceived               string
 	MsgMsgSizeIsTooBig            string
@@ -155,6 +159,9 @@ func (config *ConfigurationAttr) assignServerDefaultValues() {
 	}
 	if config.ShutdownTimeout == 0 {
 		config.ShutdownTimeout = defaultShutdownTimeout
+	}
+	if config.MsgRsetReceived == emptyString {
+		config.MsgRsetReceived = defaultRsetMsg
 	}
 }
 

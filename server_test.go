@@ -8,6 +8,7 @@ import (
 	"testing"
 
 	"github.com/stretchr/testify/assert"
+	mail "github.com/xhit/go-simple-mail/v2"
 )
 
 func TestNewServer(t *testing.T) {
@@ -312,5 +313,56 @@ func TestServerMessages(t *testing.T) {
 		server.newMessage()
 
 		assert.NotEmpty(t, server.Messages())
+	})
+}
+
+func TestServerHandleRSET(t *testing.T) {
+	server := New(ConfigurationAttr{
+		LogToStdout:       false,
+		LogServerActivity: false,
+	})
+	server.Start()
+
+	srv := mail.NewSMTPClient()
+	srv.Host = "127.0.0.1"
+	srv.Port = server.PortNumber
+
+	// don't close the connection
+	srv.KeepAlive = true
+	client, err := srv.Connect()
+	if err != nil {
+		t.Fatal("could not connect to server")
+	}
+
+	t.Run("when multiple mails are send via one connection", func(t *testing.T) {
+		email := mail.NewMSG()
+		email.SetFrom("sender@test.com").
+			AddTo("receiver@test.com").
+			SetSubject("subject").
+			SetBody(mail.TextHTML, "HTML-body").
+			AddAlternative(mail.TextPlain, "TXT-alternative")
+		email.Send(client)
+
+		email.SetSubject("subject2")
+		email.SetFrom("sender2@test.com")
+		email.Send(client)
+
+		email.SetSubject("subject3")
+		email.SetFrom("sender3@test.com")
+		email.Send(client)
+
+		messages := server.Messages()
+		// there should be 3 messages
+		assert.Len(t, messages, 3)
+		assert.Equal(t, "MAIL FROM:<sender@test.com>", messages[0].mailfromRequest)
+		assert.Equal(t, "MAIL FROM:<sender2@test.com>", messages[1].mailfromRequest)
+		assert.Equal(t, "MAIL FROM:<sender3@test.com>", messages[2].mailfromRequest)
+
+		assert.Equal(t, "RSET", messages[0].RsetRequest())
+		assert.Equal(t, "250 Ok", messages[0].RsetResponse())
+		assert.Equal(t, "RSET", messages[1].RsetRequest())
+		assert.Equal(t, "250 Ok", messages[1].RsetResponse())
+		assert.Equal(t, "RSET", messages[2].RsetRequest())
+		assert.Equal(t, "250 Ok", messages[2].RsetResponse())
 	})
 }

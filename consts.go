@@ -7,6 +7,7 @@ const (
 	defaultGreetingMsg                   = "220 Welcome"
 	defaultQuitMsg                       = "221 Closing connection"
 	defaultReceivedMsg                   = "250 Received"
+	defaultRsetMsg                       = "250 Ok"
 	defaultReadyForReceiveMsg            = "354 Ready for receive message. End data with <CR><LF>.<CR><LF>"
 	defaultTransientNegativeMsg          = "421 Service not available"
 	defaultInvalidCmdHeloArgMsg          = "501 HELO requires domain address"
@@ -50,7 +51,7 @@ const (
 	serverForceStopMsg               = "SMTP mock server was force stopped by timeout"
 
 	// Regex patterns
-	availableCmdsRegexPattern          = `(?i)helo|ehlo|mail from:|rcpt to:|data|quit`
+	availableCmdsRegexPattern          = `(?i)helo|ehlo|mail from:|rcpt to:|data|quit|rset`
 	domainRegexPattern                 = `(?i)([\p{L}0-9]+([\-.]{1}[\p{L}0-9]+)*\.\p{L}{2,63})`
 	emailRegexPattern                  = `(?i)<?((.+)@` + domainRegexPattern + `)>?`
 	validHeloCmdsRegexPattern          = `(?i)helo|ehlo`
@@ -58,6 +59,7 @@ const (
 	validRcpttoCmdRegexPattern         = `(?i)rcpt to:`
 	validDataCmdRegexPattern           = `\A(?i)data\z`
 	validQuitCmdRegexPattern           = `\A(?i)quit\z`
+	validRsetCmdsRegexPattern          = `(?i)rset\z`
 	validHeloComplexCmdRegexPattern    = `\A(` + validHeloCmdsRegexPattern + `) (` + domainRegexPattern + `|localhost)\z`
 	validMailromComplexCmdRegexPattern = `\A(` + validMailfromCmdRegexPattern + `) ?(` + emailRegexPattern + `)\z`
 	validRcpttoComplexCmdRegexPattern  = `\A(` + validRcpttoCmdRegexPattern + `) ?(` + emailRegexPattern + `)\z`

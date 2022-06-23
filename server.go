@@ -176,6 +176,12 @@ func (server *Server) handleSession(session sessionInterface) {
 			case "HELO", "EHLO":
 				newHandlerHelo(session, message, configuration).run(request)
 			case "MAIL":
+				// If the previous command was RSET a new Message should be created
+				if message.rset {
+					message = server.newMessage()
+					message.rset = true
+					message.helo = true
+				}
 				newHandlerMailfrom(session, message, configuration).run(request)
 			case "RCPT":
 				newHandlerRcptto(session, message, configuration).run(request)
@@ -183,6 +189,8 @@ func (server *Server) handleSession(session sessionInterface) {
 				newHandlerData(session, message, configuration).run(request)
 			case "QUIT":
 				newHandlerQuit(session, message, configuration).run(request)
+			case "RSET":
+				newHandlerRset(session, message, configuration).run(request)
 			}
 
 			if message.quitSent || (session.isErrorFound() && configuration.isCmdFailFast) {
