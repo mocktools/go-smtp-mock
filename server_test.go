@@ -321,8 +321,10 @@ func TestServerHandleRSET(t *testing.T) {
 		LogToStdout:       false,
 		LogServerActivity: false,
 	})
-	server.Start()
-
+	err := server.Start()
+	if err != nil {
+		t.Fatalf("error while starting the server: %s", err.Error())
+	}
 	srv := mail.NewSMTPClient()
 	srv.Host = "127.0.0.1"
 	srv.Port = server.PortNumber
@@ -341,15 +343,21 @@ func TestServerHandleRSET(t *testing.T) {
 			SetSubject("subject").
 			SetBody(mail.TextHTML, "HTML-body").
 			AddAlternative(mail.TextPlain, "TXT-alternative")
-		email.Send(client)
+		if err := email.Send(client); err != nil {
+			t.Fatalf("Error while sending email: %s", err.Error())
+		}
 
 		email.SetSubject("subject2")
 		email.SetFrom("sender2@test.com")
-		email.Send(client)
+		if err := email.Send(client); err != nil {
+			t.Fatalf("Error while sending email: %s", err.Error())
+		}
 
 		email.SetSubject("subject3")
 		email.SetFrom("sender3@test.com")
-		email.Send(client)
+		if err := email.Send(client); err != nil {
+			t.Fatalf("Error while sending email: %s", err.Error())
+		}
 
 		messages := server.Messages()
 		// there should be 3 messages
