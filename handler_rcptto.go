@@ -26,7 +26,7 @@ func (handler *handlerRcptto) run(request string) {
 	handler.writeResult(true, request, handler.configuration.msgRcpttoReceived)
 }
 
-// Erases all message data from RCPTTO command, changes cleared status to true
+// Erases all message data from RCPTTO command
 func (handler *handlerRcptto) clearMessage() {
 	messageWithData := handler.message
 	clearedMessage := &message{
@@ -36,7 +36,6 @@ func (handler *handlerRcptto) clearMessage() {
 		mailfromRequest:  messageWithData.mailfromRequest,
 		mailfromResponse: messageWithData.mailfromResponse,
 		mailfrom:         messageWithData.mailfrom,
-		cleared:          true,
 	}
 	*messageWithData = *clearedMessage
 }

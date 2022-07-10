@@ -99,7 +99,8 @@ func TestAttrFromCommandLine(t *testing.T) {
 		responseDelayRcptto := 3
 		responseDelayData := 4
 		responseDelayMessage := 5
-		responseDelayQuit := 6
+		responseDelayRset := 6
+		responseDelayQuit := 7
 		msgSizeLimit := 1000
 		msgGreeting := "msgGreeting"
 		msgInvalidCmd := "msgInvalidCmd"
@@ -120,6 +121,7 @@ func TestAttrFromCommandLine(t *testing.T) {
 		msgDataReceived := "msgDataReceived"
 		msgMsgSizeIsTooBig := "msgMsgSizeIsTooBig"
 		msgMsgReceived := "msgMsgReceived"
+		msgRsetReceived := "msgRsetReceived"
 		msgQuitCmd := "msgQuitCmd"
 		ver, configAttr, err := attrFromCommandLine(
 			[]string{
@@ -131,6 +133,7 @@ func TestAttrFromCommandLine(t *testing.T) {
 				"-sessionTimeout=" + strconv.Itoa(sessionTimeout),
 				"-shutdownTimeout=" + strconv.Itoa(shutdownTimeout),
 				"-failFast",
+				"-multipleMessageReceiving",
 				"-blacklistedHeloDomains=" + blacklistedHeloDomains,
 				"-blacklistedMailfromEmails=" + blacklistedMailfromEmails,
 				"-blacklistedRcpttoEmails=" + blacklistedRcpttoEmails,
@@ -140,6 +143,7 @@ func TestAttrFromCommandLine(t *testing.T) {
 				"-responseDelayRcptto=" + strconv.Itoa(responseDelayRcptto),
 				"-responseDelayData=" + strconv.Itoa(responseDelayData),
 				"-responseDelayMessage=" + strconv.Itoa(responseDelayMessage),
+				"-responseDelayRset=" + strconv.Itoa(responseDelayRset),
 				"-responseDelayQuit=" + strconv.Itoa(responseDelayQuit),
 				"-msgSizeLimit=" + strconv.Itoa(msgSizeLimit),
 				"-msgGreeting=" + msgGreeting,
@@ -161,6 +165,7 @@ func TestAttrFromCommandLine(t *testing.T) {
 				"-msgDataReceived=" + msgDataReceived,
 				"-msgMsgSizeIsTooBig=" + msgMsgSizeIsTooBig,
 				"-msgMsgReceived=" + msgMsgReceived,
+				"-msgRsetReceived=" + msgRsetReceived,
 				"-msgQuitCmd=" + msgQuitCmd,
 			},
 		)
@@ -173,6 +178,7 @@ func TestAttrFromCommandLine(t *testing.T) {
 		assert.Equal(t, sessionTimeout, configAttr.SessionTimeout)
 		assert.Equal(t, shutdownTimeout, configAttr.ShutdownTimeout)
 		assert.True(t, configAttr.IsCmdFailFast)
+		assert.True(t, configAttr.MultipleMessageReceiving)
 		assert.Equal(t, toSlice(blacklistedHeloDomains), configAttr.BlacklistedHeloDomains)
 		assert.Equal(t, toSlice(blacklistedMailfromEmails), configAttr.BlacklistedMailfromEmails)
 		assert.Equal(t, toSlice(blacklistedRcpttoEmails), configAttr.BlacklistedRcpttoEmails)
@@ -182,6 +188,7 @@ func TestAttrFromCommandLine(t *testing.T) {
 		assert.Equal(t, responseDelayRcptto, configAttr.ResponseDelayRcptto)
 		assert.Equal(t, responseDelayData, configAttr.ResponseDelayData)
 		assert.Equal(t, responseDelayMessage, configAttr.ResponseDelayMessage)
+		assert.Equal(t, responseDelayRset, configAttr.ResponseDelayRset)
 		assert.Equal(t, responseDelayQuit, configAttr.ResponseDelayQuit)
 		assert.Equal(t, msgSizeLimit, configAttr.MsgSizeLimit)
 		assert.Equal(t, msgGreeting, configAttr.MsgGreeting)
@@ -203,6 +210,7 @@ func TestAttrFromCommandLine(t *testing.T) {
 		assert.Equal(t, msgDataReceived, configAttr.MsgDataReceived)
 		assert.Equal(t, msgMsgSizeIsTooBig, configAttr.MsgMsgSizeIsTooBig)
 		assert.Equal(t, msgMsgReceived, configAttr.MsgMsgReceived)
+		assert.Equal(t, msgRsetReceived, configAttr.MsgRsetReceived)
 		assert.Equal(t, msgQuitCmd, configAttr.MsgQuitCmd)
 		assert.NoError(t, err)
 	})

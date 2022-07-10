@@ -2,14 +2,16 @@ package smtpmock
 
 import "sync"
 
-// Structure for storing the result of SMTP client-server interaction
+// Structure for storing the result of SMTP client-server interaction. Context-included
+// commands should be represented as request/response structure fields
 type message struct {
-	heloRequest, heloResponse                            string
-	mailfromRequest, mailfromResponse                    string
-	rcpttoRequest, rcpttoResponse                        string
-	dataRequest, dataResponse                            string
-	msgRequest, msgResponse                              string
-	helo, mailfrom, rcptto, data, msg, cleared, quitSent bool
+	heloRequest, heloResponse                         string
+	mailfromRequest, mailfromResponse                 string
+	rcpttoRequest, rcpttoResponse                     string
+	dataRequest, dataResponse                         string
+	msgRequest, msgResponse                           string
+	rsetRequest, rsetResponse                         string
+	helo, mailfrom, rcptto, data, msg, rset, quitSent bool
 }
 
 // message methods
@@ -91,15 +93,31 @@ func (message *message) Msg() bool {
 	return message.msg
 }
 
+// Getter for rsetRequest field
+func (message *message) RsetRequest() string {
+	return message.rsetRequest
+}
+
+// Getter for rsetResponse field
+func (message *message) RsetResponse() string {
+	return message.rsetResponse
+}
+
+// Getter for rset field
+func (message *message) Rset() bool {
+	return message.rset
+}
+
 // Getter for quitSent field
 func (message *message) QuitSent() bool {
 	return message.quitSent
 }
 
-// Cleared status predicate. Returns true for case when message struct
-// was cleared. Otherwise returns false
-func (message *message) isCleared() bool {
-	return message.cleared
+// Message consistency status predicate. Returns true for case when message struct is consistent.
+// It means that MAILFROM, RCPTTO, DATA commands and message context were successful.
+// Otherwise returns false
+func (message *message) isConsistent() bool {
+	return message.mailfrom && message.rcptto && message.data && message.msg
 }
 
 // Pointer to empty message

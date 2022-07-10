@@ -26,10 +26,10 @@ func (handler *handlerHelo) run(request string) {
 	handler.writeResult(true, request, handler.configuration.msgHeloReceived)
 }
 
-// Erases all message data, changes cleared status to true
+// Erases all message data
 func (handler *handlerHelo) clearMessage() {
 	message := handler.message
-	*message, message.cleared = *zeroMessage, true
+	*message = *zeroMessage
 }
 
 // Writes handled HELO result to session, message. Always returns true

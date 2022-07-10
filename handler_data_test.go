@@ -32,7 +32,6 @@ func TestHandlerDataRun(t *testing.T) {
 		handler.run(request)
 
 		assert.True(t, message.data)
-		assert.True(t, message.isCleared())
 		assert.Equal(t, request, message.dataRequest)
 		assert.Equal(t, receivedMessage, message.dataResponse)
 	})
@@ -48,7 +47,6 @@ func TestHandlerDataRun(t *testing.T) {
 		handler.run(request)
 
 		assert.False(t, message.data)
-		assert.True(t, message.isCleared())
 		assert.Equal(t, request, message.dataRequest)
 		assert.Equal(t, errorMessage, message.dataResponse)
 	})
@@ -65,14 +63,13 @@ func TestHandlerDataRun(t *testing.T) {
 		handler.run(request)
 
 		assert.False(t, message.data)
-		assert.True(t, message.isCleared())
 		assert.Equal(t, request, message.dataRequest)
 		assert.Equal(t, errorMessage, message.dataResponse)
 	})
 }
 
 func TestHandlerDataClearMessage(t *testing.T) {
-	t.Run("erases all handler message data from DATA command, changes cleared status to true", func(t *testing.T) {
+	t.Run("erases all handler message data from DATA command", func(t *testing.T) {
 		notEmptyMessage := createNotEmptyMessage()
 		handler := newHandlerData(new(session), notEmptyMessage, new(configuration))
 		clearedMessage := &message{
@@ -85,7 +82,6 @@ func TestHandlerDataClearMessage(t *testing.T) {
 			rcpttoRequest:    notEmptyMessage.rcpttoRequest,
 			rcpttoResponse:   notEmptyMessage.rcpttoResponse,
 			rcptto:           notEmptyMessage.rcptto,
-			cleared:          true,
 		}
 		handler.clearMessage()
 

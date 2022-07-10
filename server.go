@@ -128,6 +128,15 @@ func (server *Server) newMessage() *message {
 	return newMessage
 }
 
+// Creates and assigns new message with helo context from other message to server.messages
+func (server *Server) newMessageWithHeloContext(otherMessage *message) *message {
+	newMessage := server.newMessage()
+	newMessage.heloRequest = otherMessage.heloRequest
+	newMessage.heloResponse = otherMessage.heloResponse
+	newMessage.helo = otherMessage.helo
+	return newMessage
+}
+
 // Invalid SMTP command predicate. Returns true when command is invalid, otherwise returns false
 func (server *Server) isInvalidCmd(request string) bool {
 	return !matchRegex(request, availableCmdsRegexPattern)
@@ -176,11 +185,17 @@ func (server *Server) handleSession(session sessionInterface) {
 			case "HELO", "EHLO":
 				newHandlerHelo(session, message, configuration).run(request)
 			case "MAIL":
+				if configuration.multipleMessageReceiving && message.rset && message.isConsistent() {
+					message = server.newMessageWithHeloContext(message)
+				}
+
 				newHandlerMailfrom(session, message, configuration).run(request)
 			case "RCPT":
 				newHandlerRcptto(session, message, configuration).run(request)
 			case "DATA":
 				newHandlerData(session, message, configuration).run(request)
+			case "RSET":
+				newHandlerRset(session, message, configuration).run(request)
 			case "QUIT":
 				newHandlerQuit(session, message, configuration).run(request)
 			}

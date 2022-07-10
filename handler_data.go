@@ -33,7 +33,7 @@ func (handler *handlerData) run(request string) {
 	handler.processIncomingMessage()
 }
 
-// Erases all message data from DATA command, changes cleared status to true
+// Erases all message data from DATA command
 func (handler *handlerData) clearMessage() {
 	messageWithData := handler.message
 	clearedMessage := &message{
@@ -46,7 +46,6 @@ func (handler *handlerData) clearMessage() {
 		rcpttoRequest:    messageWithData.rcpttoRequest,
 		rcpttoResponse:   messageWithData.rcpttoResponse,
 		rcptto:           messageWithData.rcptto,
-		cleared:          true,
 	}
 	*messageWithData = *clearedMessage
 }
