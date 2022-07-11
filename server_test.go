@@ -36,6 +36,22 @@ func TestServerNewMessage(t *testing.T) {
 	})
 }
 
+func TestServerNewMessageWithHeloContext(t *testing.T) {
+	t.Run("pushes new message into server.messages with helo context from other message, returns this message", func(t *testing.T) {
+		server := &Server{messages: new(messages)}
+		message, heloRequest, heloResponse, helo := server.newMessage(), "heloRequest", "heloResponse", true
+		message.heloRequest, message.heloResponse, message.helo = heloRequest, heloResponse, helo
+		newMessage := server.newMessageWithHeloContext(message)
+		messages := server.messages.items
+
+		assert.Equal(t, heloRequest, newMessage.heloRequest)
+		assert.Equal(t, heloResponse, newMessage.heloResponse)
+		assert.Equal(t, helo, newMessage.helo)
+		assert.Equal(t, newMessage, messages[1])
+		assert.Equal(t, 2, len(messages))
+	})
+}
+
 func TestServerIsInvalidCmd(t *testing.T) {
 	availableComands, server := strings.Split("helo,ehlo,mail from:,rcpt to:,data,quit", ","), new(Server)
 
@@ -80,7 +96,7 @@ func TestServerRemoveFromWaitGroup(t *testing.T) {
 }
 
 func TestServerHandleSession(t *testing.T) {
-	t.Run("when complex successful session", func(t *testing.T) {
+	t.Run("when complex successful session, multiple message receiving scenario disabled", func(t *testing.T) {
 		session, configuration := &sessionMock{}, createConfiguration()
 		server := newServer(configuration)
 
@@ -96,6 +112,12 @@ func TestServerHandleSession(t *testing.T) {
 		session.On("readRequest").Once().Return("ehlo example.com", nil)
 		session.On("clearError").Once().Return(nil)
 		session.On("writeResponse", configuration.msgHeloReceived, configuration.responseDelayHelo).Once().Return(nil)
+		session.On("isErrorFound").Once().Return(false)
+
+		session.On("setTimeout", defaultSessionTimeout).Once().Return(nil)
+		session.On("readRequest").Once().Return("rset", nil)
+		session.On("clearError").Once().Return(nil)
+		session.On("writeResponse", configuration.msgRsetReceived, configuration.responseDelayRset).Once().Return(nil)
 		session.On("isErrorFound").Once().Return(false)
 
 		session.On("setTimeout", defaultSessionTimeout).Once().Return(nil)
@@ -128,6 +150,87 @@ func TestServerHandleSession(t *testing.T) {
 		session.On("finish").Once().Return(nil)
 
 		server.handleSession(session)
+		assert.Equal(t, 1, len(server.Messages()))
+	})
+
+	t.Run("when complex successful session, multiple message receiving scenario enabled", func(t *testing.T) {
+		session, configuration := &sessionMock{}, createConfiguration()
+		configuration.multipleMessageReceiving = true
+		server := newServer(configuration)
+
+		session.On("writeResponse", configuration.msgGreeting, defaultSessionResponseDelay).Once().Return(nil)
+
+		session.On("setTimeout", defaultSessionTimeout).Once().Return(nil)
+		session.On("readRequest").Once().Return("helo example.com", nil)
+		session.On("clearError").Once().Return(nil)
+		session.On("writeResponse", configuration.msgHeloReceived, configuration.responseDelayHelo).Once().Return(nil)
+		session.On("isErrorFound").Once().Return(false)
+
+		session.On("setTimeout", defaultSessionTimeout).Once().Return(nil)
+		session.On("readRequest").Once().Return("ehlo example.com", nil)
+		session.On("clearError").Once().Return(nil)
+		session.On("writeResponse", configuration.msgHeloReceived, configuration.responseDelayHelo).Once().Return(nil)
+		session.On("isErrorFound").Once().Return(false)
+
+		session.On("setTimeout", defaultSessionTimeout).Once().Return(nil)
+		session.On("readRequest").Once().Return("mail from: receiver@example.com", nil)
+		session.On("clearError").Once().Return(nil)
+		session.On("writeResponse", configuration.msgMailfromReceived, configuration.responseDelayMailfrom).Once().Return(nil)
+		session.On("isErrorFound").Once().Return(false)
+
+		session.On("setTimeout", defaultSessionTimeout).Once().Return(nil)
+		session.On("readRequest").Once().Return("rcpt to: sender1@example.com", nil)
+		session.On("clearError").Once().Return(nil)
+		session.On("writeResponse", configuration.msgRcpttoReceived, configuration.responseDelayRcptto).Once().Return(nil)
+		session.On("isErrorFound").Once().Return(false)
+
+		session.On("setTimeout", defaultSessionTimeout).Once().Return(nil)
+		session.On("readRequest").Once().Return("data", nil)
+		session.On("clearError").Once().Return(nil)
+		session.On("writeResponse", configuration.msgDataReceived, configuration.responseDelayData).Once().Return(nil)
+		session.On("isErrorFound").Once().Return(false)
+
+		session.On("readBytes").Once().Return([]uint8(".some message"), nil)
+		session.On("readBytes").Once().Return([]uint8(".\r\n"), nil)
+		session.On("writeResponse", configuration.msgMsgReceived, configuration.responseDelayMessage).Once().Return(nil)
+
+		session.On("setTimeout", defaultSessionTimeout).Once().Return(nil)
+		session.On("readRequest").Once().Return("rset", nil)
+		session.On("clearError").Once().Return(nil)
+		session.On("writeResponse", configuration.msgRsetReceived, configuration.responseDelayRset).Once().Return(nil)
+		session.On("isErrorFound").Once().Return(false)
+
+		session.On("setTimeout", defaultSessionTimeout).Once().Return(nil)
+		session.On("readRequest").Once().Return("mail from: receiver@example.com", nil)
+		session.On("clearError").Once().Return(nil)
+		session.On("writeResponse", configuration.msgMailfromReceived, configuration.responseDelayMailfrom).Once().Return(nil)
+		session.On("isErrorFound").Once().Return(false)
+
+		session.On("setTimeout", defaultSessionTimeout).Once().Return(nil)
+		session.On("readRequest").Once().Return("rcpt to: sender1@example.com", nil)
+		session.On("clearError").Once().Return(nil)
+		session.On("writeResponse", configuration.msgRcpttoReceived, configuration.responseDelayRcptto).Once().Return(nil)
+		session.On("isErrorFound").Once().Return(false)
+
+		session.On("setTimeout", defaultSessionTimeout).Once().Return(nil)
+		session.On("readRequest").Once().Return("data", nil)
+		session.On("clearError").Once().Return(nil)
+		session.On("writeResponse", configuration.msgDataReceived, configuration.responseDelayData).Once().Return(nil)
+		session.On("isErrorFound").Once().Return(false)
+
+		session.On("readBytes").Once().Return([]uint8(".some message"), nil)
+		session.On("readBytes").Once().Return([]uint8(".\r\n"), nil)
+		session.On("writeResponse", configuration.msgMsgReceived, configuration.responseDelayMessage).Once().Return(nil)
+
+		session.On("setTimeout", defaultSessionTimeout).Once().Return(nil)
+		session.On("readRequest").Once().Return("quit", nil)
+		session.On("writeResponse", configuration.msgQuitCmd, configuration.responseDelayQuit).Once().Return(nil)
+		session.On("isErrorFound").Once().Return(false)
+
+		session.On("finish").Once().Return(nil)
+
+		server.handleSession(session)
+		assert.Equal(t, 2, len(server.Messages()))
 	})
 
 	t.Run("when invalid command, fail fast scenario disabled", func(t *testing.T) {
@@ -202,7 +305,7 @@ func TestServerStart(t *testing.T) {
 		server := newServer(configuration)
 
 		assert.NoError(t, server.Start())
-		_ = runMinimalSuccessfulSMTPSession(configuration.hostAddress, server.PortNumber)
+		_ = runSuccessfulSMTPSession(configuration.hostAddress, server.PortNumber, false)
 		assert.NotEmpty(t, server.messages)
 		assert.NotNil(t, server.quit)
 		assert.NotNil(t, server.quitTimeout)
@@ -218,7 +321,7 @@ func TestServerStart(t *testing.T) {
 		server := newServer(configuration)
 
 		assert.NoError(t, server.Start())
-		_ = runMinimalSuccessfulSMTPSession(configuration.hostAddress, portNumber)
+		_ = runSuccessfulSMTPSession(configuration.hostAddress, portNumber, false)
 		assert.NotEmpty(t, server.messages)
 		assert.NotNil(t, server.quit)
 		assert.NotNil(t, server.quitTimeout)

@@ -9,6 +9,7 @@ type configuration struct {
 	logToStdout                   bool
 	logServerActivity             bool
 	isCmdFailFast                 bool
+	multipleMessageReceiving      bool
 	msgGreeting                   string
 	msgInvalidCmd                 string
 	msgQuitCmd                    string
@@ -29,6 +30,9 @@ type configuration struct {
 	msgDataReceived               string
 	msgMsgSizeIsTooBig            string
 	msgMsgReceived                string
+	msgInvalidCmdRsetSequence     string
+	msgInvalidCmdRsetArg          string
+	msgRsetReceived               string
 	blacklistedHeloDomains        []string
 	blacklistedMailfromEmails     []string
 	blacklistedRcpttoEmails       []string
@@ -38,6 +42,7 @@ type configuration struct {
 	responseDelayRcptto           int
 	responseDelayData             int
 	responseDelayMessage          int
+	responseDelayRset             int
 	responseDelayQuit             int
 	msgSizeLimit                  int
 	sessionTimeout                int
@@ -56,6 +61,7 @@ func newConfiguration(config ConfigurationAttr) *configuration {
 		logToStdout:                   config.LogToStdout,
 		logServerActivity:             config.LogServerActivity,
 		isCmdFailFast:                 config.IsCmdFailFast,
+		multipleMessageReceiving:      config.MultipleMessageReceiving,
 		msgGreeting:                   config.MsgGreeting,
 		msgInvalidCmd:                 config.MsgInvalidCmd,
 		msgInvalidCmdHeloSequence:     config.MsgInvalidCmdHeloSequence,
@@ -75,6 +81,9 @@ func newConfiguration(config ConfigurationAttr) *configuration {
 		msgDataReceived:               config.MsgDataReceived,
 		msgMsgSizeIsTooBig:            config.MsgMsgSizeIsTooBig,
 		msgMsgReceived:                config.MsgMsgReceived,
+		msgInvalidCmdRsetSequence:     config.MsgInvalidCmdRsetSequence,
+		msgInvalidCmdRsetArg:          config.MsgInvalidCmdRsetArg,
+		msgRsetReceived:               config.MsgRsetReceived,
 		msgQuitCmd:                    config.MsgQuitCmd,
 		blacklistedHeloDomains:        config.BlacklistedHeloDomains,
 		blacklistedMailfromEmails:     config.BlacklistedMailfromEmails,
@@ -85,6 +94,7 @@ func newConfiguration(config ConfigurationAttr) *configuration {
 		responseDelayRcptto:           config.ResponseDelayRcptto,
 		responseDelayData:             config.ResponseDelayData,
 		responseDelayMessage:          config.ResponseDelayMessage,
+		responseDelayRset:             config.ResponseDelayRset,
 		responseDelayQuit:             config.ResponseDelayQuit,
 		msgSizeLimit:                  config.MsgSizeLimit,
 		sessionTimeout:                config.SessionTimeout,
@@ -99,6 +109,7 @@ type ConfigurationAttr struct {
 	LogToStdout                   bool
 	LogServerActivity             bool
 	IsCmdFailFast                 bool
+	MultipleMessageReceiving      bool
 	MsgGreeting                   string
 	MsgInvalidCmd                 string
 	MsgQuitCmd                    string
@@ -119,6 +130,9 @@ type ConfigurationAttr struct {
 	MsgDataReceived               string
 	MsgMsgSizeIsTooBig            string
 	MsgMsgReceived                string
+	MsgInvalidCmdRsetSequence     string
+	MsgInvalidCmdRsetArg          string
+	MsgRsetReceived               string
 	BlacklistedHeloDomains        []string
 	BlacklistedMailfromEmails     []string
 	BlacklistedRcpttoEmails       []string
@@ -128,6 +142,7 @@ type ConfigurationAttr struct {
 	ResponseDelayRcptto           int
 	ResponseDelayData             int
 	ResponseDelayMessage          int
+	ResponseDelayRset             int
 	ResponseDelayQuit             int
 	MsgSizeLimit                  int
 	SessionTimeout                int
@@ -232,6 +247,19 @@ func (config *ConfigurationAttr) assignHandlerMessageDefaultValues() {
 	}
 }
 
+// Assigns handlerRset defaults
+func (config *ConfigurationAttr) assignHandlerRsetDefaultValues() {
+	if config.MsgInvalidCmdRsetSequence == emptyString {
+		config.MsgInvalidCmdRsetSequence = defaultInvalidCmdHeloSequenceMsg
+	}
+	if config.MsgInvalidCmdRsetArg == emptyString {
+		config.MsgInvalidCmdRsetArg = defaultInvalidCmdMsg
+	}
+	if config.MsgRsetReceived == emptyString {
+		config.MsgRsetReceived = defaultOkMsg
+	}
+}
+
 // Assigns default values to ConfigurationAttr fields
 func (config *ConfigurationAttr) assignDefaultValues() {
 	config.assignServerDefaultValues()
@@ -240,4 +268,5 @@ func (config *ConfigurationAttr) assignDefaultValues() {
 	config.assignHandlerRcpttoDefaultValues()
 	config.assignHandlerDataDefaultValues()
 	config.assignHandlerMessageDefaultValues()
+	config.assignHandlerRsetDefaultValues()
 }

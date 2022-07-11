@@ -88,6 +88,7 @@ func attrFromCommandLine(args []string, options ...flag.ErrorHandling) (bool, *s
 		sessionTimeout                = flags.Int("sessionTimeout", 0, "Session timeout in seconds. It's equal to 30 seconds by default")
 		shutdownTimeout               = flags.Int("shutdownTimeout", 0, "Graceful shutdown timeout in seconds. It's equal to 1 second by default")
 		failFast                      = flags.Bool("failFast", false, "Enables fail fast scenario. Disabled by default")
+		multipleMessageReceiving      = flags.Bool("multipleMessageReceiving", false, "Enables multiple message receiving scenario. Disabled by default")
 		blacklistedHeloDomains        = flags.String("blacklistedHeloDomains", "", "Blacklisted HELO domains, separated by commas")
 		blacklistedMailfromEmails     = flags.String("blacklistedMailfromEmails", "", "Blacklisted MAIL FROM emails, separated by commas")
 		blacklistedRcpttoEmails       = flags.String("blacklistedRcpttoEmails", "", "Blacklisted RCPT TO emails, separated by commas")
@@ -97,6 +98,7 @@ func attrFromCommandLine(args []string, options ...flag.ErrorHandling) (bool, *s
 		responseDelayRcptto           = flags.Int("responseDelayRcptto", 0, "RCPT TO"+responseDelayFlagInfo)
 		responseDelayData             = flags.Int("responseDelayData", 0, "DATA"+responseDelayFlagInfo)
 		responseDelayMessage          = flags.Int("responseDelayMessage", 0, "Message"+responseDelayFlagInfo)
+		responseDelayRset             = flags.Int("responseDelayRset", 0, "RSET"+responseDelayFlagInfo)
 		responseDelayQuit             = flags.Int("responseDelayQuit", 0, "QUIT"+responseDelayFlagInfo)
 		msgSizeLimit                  = flags.Int("msgSizeLimit", 0, "Message body size limit in bytes. It's equal to 10485760 bytes")
 		msgGreeting                   = flags.String("msgGreeting", "", "Custom server greeting message")
@@ -118,6 +120,9 @@ func attrFromCommandLine(args []string, options ...flag.ErrorHandling) (bool, *s
 		msgDataReceived               = flags.String("msgDataReceived", "", "Custom DATA received message")
 		msgMsgSizeIsTooBig            = flags.String("msgMsgSizeIsTooBig", "", "Custom size is too big message")
 		msgMsgReceived                = flags.String("msgMsgReceived", "", "Custom received message body message")
+		msgInvalidCmdRsetSequence     = flags.String("msgInvalidCmdRsetSequence", "", "Custom invalid command RSET sequence message")
+		msgInvalidCmdRsetArg          = flags.String("msgInvalidCmdRsetArg", "", "Custom invalid command RSET message")
+		msgRsetReceived               = flags.String("msgRsetReceived", "", "Custom RSET received message")
 		msgQuitCmd                    = flags.String("msgQuitCmd", "", "Custom quit command message")
 	)
 	if err := flags.Parse(args[1:]); err != nil {
@@ -132,6 +137,7 @@ func attrFromCommandLine(args []string, options ...flag.ErrorHandling) (bool, *s
 		SessionTimeout:                *sessionTimeout,
 		ShutdownTimeout:               *shutdownTimeout,
 		IsCmdFailFast:                 *failFast,
+		MultipleMessageReceiving:      *multipleMessageReceiving,
 		BlacklistedHeloDomains:        toSlice(*blacklistedHeloDomains),
 		BlacklistedMailfromEmails:     toSlice(*blacklistedMailfromEmails),
 		BlacklistedRcpttoEmails:       toSlice(*blacklistedRcpttoEmails),
@@ -141,6 +147,7 @@ func attrFromCommandLine(args []string, options ...flag.ErrorHandling) (bool, *s
 		ResponseDelayRcptto:           *responseDelayRcptto,
 		ResponseDelayData:             *responseDelayData,
 		ResponseDelayMessage:          *responseDelayMessage,
+		ResponseDelayRset:             *responseDelayRset,
 		ResponseDelayQuit:             *responseDelayQuit,
 		MsgSizeLimit:                  *msgSizeLimit,
 		MsgGreeting:                   *msgGreeting,
@@ -162,6 +169,9 @@ func attrFromCommandLine(args []string, options ...flag.ErrorHandling) (bool, *s
 		MsgDataReceived:               *msgDataReceived,
 		MsgMsgSizeIsTooBig:            *msgMsgSizeIsTooBig,
 		MsgMsgReceived:                *msgMsgReceived,
+		MsgInvalidCmdRsetSequence:     *msgInvalidCmdRsetSequence,
+		MsgInvalidCmdRsetArg:          *msgInvalidCmdRsetArg,
+		MsgRsetReceived:               *msgRsetReceived,
 		MsgQuitCmd:                    *msgQuitCmd,
 	}, nil
 }

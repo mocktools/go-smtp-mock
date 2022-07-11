@@ -23,8 +23,7 @@ func (handler *handlerQuit) run(request string) {
 	handler.session.writeResponse(configuration.msgQuitCmd, configuration.responseDelayQuit)
 }
 
-// Invalid QUIT command predicate. Returns true when request is invalid,
-// otherwise returns false.
+// Invalid QUIT command predicate. Returns true when request is invalid, otherwise returns false
 func (handler *handlerQuit) isInvalidRequest(request string) bool {
 	return !matchRegex(request, validQuitCmdRegexPattern)
 }

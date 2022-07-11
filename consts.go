@@ -6,13 +6,14 @@ const (
 	// SMTP mock default messages
 	defaultGreetingMsg                   = "220 Welcome"
 	defaultQuitMsg                       = "221 Closing connection"
+	defaultOkMsg                         = "250 Ok"
 	defaultReceivedMsg                   = "250 Received"
 	defaultReadyForReceiveMsg            = "354 Ready for receive message. End data with <CR><LF>.<CR><LF>"
 	defaultTransientNegativeMsg          = "421 Service not available"
 	defaultInvalidCmdHeloArgMsg          = "501 HELO requires domain address"
 	defaultInvalidCmdMailfromArgMsg      = "501 MAIL FROM requires valid email address"
 	defaultInvalidCmdRcpttoArgMsg        = "501 RCPT TO requires valid email address"
-	defaultInvalidCmdMsg                 = "502 Command unrecognized. Available commands: HELO, EHLO, MAIL FROM:, RCPT TO:, DATA, QUIT"
+	defaultInvalidCmdMsg                 = "502 Command unrecognized. Available commands: HELO, EHLO, MAIL FROM:, RCPT TO:, DATA, RSET, QUIT"
 	defaultInvalidCmdHeloSequenceMsg     = "503 Bad sequence of commands. HELO should be the first"
 	defaultInvalidCmdMailfromSequenceMsg = "503 Bad sequence of commands. MAIL FROM should be used after HELO"
 	defaultInvalidCmdRcpttoSequenceMsg   = "503 Bad sequence of commands. RCPT TO should be used after MAIL FROM"
@@ -50,13 +51,14 @@ const (
 	serverForceStopMsg               = "SMTP mock server was force stopped by timeout"
 
 	// Regex patterns
-	availableCmdsRegexPattern          = `(?i)helo|ehlo|mail from:|rcpt to:|data|quit`
+	availableCmdsRegexPattern          = `(?i)helo|ehlo|mail from:|rcpt to:|data|rset|quit`
 	domainRegexPattern                 = `(?i)([\p{L}0-9]+([\-.]{1}[\p{L}0-9]+)*\.\p{L}{2,63})`
 	emailRegexPattern                  = `(?i)<?((.+)@` + domainRegexPattern + `)>?`
 	validHeloCmdsRegexPattern          = `(?i)helo|ehlo`
 	validMailfromCmdRegexPattern       = `(?i)mail from:`
 	validRcpttoCmdRegexPattern         = `(?i)rcpt to:`
 	validDataCmdRegexPattern           = `\A(?i)data\z`
+	validRsetCmdRegexPattern           = `\A(?i)rset\z`
 	validQuitCmdRegexPattern           = `\A(?i)quit\z`
 	validHeloComplexCmdRegexPattern    = `\A(` + validHeloCmdsRegexPattern + `) (` + domainRegexPattern + `|localhost)\z`
 	validMailromComplexCmdRegexPattern = `\A(` + validMailfromCmdRegexPattern + `) ?(` + emailRegexPattern + `)\z`

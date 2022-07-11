@@ -139,10 +139,10 @@ func TestNew(t *testing.T) {
 	})
 
 	t.Run("successful iteration with new server", func(t *testing.T) {
-		server := New(ConfigurationAttr{})
-		configuration := server.configuration
+		server := New(ConfigurationAttr{MultipleMessageReceiving: true})
+		configuration, messages := server.configuration, server.messages
 
-		assert.Empty(t, server.messages)
+		assert.Empty(t, messages)
 		assert.NotNil(t, server.logger)
 		assert.NotNil(t, server.wg)
 		assert.Nil(t, server.quit)
@@ -150,12 +150,51 @@ func TestNew(t *testing.T) {
 
 		assert.NoError(t, server.Start())
 		assert.True(t, server.isStarted)
-		_ = runMinimalSuccessfulSMTPSession(configuration.hostAddress, server.PortNumber)
+		_ = runSuccessfulSMTPSession(configuration.hostAddress, server.PortNumber, true)
 		_ = server.Stop()
 
-		assert.NotEmpty(t, server.messages)
+		assert.Equal(t, 2, len(messages.items))
 		assert.NotNil(t, server.quit)
 		assert.False(t, server.isStarted)
 		assert.Greater(t, server.PortNumber, 0)
+
+		receivedMessages := messages.items
+		firstMessage, secondMessage := receivedMessages[0], receivedMessages[1]
+
+		assert.True(t, firstMessage.helo)
+		assert.Equal(t, "EHLO olo.com", firstMessage.heloRequest)
+		assert.Equal(t, configuration.msgHeloReceived, firstMessage.heloResponse)
+
+		assert.True(t, firstMessage.mailfrom)
+		assert.Equal(t, "MAIL FROM:<user@molo.com>", firstMessage.mailfromRequest)
+		assert.Equal(t, configuration.msgMailfromReceived, firstMessage.mailfromResponse)
+		assert.True(t, firstMessage.rcptto)
+		assert.Equal(t, "RCPT TO:<user1@olo.com>", firstMessage.rcpttoRequest)
+		assert.Equal(t, configuration.msgRcpttoReceived, firstMessage.rcpttoResponse)
+		assert.True(t, firstMessage.data)
+		assert.Equal(t, "DATA", firstMessage.dataRequest)
+		assert.Equal(t, configuration.msgDataReceived, firstMessage.dataResponse)
+		assert.True(t, firstMessage.msg)
+		assert.Equal(t, string(messageBody("user@molo.com", "user1@olo.com"))+"\r\n", firstMessage.msgRequest)
+		assert.Equal(t, configuration.msgMsgReceived, firstMessage.msgResponse)
+		assert.True(t, firstMessage.isConsistent())
+		assert.True(t, firstMessage.rset)
+		assert.Equal(t, "RSET", firstMessage.rsetRequest)
+		assert.Equal(t, configuration.msgRsetReceived, firstMessage.rsetResponse)
+
+		assert.True(t, secondMessage.mailfrom)
+		assert.Equal(t, "MAIL FROM:<user@molo.com>", secondMessage.mailfromRequest)
+		assert.Equal(t, configuration.msgMailfromReceived, secondMessage.mailfromResponse)
+		assert.True(t, secondMessage.rcptto)
+		assert.Equal(t, "RCPT TO:<user2@olo.com>", secondMessage.rcpttoRequest)
+		assert.Equal(t, configuration.msgRcpttoReceived, secondMessage.rcpttoResponse)
+		assert.True(t, secondMessage.data)
+		assert.Equal(t, "DATA", secondMessage.dataRequest)
+		assert.Equal(t, configuration.msgDataReceived, secondMessage.dataResponse)
+		assert.True(t, secondMessage.msg)
+		assert.Equal(t, string(messageBody("user@molo.com", "user2@olo.com"))+"\r\n", secondMessage.msgRequest)
+		assert.Equal(t, configuration.msgMsgReceived, secondMessage.msgResponse)
+		assert.True(t, secondMessage.isConsistent())
+		assert.True(t, secondMessage.quitSent)
 	})
 }

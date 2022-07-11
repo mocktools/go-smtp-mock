@@ -30,7 +30,6 @@ func TestHandlerMailfromRun(t *testing.T) {
 		handler.run(request)
 
 		assert.True(t, message.mailfrom)
-		assert.True(t, message.isCleared())
 		assert.Equal(t, request, message.mailfromRequest)
 		assert.Equal(t, receivedMessage, message.mailfromResponse)
 	})
@@ -46,7 +45,6 @@ func TestHandlerMailfromRun(t *testing.T) {
 		handler.run(request)
 
 		assert.False(t, message.mailfrom)
-		assert.True(t, message.isCleared())
 		assert.Equal(t, request, message.mailfromRequest)
 		assert.Equal(t, errorMessage, message.mailfromResponse)
 	})
@@ -63,7 +61,6 @@ func TestHandlerMailfromRun(t *testing.T) {
 		handler.run(request)
 
 		assert.False(t, message.mailfrom)
-		assert.True(t, message.isCleared())
 		assert.Equal(t, request, message.mailfromRequest)
 		assert.Equal(t, errorMessage, message.mailfromResponse)
 	})
@@ -82,21 +79,19 @@ func TestHandlerMailfromRun(t *testing.T) {
 		handler.run(request)
 
 		assert.False(t, message.mailfrom)
-		assert.True(t, message.isCleared())
 		assert.Equal(t, request, message.mailfromRequest)
 		assert.Equal(t, errorMessage, message.mailfromResponse)
 	})
 }
 
 func TestHandlerMailfromClearMessage(t *testing.T) {
-	t.Run("erases all handler message data from MAILFROM command, changes cleared status to true", func(t *testing.T) {
+	t.Run("erases all handler message data from MAILFROM command", func(t *testing.T) {
 		notEmptyMessage := createNotEmptyMessage()
 		handler := newHandlerMailfrom(new(session), notEmptyMessage, new(configuration))
 		clearedMessage := &message{
 			heloRequest:  notEmptyMessage.heloRequest,
 			heloResponse: notEmptyMessage.heloResponse,
 			helo:         notEmptyMessage.helo,
-			cleared:      true,
 		}
 		handler.clearMessage()
 

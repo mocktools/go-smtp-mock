@@ -26,14 +26,13 @@ func (handler *handlerMailfrom) run(request string) {
 	handler.writeResult(true, request, handler.configuration.msgMailfromReceived)
 }
 
-// Erases all message data from MAILFROM command, changes cleared status to true
+// Erases all message data from MAILFROM command
 func (handler *handlerMailfrom) clearMessage() {
 	messageWithData := handler.message
 	clearedMessage := &message{
 		heloRequest:  messageWithData.heloRequest,
 		heloResponse: messageWithData.heloResponse,
 		helo:         messageWithData.helo,
-		cleared:      true,
 	}
 	*messageWithData = *clearedMessage
 }
