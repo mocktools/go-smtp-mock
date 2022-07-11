@@ -41,6 +41,7 @@
 - Comes with default settings out of the box, configure only what you need
 - Ability to override previous SMTP commands
 - Fail fast scenario (ability to close client session for case when command was inconsistent or failed)
+- Multiple message receiving (ability to configure multiple message receiving during one session)
 - Mock-server activity logger
 - Ability to do graceful/force shutdown of SMTP mock server
 - No authentication support
@@ -122,6 +123,13 @@ smtpmock.ConfigurationAttr{
   // It's equal to false by default
   IsCmdFailFast:                 true,
 
+  // Ability to configure multiple message receiving during one session. It means that server
+  // will create another message during current SMTP session in case when RSET
+  // command has been used after succesful commands chain: MAILFROM, RCPTTO, DATA.
+  // Please note, by default RSET command flushes current message in any case.
+  // It's equal to false by default
+  MultipleMessageReceiving:      true,
+
   // Ability to specify blacklisted HELO domains. It's equal to empty []string
   BlacklistedHeloDomains:        []string{"example1.com", "example2.com", "localhost"},
 
@@ -154,6 +162,10 @@ smtpmock.ConfigurationAttr{
   // Ability to specify message response delay in seconds. It runs immediately,
   // equals to 0 seconds by default
   ResponseDelayMessage:          2,
+
+  // Ability to specify RSET response delay in seconds. It runs immediately,
+  // equals to 0 seconds by default
+  ResponseDelayRset:             2,
 
   // Ability to specify QUIT response delay in seconds. It runs immediately,
   // equals to 0 seconds by default
@@ -229,6 +241,16 @@ smtpmock.ConfigurationAttr{
 
   // Custom received message body message. Based on defaultReceivedMsg by default
   MsgMsgReceived:                "msgMsgReceived",
+
+  // Custom invalid command RSET sequence message.
+  // Based on defaultInvalidCmdHeloSequenceMsg by default
+  MsgInvalidCmdRsetSequence:     "msgInvalidCmdRsetSequence",
+
+  // Custom invalid command RSET message. Based on defaultInvalidCmdMsg by default
+  MsgInvalidCmdRsetArg:           "msgInvalidCmdRsetArg",
+
+  // Custom RSET received message. Based on defaultOkMsg by default
+  MsgRsetReceived:               "msgRsetReceived",
 
   // Custom quit command message. Based on defaultQuitMsg by default
   MsgQuitCmd:                    "msgQuitCmd",
@@ -352,6 +374,7 @@ curl -sL https://raw.githubusercontent.com/mocktools/go-smtp-mock/master/script/
 | `-sessionTimeout` - session timeout in seconds. It's equal to 30 seconds by default | `-sessionTimeout=60` |
 | `-shutdownTimeout` - graceful shutdown timeout in seconds. It's equal to 1 second by default | `-shutdownTimeout=5` |
 | `-failFast` - enables fail fast scenario. Disabled by default | `-failFast` |
+| `-multipleMessageReceiving` - enables multiple message receiving scenario. Disabled by default | `-multipleMessageReceiving` |
 | `-blacklistedHeloDomains` - blacklisted `HELO` domains, separated by commas | `-blacklistedHeloDomains="example1.com,example2.com"` |
 | `-blacklistedMailfromEmails` - blacklisted `MAIL FROM` emails, separated by commas | `-blacklistedMailfromEmails="a@example1.com,b@example2.com"` |
 | `-blacklistedRcpttoEmails` - blacklisted `RCPT TO` emails, separated by commas | `-blacklistedRcpttoEmails="a@example1.com,b@example2.com"` |
@@ -361,6 +384,7 @@ curl -sL https://raw.githubusercontent.com/mocktools/go-smtp-mock/master/script/
 | `-responseDelayRcptto` - `RCPT TO` response delay in seconds. It's equal to 0 seconds by default | `-responseDelayRcptto=2` |
 | `-responseDelayData` - `DATA` response delay in seconds. It's equal to 0 seconds by default | `-responseDelayData=2` |
 | `-responseDelayMessage` - Message response delay in seconds. It's equal to 0 seconds by default | `-responseDelayMessage=2` |
+| `-responseDelayRset` - `RSET` response delay in seconds. It's equal to 0 seconds by default | `-responseDelayRset=2` |
 | `-responseDelayQuit` - `QUIT` response delay in seconds. It's equal to 0 seconds by default | `-responseDelayQuit=2` |
 | `-msgSizeLimit` - message body size limit in bytes. It's equal to `10485760` bytes | `-msgSizeLimit=42` |
 | `-msgGreeting` - custom server greeting message | `-msgGreeting="Greeting message"` |
@@ -382,6 +406,9 @@ curl -sL https://raw.githubusercontent.com/mocktools/go-smtp-mock/master/script/
 | `-msgDataReceived` - custom `DATA` received message | `-msgDataReceived="DATA received message"` |
 | `-msgMsgSizeIsTooBig` - custom size is too big message | `-msgMsgSizeIsTooBig="Message size is too big"` |
 | `-msgMsgReceived` - custom received message body message | `-msgMsgReceived="Message has been received"` |
+| `-msgInvalidCmdRsetSequence` - custom invalid command `RSET` sequence message | `-msgInvalidCmdRsetSequence="Invalid command RSET sequence message"` |
+| `-msgInvalidCmdRsetArg` - custom invalid command `RSET` message | `-msgInvalidCmdRsetArg="Invalid command RSET message"` |
+| `-msgRsetReceived` - custom `RSET` received message | `-msgRsetReceived="RSET received message"` |
 | `-msgQuitCmd` - custom quit command message | `-msgQuitCmd="Quit command message"` |
 
 #### Other options

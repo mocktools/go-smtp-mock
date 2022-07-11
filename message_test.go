@@ -126,6 +126,30 @@ func TestMessageMsg(t *testing.T) {
 	})
 }
 
+func TestMessageRsetRequest(t *testing.T) {
+	t.Run("getter for rsetRequest field", func(t *testing.T) {
+		message := &message{rsetRequest: "some context"}
+
+		assert.Equal(t, message.rsetRequest, message.RsetRequest())
+	})
+}
+
+func TestMessageRsetResponse(t *testing.T) {
+	t.Run("getter for rsetRequest field", func(t *testing.T) {
+		message := &message{rsetResponse: "some context"}
+
+		assert.Equal(t, message.rsetResponse, message.RsetResponse())
+	})
+}
+
+func TestMessageRset(t *testing.T) {
+	t.Run("getter for rset field", func(t *testing.T) {
+		message := &message{rset: true}
+
+		assert.Equal(t, message.rset, message.Rset())
+	})
+}
+
 func TestMessageQuitSent(t *testing.T) {
 	t.Run("getter for quitSent field", func(t *testing.T) {
 		message := &message{quitSent: true}
@@ -134,15 +158,34 @@ func TestMessageQuitSent(t *testing.T) {
 	})
 }
 
-func TestMessageIsCleared(t *testing.T) {
-	t.Run("when cleared status true", func(t *testing.T) {
-		message := &message{cleared: true}
+func TestMessageIsConsistent(t *testing.T) {
+	t.Run("when consistent", func(t *testing.T) {
+		message := &message{mailfrom: true, rcptto: true, data: true, msg: true}
 
-		assert.True(t, message.isCleared())
+		assert.True(t, message.isConsistent())
 	})
 
-	t.Run("when cleared status false", func(t *testing.T) {
-		assert.False(t, new(message).isCleared())
+	t.Run("when not consistent MAILFROM", func(t *testing.T) {
+
+		assert.False(t, new(message).isConsistent())
+	})
+
+	t.Run("when not consistent RCPTTO", func(t *testing.T) {
+		message := &message{mailfrom: true}
+
+		assert.False(t, message.isConsistent())
+	})
+
+	t.Run("when not consistent DATA", func(t *testing.T) {
+		message := &message{mailfrom: true, rcptto: true}
+
+		assert.False(t, message.isConsistent())
+	})
+
+	t.Run("when not consistent MSG", func(t *testing.T) {
+		message := &message{mailfrom: true, rcptto: true, data: true}
+
+		assert.False(t, message.isConsistent())
 	})
 }
 

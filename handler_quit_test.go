@@ -36,3 +36,19 @@ func TestHandlerQuitRun(t *testing.T) {
 		assert.False(t, message.quitSent)
 	})
 }
+
+func TestHandlerQuitIsInvalidRequest(t *testing.T) {
+	handler := newHandlerQuit(new(session), new(message), new(configuration))
+
+	t.Run("when request includes invalid QUIT command", func(t *testing.T) {
+		request := "QUIT "
+
+		assert.True(t, handler.isInvalidRequest(request))
+	})
+
+	t.Run("when request includes valid QUIT command", func(t *testing.T) {
+		request := "QUIT"
+
+		assert.False(t, handler.isInvalidRequest(request))
+	})
+}

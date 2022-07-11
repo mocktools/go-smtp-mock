@@ -30,7 +30,6 @@ func TestHandlerRcpttoRun(t *testing.T) {
 		handler.run(request)
 
 		assert.True(t, message.rcptto)
-		assert.True(t, message.isCleared())
 		assert.Equal(t, request, message.rcpttoRequest)
 		assert.Equal(t, receivedMessage, message.rcpttoResponse)
 	})
@@ -46,7 +45,6 @@ func TestHandlerRcpttoRun(t *testing.T) {
 		handler.run(request)
 
 		assert.False(t, message.rcptto)
-		assert.True(t, message.isCleared())
 		assert.Equal(t, request, message.rcpttoRequest)
 		assert.Equal(t, errorMessage, message.rcpttoResponse)
 	})
@@ -63,7 +61,6 @@ func TestHandlerRcpttoRun(t *testing.T) {
 		handler.run(request)
 
 		assert.False(t, message.rcptto)
-		assert.True(t, message.isCleared())
 		assert.Equal(t, request, message.rcpttoRequest)
 		assert.Equal(t, errorMessage, message.rcpttoResponse)
 	})
@@ -82,7 +79,6 @@ func TestHandlerRcpttoRun(t *testing.T) {
 		handler.run(request)
 
 		assert.False(t, message.rcptto)
-		assert.True(t, message.isCleared())
 		assert.Equal(t, request, message.rcpttoRequest)
 		assert.Equal(t, errorMessage, message.rcpttoResponse)
 	})
@@ -101,14 +97,13 @@ func TestHandlerRcpttoRun(t *testing.T) {
 		handler.run(request)
 
 		assert.False(t, message.rcptto)
-		assert.True(t, message.isCleared())
 		assert.Equal(t, request, message.rcpttoRequest)
 		assert.Equal(t, errorMessage, message.rcpttoResponse)
 	})
 }
 
 func TestHandlerRcpttoClearMessage(t *testing.T) {
-	t.Run("erases all handler message data from RCPTTO command, changes cleared status to true", func(t *testing.T) {
+	t.Run("erases all handler message data from RCPTTO command", func(t *testing.T) {
 		notEmptyMessage := createNotEmptyMessage()
 		handler := newHandlerRcptto(new(session), notEmptyMessage, new(configuration))
 		clearedMessage := &message{
@@ -118,7 +113,6 @@ func TestHandlerRcpttoClearMessage(t *testing.T) {
 			mailfromRequest:  notEmptyMessage.mailfromRequest,
 			mailfromResponse: notEmptyMessage.mailfromResponse,
 			mailfrom:         notEmptyMessage.mailfrom,
-			cleared:          true,
 		}
 		handler.clearMessage()
 

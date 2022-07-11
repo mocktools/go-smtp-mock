@@ -29,7 +29,6 @@ func TestHandlerHeloRun(t *testing.T) {
 		handler.run(request)
 
 		assert.True(t, message.helo)
-		assert.True(t, message.isCleared())
 		assert.Equal(t, request, message.heloRequest)
 		assert.Equal(t, receivedMessage, message.heloResponse)
 	})
@@ -45,7 +44,6 @@ func TestHandlerHeloRun(t *testing.T) {
 		handler.run(request)
 
 		assert.False(t, message.helo)
-		assert.True(t, message.isCleared())
 		assert.Equal(t, request, message.heloRequest)
 		assert.Equal(t, errorMessage, message.heloResponse)
 	})
@@ -64,16 +62,15 @@ func TestHandlerHeloRun(t *testing.T) {
 		handler.run(request)
 
 		assert.False(t, message.helo)
-		assert.True(t, message.isCleared())
 		assert.Equal(t, request, message.heloRequest)
 		assert.Equal(t, errorMessage, message.heloResponse)
 	})
 }
 
 func TestHandlerHeloClearMessage(t *testing.T) {
-	t.Run("erases all handler message data, changes cleared status to true", func(t *testing.T) {
+	t.Run("erases all handler message data", func(t *testing.T) {
 		notEmptyMessage := createNotEmptyMessage()
-		handler, clearedMessage := newHandlerHelo(new(session), notEmptyMessage, new(configuration)), &message{cleared: true}
+		handler, clearedMessage := newHandlerHelo(new(session), notEmptyMessage, new(configuration)), new(message)
 		handler.clearMessage()
 
 		assert.Same(t, notEmptyMessage, handler.message)
