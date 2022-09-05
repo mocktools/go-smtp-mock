@@ -9,7 +9,7 @@ import (
 
 func TestNewHandlerRset(t *testing.T) {
 	t.Run("returns new handlerRset", func(t *testing.T) {
-		session, message, configuration := new(session), new(message), new(configuration)
+		session, message, configuration := new(session), new(Message), new(configuration)
 		handler := newHandlerRset(session, message, configuration)
 
 		assert.Same(t, session, handler.session)
@@ -21,7 +21,7 @@ func TestNewHandlerRset(t *testing.T) {
 func TestHandlerRsetRun(t *testing.T) {
 	t.Run("when successful RSET request", func(t *testing.T) {
 		request := "RSET"
-		session, message, configuration := new(sessionMock), new(message), createConfiguration()
+		session, message, configuration := new(sessionMock), new(Message), createConfiguration()
 		receivedMessage := configuration.msgRsetReceived
 		message.helo = true
 		handler := newHandlerRset(session, message, configuration)
@@ -36,7 +36,7 @@ func TestHandlerRsetRun(t *testing.T) {
 
 	t.Run("when failure RSET request, invalid command sequence", func(t *testing.T) {
 		request := "RSET"
-		session, message, configuration := new(sessionMock), new(message), createConfiguration()
+		session, message, configuration := new(sessionMock), new(Message), createConfiguration()
 		errorMessage := configuration.msgInvalidCmdRsetSequence
 		handler, err := newHandlerRset(session, message, configuration), errors.New(errorMessage)
 		session.On("clearError").Once().Return(nil)
@@ -51,7 +51,7 @@ func TestHandlerRsetRun(t *testing.T) {
 
 	t.Run("when failure RSET request, invalid command", func(t *testing.T) {
 		request := "RSET "
-		session, message, configuration := new(sessionMock), new(message), createConfiguration()
+		session, message, configuration := new(sessionMock), new(Message), createConfiguration()
 		errorMessage := configuration.msgInvalidCmdRsetArg
 		message.helo = true
 		handler, err := newHandlerRset(session, message, configuration), errors.New(errorMessage)
@@ -70,7 +70,7 @@ func TestHandlerRsetClearMessage(t *testing.T) {
 	t.Run("when not multiple message receiving condition erases all message data except HELO/EHLO command context", func(t *testing.T) {
 		notEmptyMessage := createNotEmptyMessage()
 		handler := newHandlerRset(new(session), notEmptyMessage, new(configuration))
-		clearedMessage := &message{
+		clearedMessage := &Message{
 			heloRequest:  notEmptyMessage.heloRequest,
 			heloResponse: notEmptyMessage.heloResponse,
 			helo:         notEmptyMessage.helo,
@@ -99,7 +99,7 @@ func TestHandlerRsetWriteResult(t *testing.T) {
 	configuration, session := createConfiguration(), &sessionMock{}
 
 	t.Run("when successful request received", func(t *testing.T) {
-		message := new(message)
+		message := new(Message)
 		handler := newHandlerRset(session, message, configuration)
 		session.On("writeResponse", response, configuration.responseDelayRset).Once().Return(nil)
 
@@ -110,7 +110,7 @@ func TestHandlerRsetWriteResult(t *testing.T) {
 	})
 
 	t.Run("when failed request received", func(t *testing.T) {
-		message, err := new(message), errors.New(response)
+		message, err := new(Message), errors.New(response)
 		handler := newHandlerRset(session, message, configuration)
 		session.On("addError", err).Once().Return(nil)
 		session.On("writeResponse", response, configuration.responseDelayRset).Once().Return(nil)
@@ -126,7 +126,7 @@ func TestHandlerRsetIsInvalidCmdSequence(t *testing.T) {
 	request, configuration, session := "some request", createConfiguration(), &sessionMock{}
 
 	t.Run("when helo previous command was failure ", func(t *testing.T) {
-		message, errorMessage := new(message), configuration.msgInvalidCmdRsetSequence
+		message, errorMessage := new(Message), configuration.msgInvalidCmdRsetSequence
 		handler, err := newHandlerRset(session, message, configuration), errors.New(errorMessage)
 		session.On("addError", err).Once().Return(nil)
 		session.On("writeResponse", errorMessage, configuration.responseDelayRset).Once().Return(nil)
@@ -138,7 +138,7 @@ func TestHandlerRsetIsInvalidCmdSequence(t *testing.T) {
 	})
 
 	t.Run("when helo previous command was successful ", func(t *testing.T) {
-		message := new(message)
+		message := new(Message)
 		handler := newHandlerRset(session, message, configuration)
 		message.helo = true
 
@@ -153,7 +153,7 @@ func TestHandlerRsetIsInvalidCmdArg(t *testing.T) {
 	configuration, session := createConfiguration(), &sessionMock{}
 
 	t.Run("when request includes invalid RSET command", func(t *testing.T) {
-		request, message, errorMessage := "RSET ", new(message), configuration.msgInvalidCmdRsetArg
+		request, message, errorMessage := "RSET ", new(Message), configuration.msgInvalidCmdRsetArg
 		handler, err := newHandlerRset(session, message, configuration), errors.New(errorMessage)
 		session.On("addError", err).Once().Return(nil)
 		session.On("writeResponse", errorMessage, configuration.responseDelayRset).Once().Return(nil)
@@ -165,7 +165,7 @@ func TestHandlerRsetIsInvalidCmdArg(t *testing.T) {
 	})
 
 	t.Run("when request includes valid RSET command", func(t *testing.T) {
-		message := new(message)
+		message := new(Message)
 		handler := newHandlerRset(session, message, configuration)
 
 		assert.False(t, handler.isInvalidCmdArg("RSET"))
@@ -180,7 +180,7 @@ func TestHandlerRsetIsInvalidRequest(t *testing.T) {
 
 	t.Run("when request includes invalid RSET command sequence, the previous command is not successful", func(t *testing.T) {
 		request := "RSET"
-		session, message, errorMessage := new(sessionMock), new(message), configuration.msgInvalidCmdRsetSequence
+		session, message, errorMessage := new(sessionMock), new(Message), configuration.msgInvalidCmdRsetSequence
 		handler, err := newHandlerRset(session, message, configuration), errors.New(errorMessage)
 		session.On("addError", err).Once().Return(nil)
 		session.On("writeResponse", errorMessage, configuration.responseDelayRset).Once().Return(nil)
@@ -193,7 +193,7 @@ func TestHandlerRsetIsInvalidRequest(t *testing.T) {
 
 	t.Run("when request includes invalid RSET command", func(t *testing.T) {
 		request := "RSET "
-		session, message, errorMessage := new(sessionMock), new(message), configuration.msgInvalidCmdRsetArg
+		session, message, errorMessage := new(sessionMock), new(Message), configuration.msgInvalidCmdRsetArg
 		message.helo = true
 		handler, err := newHandlerRset(session, message, configuration), errors.New(errorMessage)
 		session.On("addError", err).Once().Return(nil)
@@ -207,7 +207,7 @@ func TestHandlerRsetIsInvalidRequest(t *testing.T) {
 
 	t.Run("when valid RSET request", func(t *testing.T) {
 		request := "RSET"
-		session, message := new(sessionMock), new(message)
+		session, message := new(sessionMock), new(Message)
 		message.helo = true
 		handler := newHandlerRset(session, message, configuration)
 

@@ -8,7 +8,7 @@ type handlerRcptto struct {
 }
 
 // RCPTTO command handler builder. Returns pointer to new handlerRcptto structure
-func newHandlerRcptto(session sessionInterface, message *message, configuration *configuration) *handlerRcptto {
+func newHandlerRcptto(session sessionInterface, message *Message, configuration *configuration) *handlerRcptto {
 	return &handlerRcptto{&handler{session: session, message: message, configuration: configuration}}
 }
 
@@ -29,7 +29,7 @@ func (handler *handlerRcptto) run(request string) {
 // Erases all message data from RCPTTO command
 func (handler *handlerRcptto) clearMessage() {
 	messageWithData := handler.message
-	clearedMessage := &message{
+	clearedMessage := &Message{
 		heloRequest:      messageWithData.heloRequest,
 		heloResponse:     messageWithData.heloResponse,
 		helo:             messageWithData.helo,

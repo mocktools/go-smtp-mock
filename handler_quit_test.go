@@ -8,7 +8,7 @@ import (
 
 func TestNewHandlerQuit(t *testing.T) {
 	t.Run("returns new handlerQuit", func(t *testing.T) {
-		session, message, configuration := new(session), new(message), new(configuration)
+		session, message, configuration := new(session), new(Message), new(configuration)
 		handler := newHandlerQuit(session, message, configuration)
 
 		assert.Same(t, session, handler.session)
@@ -19,7 +19,7 @@ func TestNewHandlerQuit(t *testing.T) {
 
 func TestHandlerQuitRun(t *testing.T) {
 	t.Run("when successful QUIT request", func(t *testing.T) {
-		request, session, message, configuration := "QUIT", new(sessionMock), new(message), createConfiguration()
+		request, session, message, configuration := "QUIT", new(sessionMock), new(Message), createConfiguration()
 		receivedMessage := configuration.msgQuitCmd
 		handler := newHandlerQuit(session, message, configuration)
 		session.On("writeResponse", receivedMessage, configuration.responseDelayQuit).Once().Return(nil)
@@ -29,7 +29,7 @@ func TestHandlerQuitRun(t *testing.T) {
 	})
 
 	t.Run("when failure QUIT request", func(t *testing.T) {
-		request, session, message, configuration := "QUIT ", new(sessionMock), new(message), createConfiguration()
+		request, session, message, configuration := "QUIT ", new(sessionMock), new(Message), createConfiguration()
 		handler := newHandlerQuit(session, message, configuration)
 		handler.run(request)
 
@@ -38,7 +38,7 @@ func TestHandlerQuitRun(t *testing.T) {
 }
 
 func TestHandlerQuitIsInvalidRequest(t *testing.T) {
-	handler := newHandlerQuit(new(session), new(message), new(configuration))
+	handler := newHandlerQuit(new(session), new(Message), new(configuration))
 
 	t.Run("when request includes invalid QUIT command", func(t *testing.T) {
 		request := "QUIT "

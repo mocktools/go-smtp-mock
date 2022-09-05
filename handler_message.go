@@ -16,7 +16,7 @@ type handlerMessage struct {
 }
 
 // Message handler builder. Returns pointer to new handlerMessage structure
-func newHandlerMessage(session sessionInterface, message *message, configuration *configuration) *handlerMessage {
+func newHandlerMessage(session sessionInterface, message *Message, configuration *configuration) *handlerMessage {
 	return &handlerMessage{&handler{session: session, message: message, configuration: configuration}}
 }
 
