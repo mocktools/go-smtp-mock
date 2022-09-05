@@ -9,7 +9,7 @@ import (
 
 func TestNewHandlerHelo(t *testing.T) {
 	t.Run("returns new handlerHelo", func(t *testing.T) {
-		session, message, configuration := new(session), new(message), new(configuration)
+		session, message, configuration := new(session), new(Message), new(configuration)
 		handler := newHandlerHelo(session, message, configuration)
 
 		assert.Same(t, session, handler.session)
@@ -21,7 +21,7 @@ func TestNewHandlerHelo(t *testing.T) {
 func TestHandlerHeloRun(t *testing.T) {
 	t.Run("when successful HELO request", func(t *testing.T) {
 		request := "HELO example.com"
-		session, message, configuration := new(sessionMock), new(message), createConfiguration()
+		session, message, configuration := new(sessionMock), new(Message), createConfiguration()
 		receivedMessage := configuration.msgHeloReceived
 		handler := newHandlerHelo(session, message, configuration)
 		session.On("clearError").Once().Return(nil)
@@ -35,7 +35,7 @@ func TestHandlerHeloRun(t *testing.T) {
 
 	t.Run("when failure HELO request, invalid command argument", func(t *testing.T) {
 		request := "HELO"
-		session, message, configuration := new(sessionMock), new(message), createConfiguration()
+		session, message, configuration := new(sessionMock), new(Message), createConfiguration()
 		errorMessage := configuration.msgInvalidCmdHeloArg
 		handler, err := newHandlerHelo(session, message, configuration), errors.New(errorMessage)
 		session.On("clearError").Once().Return(nil)
@@ -51,7 +51,7 @@ func TestHandlerHeloRun(t *testing.T) {
 	t.Run("when failure HELO request, blacklisted HELO domain", func(t *testing.T) {
 		domainName := "example.com"
 		request := "HELO " + domainName
-		session, message, configuration := new(sessionMock), new(message), createConfiguration()
+		session, message, configuration := new(sessionMock), new(Message), createConfiguration()
 		configuration.blacklistedHeloDomains = []string{domainName}
 		errorMessage := configuration.msgHeloBlacklistedDomain
 		handler, err := newHandlerHelo(session, message, configuration), errors.New(errorMessage)
@@ -70,7 +70,7 @@ func TestHandlerHeloRun(t *testing.T) {
 func TestHandlerHeloClearMessage(t *testing.T) {
 	t.Run("erases all handler message data", func(t *testing.T) {
 		notEmptyMessage := createNotEmptyMessage()
-		handler, clearedMessage := newHandlerHelo(new(session), notEmptyMessage, new(configuration)), new(message)
+		handler, clearedMessage := newHandlerHelo(new(session), notEmptyMessage, new(configuration)), new(Message)
 		handler.clearMessage()
 
 		assert.Same(t, notEmptyMessage, handler.message)
@@ -88,7 +88,7 @@ func TestHandlerHeloWriteResult(t *testing.T) {
 	configuration, session := createConfiguration(), &sessionMock{}
 
 	t.Run("when successful request received", func(t *testing.T) {
-		message := new(message)
+		message := new(Message)
 		handler := newHandlerHelo(session, message, configuration)
 		session.On("writeResponse", response, configuration.responseDelayHelo).Once().Return(nil)
 
@@ -99,7 +99,7 @@ func TestHandlerHeloWriteResult(t *testing.T) {
 	})
 
 	t.Run("when failed request received", func(t *testing.T) {
-		message, err := new(message), errors.New(response)
+		message, err := new(Message), errors.New(response)
 		handler := newHandlerHelo(session, message, configuration)
 		session.On("addError", err).Once().Return(nil)
 		session.On("writeResponse", response, configuration.responseDelayHelo).Once().Return(nil)
@@ -115,7 +115,7 @@ func TestHandlerHeloIsInvalidCmdArg(t *testing.T) {
 	configuration, session := createConfiguration(), &sessionMock{}
 
 	t.Run("when request includes invalid command HELO argument", func(t *testing.T) {
-		request, message, errorMessage := "HELO name.zone42", new(message), configuration.msgInvalidCmdHeloArg
+		request, message, errorMessage := "HELO name.zone42", new(Message), configuration.msgInvalidCmdHeloArg
 		handler, err := newHandlerHelo(session, message, configuration), errors.New(errorMessage)
 		session.On("addError", err).Once().Return(nil)
 		session.On("writeResponse", errorMessage, configuration.responseDelayHelo).Once().Return(nil)
@@ -127,7 +127,7 @@ func TestHandlerHeloIsInvalidCmdArg(t *testing.T) {
 	})
 
 	t.Run("when request includes valid command HELO argument", func(t *testing.T) {
-		message := new(message)
+		message := new(Message)
 		handler := newHandlerHelo(session, message, configuration)
 
 		assert.False(t, handler.isInvalidCmdArg("HELO example.com"))
@@ -164,7 +164,7 @@ func TestHandlerHeloIsBlacklistedDomain(t *testing.T) {
 	request := "EHLO " + domainName
 
 	t.Run("when request includes blacklisted domain name", func(t *testing.T) {
-		session, message, configuration := new(sessionMock), new(message), createConfiguration()
+		session, message, configuration := new(sessionMock), new(Message), createConfiguration()
 		configuration.blacklistedHeloDomains = []string{domainName}
 		errorMessage := configuration.msgHeloBlacklistedDomain
 		handler, err := newHandlerHelo(session, message, configuration), errors.New(errorMessage)
@@ -178,7 +178,7 @@ func TestHandlerHeloIsBlacklistedDomain(t *testing.T) {
 	})
 
 	t.Run("when request not includes blacklisted domain name", func(t *testing.T) {
-		session, message, configuration := new(sessionMock), new(message), createConfiguration()
+		session, message, configuration := new(sessionMock), new(Message), createConfiguration()
 		handler := newHandlerHelo(session, message, configuration)
 
 		assert.False(t, handler.isBlacklistedDomain(request))
@@ -193,7 +193,7 @@ func TestHandlerHeloIsInvalidRequest(t *testing.T) {
 
 	t.Run("when request includes invalid HELO command argument", func(t *testing.T) {
 		request := "HELO user@example"
-		session, message, errorMessage := new(sessionMock), new(message), configuration.msgInvalidCmdHeloArg
+		session, message, errorMessage := new(sessionMock), new(Message), configuration.msgInvalidCmdHeloArg
 		handler, err := newHandlerHelo(session, message, configuration), errors.New(errorMessage)
 		session.On("addError", err).Once().Return(nil)
 		session.On("writeResponse", errorMessage, configuration.responseDelayHelo).Once().Return(nil)
@@ -209,7 +209,7 @@ func TestHandlerHeloIsInvalidRequest(t *testing.T) {
 	for _, heloDomain := range heloDomains {
 		t.Run("when valid HELO request", func(t *testing.T) {
 			request := "HELO " + heloDomain
-			session, message := new(sessionMock), new(message)
+			session, message := new(sessionMock), new(Message)
 			handler := newHandlerHelo(session, message, configuration)
 
 			assert.False(t, handler.isInvalidRequest(request))
@@ -223,7 +223,7 @@ func TestHandlerHeloIsInvalidRequest(t *testing.T) {
 		t.Run("when request includes blacklisted HELO domain", func(t *testing.T) {
 			configuration := createConfiguration()
 			request := "HELO " + blacklistedDomain
-			session, message, errorMessage := new(sessionMock), new(message), configuration.msgHeloBlacklistedDomain
+			session, message, errorMessage := new(sessionMock), new(Message), configuration.msgHeloBlacklistedDomain
 			configuration.blacklistedHeloDomains = heloDomains
 			handler, err := newHandlerHelo(session, message, configuration), errors.New(errorMessage)
 			session.On("addError", err).Once().Return(nil)

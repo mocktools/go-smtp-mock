@@ -11,7 +11,7 @@ type handlerData struct {
 }
 
 // DATA command handler builder. Returns pointer to new handlerData structure
-func newHandlerData(session sessionInterface, message *message, configuration *configuration) *handlerData {
+func newHandlerData(session sessionInterface, message *Message, configuration *configuration) *handlerData {
 	return &handlerData{
 		&handler{session: session, message: message, configuration: configuration},
 		newHandlerMessage(session, message, configuration),
@@ -36,7 +36,7 @@ func (handler *handlerData) run(request string) {
 // Erases all message data from DATA command
 func (handler *handlerData) clearMessage() {
 	messageWithData := handler.message
-	clearedMessage := &message{
+	clearedMessage := &Message{
 		heloRequest:      messageWithData.heloRequest,
 		heloResponse:     messageWithData.heloResponse,
 		helo:             messageWithData.helo,

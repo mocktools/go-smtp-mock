@@ -6,7 +6,7 @@ type handlerQuit struct {
 }
 
 // QUIT command handler builder. Returns pointer to new handlerQuit structure
-func newHandlerQuit(session sessionInterface, message *message, configuration *configuration) *handlerQuit {
+func newHandlerQuit(session sessionInterface, message *Message, configuration *configuration) *handlerQuit {
 	return &handlerQuit{&handler{session: session, message: message, configuration: configuration}}
 }
 

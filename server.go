@@ -117,19 +117,19 @@ func (server *Server) Stop() (err error) {
 
 // Public interface to get access to server messages
 // Returns slice of message pointers
-func (server *Server) Messages() []*message {
+func (server *Server) Messages() []*Message {
 	return server.messages.items
 }
 
 // Creates and assigns new message to server.messages
-func (server *Server) newMessage() *message {
-	newMessage := new(message)
+func (server *Server) newMessage() *Message {
+	newMessage := new(Message)
 	server.messages.append(newMessage)
 	return newMessage
 }
 
 // Creates and assigns new message with helo context from other message to server.messages
-func (server *Server) newMessageWithHeloContext(otherMessage *message) *message {
+func (server *Server) newMessageWithHeloContext(otherMessage *Message) *Message {
 	newMessage := server.newMessage()
 	newMessage.heloRequest = otherMessage.heloRequest
 	newMessage.heloResponse = otherMessage.heloResponse
@@ -157,6 +157,11 @@ func (server *Server) addToWaitGroup() {
 // Removes goroutine from WaitGroup
 func (server *Server) removeFromWaitGroup() {
 	server.wg.Done()
+}
+
+// Checks ability to end current session
+func (server *Server) isAbleToEndSession(message *Message, session sessionInterface) bool {
+	return message.quitSent || (session.isErrorFound() && server.configuration.isCmdFailFast)
 }
 
 // SMTP client-server session handler
@@ -200,7 +205,7 @@ func (server *Server) handleSession(session sessionInterface) {
 				newHandlerQuit(session, message, configuration).run(request)
 			}
 
-			if message.quitSent || (session.isErrorFound() && configuration.isCmdFailFast) {
+			if server.isAbleToEndSession(message, session) {
 				return
 			}
 		}

@@ -9,7 +9,7 @@ import (
 
 func TestNewHandlerRcptto(t *testing.T) {
 	t.Run("returns new handlerRcptto", func(t *testing.T) {
-		session, message, configuration := new(session), new(message), new(configuration)
+		session, message, configuration := new(session), new(Message), new(configuration)
 		handler := newHandlerRcptto(session, message, configuration)
 
 		assert.Same(t, session, handler.session)
@@ -21,7 +21,7 @@ func TestNewHandlerRcptto(t *testing.T) {
 func TestHandlerRcpttoRun(t *testing.T) {
 	t.Run("when successful RCPTTO request", func(t *testing.T) {
 		request := "RCPT TO: user@example.com"
-		session, message, configuration := new(sessionMock), new(message), createConfiguration()
+		session, message, configuration := new(sessionMock), new(Message), createConfiguration()
 		receivedMessage := configuration.msgRcpttoReceived
 		message.helo, message.mailfrom = true, true
 		handler := newHandlerRcptto(session, message, configuration)
@@ -36,7 +36,7 @@ func TestHandlerRcpttoRun(t *testing.T) {
 
 	t.Run("when failure RCPTTO request, invalid command sequence", func(t *testing.T) {
 		request := "MAIL FROM: user@example.com"
-		session, message, configuration := new(sessionMock), new(message), createConfiguration()
+		session, message, configuration := new(sessionMock), new(Message), createConfiguration()
 		errorMessage := configuration.msgInvalidCmdRcpttoSequence
 		handler, err := newHandlerRcptto(session, message, configuration), errors.New(errorMessage)
 		session.On("clearError").Once().Return(nil)
@@ -51,7 +51,7 @@ func TestHandlerRcpttoRun(t *testing.T) {
 
 	t.Run("when failure RCPTTO request, invalid command argument", func(t *testing.T) {
 		request := "RCPT TO: user@example"
-		session, message, configuration := new(sessionMock), new(message), createConfiguration()
+		session, message, configuration := new(sessionMock), new(Message), createConfiguration()
 		message.helo, message.mailfrom = true, true
 		errorMessage := configuration.msgInvalidCmdRcpttoArg
 		handler, err := newHandlerRcptto(session, message, configuration), errors.New(errorMessage)
@@ -68,7 +68,7 @@ func TestHandlerRcpttoRun(t *testing.T) {
 	t.Run("when failure RCPTTO request, request includes blacklisted RCPTTO email", func(t *testing.T) {
 		email := "user@example.com"
 		request := "RCPT TO: " + email
-		session, message, configuration := new(sessionMock), new(message), createConfiguration()
+		session, message, configuration := new(sessionMock), new(Message), createConfiguration()
 		configuration.isCmdFailFast, configuration.blacklistedRcpttoEmails = true, []string{email}
 		message.helo, message.mailfrom = true, true
 		errorMessage := configuration.msgRcpttoBlacklistedEmail
@@ -86,7 +86,7 @@ func TestHandlerRcpttoRun(t *testing.T) {
 	t.Run("when failure RCPTTO request, request includes not registered RCPTTO email", func(t *testing.T) {
 		email := "user@example.com"
 		request := "RCPT TO: " + email
-		session, message, configuration := new(sessionMock), new(message), createConfiguration()
+		session, message, configuration := new(sessionMock), new(Message), createConfiguration()
 		configuration.isCmdFailFast, configuration.notRegisteredEmails = true, []string{email}
 		message.helo, message.mailfrom = true, true
 		errorMessage := configuration.msgRcpttoNotRegisteredEmail
@@ -106,7 +106,7 @@ func TestHandlerRcpttoClearMessage(t *testing.T) {
 	t.Run("erases all handler message data from RCPTTO command", func(t *testing.T) {
 		notEmptyMessage := createNotEmptyMessage()
 		handler := newHandlerRcptto(new(session), notEmptyMessage, new(configuration))
-		clearedMessage := &message{
+		clearedMessage := &Message{
 			heloRequest:      notEmptyMessage.heloRequest,
 			heloResponse:     notEmptyMessage.heloResponse,
 			helo:             notEmptyMessage.helo,
@@ -130,7 +130,7 @@ func TestHandlerRcpttoWriteResult(t *testing.T) {
 	configuration, session := createConfiguration(), &sessionMock{}
 
 	t.Run("when successful request received", func(t *testing.T) {
-		message := new(message)
+		message := new(Message)
 		handler := newHandlerRcptto(session, message, configuration)
 		session.On("writeResponse", response, configuration.responseDelayRcptto).Once().Return(nil)
 
@@ -141,7 +141,7 @@ func TestHandlerRcpttoWriteResult(t *testing.T) {
 	})
 
 	t.Run("when failed request received", func(t *testing.T) {
-		message, err := new(message), errors.New(response)
+		message, err := new(Message), errors.New(response)
 		handler := newHandlerRcptto(session, message, configuration)
 		session.On("addError", err).Once().Return(nil)
 		session.On("writeResponse", response, configuration.responseDelayRcptto).Once().Return(nil)
@@ -157,7 +157,7 @@ func TestHandlerRcpttoIsInvalidCmdSequence(t *testing.T) {
 	request, configuration, session := "some request", createConfiguration(), &sessionMock{}
 
 	t.Run("when none of the previous command was successful", func(t *testing.T) {
-		message, errorMessage := new(message), configuration.msgInvalidCmdRcpttoSequence
+		message, errorMessage := new(Message), configuration.msgInvalidCmdRcpttoSequence
 		handler, err := newHandlerRcptto(session, message, configuration), errors.New(errorMessage)
 		session.On("addError", err).Once().Return(nil)
 		session.On("writeResponse", errorMessage, configuration.responseDelayRcptto).Once().Return(nil)
@@ -169,7 +169,7 @@ func TestHandlerRcpttoIsInvalidCmdSequence(t *testing.T) {
 	})
 
 	t.Run("when mailfrom previous command was failure", func(t *testing.T) {
-		message, errorMessage := new(message), configuration.msgInvalidCmdRcpttoSequence
+		message, errorMessage := new(Message), configuration.msgInvalidCmdRcpttoSequence
 		message.helo = true
 		handler, err := newHandlerRcptto(session, message, configuration), errors.New(errorMessage)
 		session.On("addError", err).Once().Return(nil)
@@ -182,7 +182,7 @@ func TestHandlerRcpttoIsInvalidCmdSequence(t *testing.T) {
 	})
 
 	t.Run("when all of the previous commands was successful", func(t *testing.T) {
-		message := new(message)
+		message := new(Message)
 		message.helo, message.mailfrom = true, true
 		handler := newHandlerRcptto(session, message, configuration)
 
@@ -197,7 +197,7 @@ func TestHandlerRcpttoIsInvalidCmdArg(t *testing.T) {
 	configuration, session := createConfiguration(), &sessionMock{}
 
 	t.Run("when request includes invalid command RCPTTO argument", func(t *testing.T) {
-		request, message, errorMessage := "RCPT TO: email@invalid", new(message), configuration.msgInvalidCmdRcpttoArg
+		request, message, errorMessage := "RCPT TO: email@invalid", new(Message), configuration.msgInvalidCmdRcpttoArg
 		handler, err := newHandlerRcptto(session, message, configuration), errors.New(errorMessage)
 		session.On("addError", err).Once().Return(nil)
 		session.On("writeResponse", errorMessage, configuration.responseDelayRcptto).Once().Return(nil)
@@ -209,7 +209,7 @@ func TestHandlerRcpttoIsInvalidCmdArg(t *testing.T) {
 	})
 
 	t.Run("when request includes valid command RCPTTO argument without <> sign", func(t *testing.T) {
-		message := new(message)
+		message := new(Message)
 		handler := newHandlerRcptto(session, message, configuration)
 
 		assert.False(t, handler.isInvalidCmdArg("RCPT TO: user@example.com"))
@@ -219,7 +219,7 @@ func TestHandlerRcpttoIsInvalidCmdArg(t *testing.T) {
 	})
 
 	t.Run("when request includes valid command RCPTTO argument without <> sign without space", func(t *testing.T) {
-		message := new(message)
+		message := new(Message)
 		handler := newHandlerRcptto(session, message, configuration)
 
 		assert.False(t, handler.isInvalidCmdArg("RCPT TO:user@example.com"))
@@ -229,7 +229,7 @@ func TestHandlerRcpttoIsInvalidCmdArg(t *testing.T) {
 	})
 
 	t.Run("when request includes valid command RCPTTO argument with <> sign", func(t *testing.T) {
-		message := new(message)
+		message := new(Message)
 		handler := newHandlerRcptto(session, message, configuration)
 
 		assert.False(t, handler.isInvalidCmdArg("RCPT TO: <user@example.com>"))
@@ -239,7 +239,7 @@ func TestHandlerRcpttoIsInvalidCmdArg(t *testing.T) {
 	})
 
 	t.Run("when request includes valid command RCPTTO argument with <> sign withoyt space", func(t *testing.T) {
-		message := new(message)
+		message := new(Message)
 		handler := newHandlerRcptto(session, message, configuration)
 
 		assert.False(t, handler.isInvalidCmdArg("RCPT TO:<user@example.com>"))
@@ -276,7 +276,7 @@ func TestHandlerRcpttoIsBlacklistedEmail(t *testing.T) {
 	request := "RCPT TO: " + email
 
 	t.Run("when request includes blacklisted domain name", func(t *testing.T) {
-		session, message, configuration := new(sessionMock), new(message), createConfiguration()
+		session, message, configuration := new(sessionMock), new(Message), createConfiguration()
 		configuration.blacklistedRcpttoEmails = []string{email}
 		errorMessage := configuration.msgRcpttoBlacklistedEmail
 		handler, err := newHandlerRcptto(session, message, configuration), errors.New(errorMessage)
@@ -290,7 +290,7 @@ func TestHandlerRcpttoIsBlacklistedEmail(t *testing.T) {
 	})
 
 	t.Run("when request not includes blacklisted domain name", func(t *testing.T) {
-		session, message, configuration := new(sessionMock), new(message), createConfiguration()
+		session, message, configuration := new(sessionMock), new(Message), createConfiguration()
 		handler := newHandlerRcptto(session, message, configuration)
 
 		assert.False(t, handler.isBlacklistedEmail(request))
@@ -305,7 +305,7 @@ func TestHandlerRcpttoIsNotRegisteredEmail(t *testing.T) {
 	request := "RCPT TO: " + email
 
 	t.Run("when request includes blacklisted domain name", func(t *testing.T) {
-		session, message, configuration := new(sessionMock), new(message), createConfiguration()
+		session, message, configuration := new(sessionMock), new(Message), createConfiguration()
 		configuration.notRegisteredEmails = []string{email}
 		errorMessage := configuration.msgRcpttoNotRegisteredEmail
 		handler, err := newHandlerRcptto(session, message, configuration), errors.New(errorMessage)
@@ -319,7 +319,7 @@ func TestHandlerRcpttoIsNotRegisteredEmail(t *testing.T) {
 	})
 
 	t.Run("when request not includes blacklisted domain name", func(t *testing.T) {
-		session, message, configuration := new(sessionMock), new(message), createConfiguration()
+		session, message, configuration := new(sessionMock), new(Message), createConfiguration()
 		handler := newHandlerRcptto(session, message, configuration)
 
 		assert.False(t, handler.isNotRegisteredEmail(request))
@@ -334,7 +334,7 @@ func TestHandlerRcpttoIsInvalidRequest(t *testing.T) {
 
 	t.Run("when request includes invalid RCPTTO command sequence", func(t *testing.T) {
 		request := "MAIL FROM: user@example.com"
-		session, message, errorMessage := new(sessionMock), new(message), configuration.msgInvalidCmdRcpttoSequence
+		session, message, errorMessage := new(sessionMock), new(Message), configuration.msgInvalidCmdRcpttoSequence
 		handler, err := newHandlerRcptto(session, message, configuration), errors.New(errorMessage)
 		session.On("addError", err).Once().Return(nil)
 		session.On("writeResponse", errorMessage, configuration.responseDelayRcptto).Once().Return(nil)
@@ -347,7 +347,7 @@ func TestHandlerRcpttoIsInvalidRequest(t *testing.T) {
 
 	t.Run("when request includes invalid RCPTTO command argument", func(t *testing.T) {
 		request := "RCPT TO: user@example"
-		session, message, errorMessage := new(sessionMock), new(message), configuration.msgInvalidCmdRcpttoArg
+		session, message, errorMessage := new(sessionMock), new(Message), configuration.msgInvalidCmdRcpttoArg
 		message.helo, message.mailfrom = true, true
 		handler, err := newHandlerRcptto(session, message, configuration), errors.New(errorMessage)
 		session.On("addError", err).Once().Return(nil)
@@ -362,7 +362,7 @@ func TestHandlerRcpttoIsInvalidRequest(t *testing.T) {
 	t.Run("when request includes blacklisted RCPTTO email", func(t *testing.T) {
 		configuration, blacklistedEmail := createConfiguration(), "user@example.com"
 		request := "RCPT TO: " + blacklistedEmail
-		session, message, errorMessage := new(sessionMock), new(message), configuration.msgRcpttoBlacklistedEmail
+		session, message, errorMessage := new(sessionMock), new(Message), configuration.msgRcpttoBlacklistedEmail
 		configuration.blacklistedRcpttoEmails = []string{blacklistedEmail}
 		message.helo, message.mailfrom = true, true
 		handler, err := newHandlerRcptto(session, message, configuration), errors.New(errorMessage)
@@ -378,7 +378,7 @@ func TestHandlerRcpttoIsInvalidRequest(t *testing.T) {
 	t.Run("when request includes not registered RCPTTO email", func(t *testing.T) {
 		configuration, notRegisteredEmail := createConfiguration(), "user@example.com"
 		request := "RCPT TO: " + notRegisteredEmail
-		session, message, errorMessage := new(sessionMock), new(message), configuration.msgRcpttoNotRegisteredEmail
+		session, message, errorMessage := new(sessionMock), new(Message), configuration.msgRcpttoNotRegisteredEmail
 		configuration.notRegisteredEmails = []string{notRegisteredEmail}
 		message.helo, message.mailfrom = true, true
 		handler, err := newHandlerRcptto(session, message, configuration), errors.New(errorMessage)
@@ -393,7 +393,7 @@ func TestHandlerRcpttoIsInvalidRequest(t *testing.T) {
 
 	t.Run("when valid RCPTTO request", func(t *testing.T) {
 		request := "RCPT TO: user@example.com"
-		session, message := new(sessionMock), new(message)
+		session, message := new(sessionMock), new(Message)
 		message.helo, message.mailfrom = true, true
 		handler := newHandlerRcptto(session, message, configuration)
 

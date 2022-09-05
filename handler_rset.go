@@ -8,7 +8,7 @@ type handlerRset struct {
 }
 
 // RSET command handler builder. Returns pointer to new handlerRset structure
-func newHandlerRset(session sessionInterface, message *message, configuration *configuration) *handlerRset {
+func newHandlerRset(session sessionInterface, message *Message, configuration *configuration) *handlerRset {
 	return &handlerRset{&handler{session: session, message: message, configuration: configuration}}
 }
 
@@ -32,7 +32,7 @@ func (handler *handlerRset) clearMessage() {
 	messageWithData, configuration := handler.message, handler.configuration
 
 	if !(configuration.multipleMessageReceiving && messageWithData.isConsistent()) {
-		clearedMessage := &message{
+		clearedMessage := &Message{
 			heloRequest:  messageWithData.heloRequest,
 			heloResponse: messageWithData.heloResponse,
 			helo:         messageWithData.helo,

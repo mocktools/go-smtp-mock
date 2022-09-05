@@ -9,7 +9,7 @@ import (
 
 func TestNewHandlerData(t *testing.T) {
 	t.Run("returns new handlerData", func(t *testing.T) {
-		session, message, configuration := new(session), new(message), new(configuration)
+		session, message, configuration := new(session), new(Message), new(configuration)
 		handler := newHandlerData(session, message, configuration)
 
 		assert.Same(t, session, handler.session)
@@ -20,7 +20,7 @@ func TestNewHandlerData(t *testing.T) {
 
 func TestHandlerDataRun(t *testing.T) {
 	t.Run("when successful DATA request", func(t *testing.T) {
-		request, session, message, configuration := "DATA", new(sessionMock), new(message), createConfiguration()
+		request, session, message, configuration := "DATA", new(sessionMock), new(Message), createConfiguration()
 		handlerMessage, receivedMessage := &handlerMessageMock{}, configuration.msgDataReceived
 		message.helo, message.mailfrom, message.rcptto = true, true, true
 		handler, responseDelay := newHandlerData(session, message, configuration), configuration.responseDelayData
@@ -38,7 +38,7 @@ func TestHandlerDataRun(t *testing.T) {
 
 	t.Run("when failure DATA request, invalid command sequence", func(t *testing.T) {
 		request := "DATA"
-		session, message, configuration := new(sessionMock), new(message), createConfiguration()
+		session, message, configuration := new(sessionMock), new(Message), createConfiguration()
 		errorMessage := configuration.msgInvalidCmdDataSequence
 		handler, err := newHandlerData(session, message, configuration), errors.New(errorMessage)
 		session.On("clearError").Once().Return(nil)
@@ -53,7 +53,7 @@ func TestHandlerDataRun(t *testing.T) {
 
 	t.Run("when failure DATA request, invalid command", func(t *testing.T) {
 		request := "DATA:"
-		session, message, configuration := new(sessionMock), new(message), createConfiguration()
+		session, message, configuration := new(sessionMock), new(Message), createConfiguration()
 		message.helo, message.mailfrom, message.rcptto = true, true, true
 		errorMessage := configuration.msgInvalidCmd
 		handler, err := newHandlerData(session, message, configuration), errors.New(errorMessage)
@@ -72,7 +72,7 @@ func TestHandlerDataClearMessage(t *testing.T) {
 	t.Run("erases all handler message data from DATA command", func(t *testing.T) {
 		notEmptyMessage := createNotEmptyMessage()
 		handler := newHandlerData(new(session), notEmptyMessage, new(configuration))
-		clearedMessage := &message{
+		clearedMessage := &Message{
 			heloRequest:      notEmptyMessage.heloRequest,
 			heloResponse:     notEmptyMessage.heloResponse,
 			helo:             notEmptyMessage.helo,
@@ -107,7 +107,7 @@ func TestHandlerDataWriteResult(t *testing.T) {
 	configuration, session := createConfiguration(), &sessionMock{}
 
 	t.Run("when successful request received", func(t *testing.T) {
-		message := new(message)
+		message := new(Message)
 		handler := newHandlerData(session, message, configuration)
 		session.On("writeResponse", response, configuration.responseDelayData).Once().Return(nil)
 
@@ -118,7 +118,7 @@ func TestHandlerDataWriteResult(t *testing.T) {
 	})
 
 	t.Run("when failed request received", func(t *testing.T) {
-		message, err := new(message), errors.New(response)
+		message, err := new(Message), errors.New(response)
 		handler := newHandlerData(session, message, configuration)
 		session.On("addError", err).Once().Return(nil)
 		session.On("writeResponse", response, configuration.responseDelayData).Once().Return(nil)
@@ -134,7 +134,7 @@ func TestHandlerDataIsInvalidCmdSequence(t *testing.T) {
 	request, configuration, session := "some request", createConfiguration(), &sessionMock{}
 
 	t.Run("when none of the previous command was successful", func(t *testing.T) {
-		message, errorMessage := new(message), configuration.msgInvalidCmdDataSequence
+		message, errorMessage := new(Message), configuration.msgInvalidCmdDataSequence
 		handler, err := newHandlerData(session, message, configuration), errors.New(errorMessage)
 		session.On("addError", err).Once().Return(nil)
 		session.On("writeResponse", errorMessage, configuration.responseDelayData).Once().Return(nil)
@@ -146,7 +146,7 @@ func TestHandlerDataIsInvalidCmdSequence(t *testing.T) {
 	})
 
 	t.Run("when rcptto previous command was failure", func(t *testing.T) {
-		message, errorMessage := new(message), configuration.msgInvalidCmdDataSequence
+		message, errorMessage := new(Message), configuration.msgInvalidCmdDataSequence
 		message.helo, message.mailfrom = true, true
 		handler, err := newHandlerData(session, message, configuration), errors.New(errorMessage)
 		session.On("addError", err).Once().Return(nil)
@@ -159,7 +159,7 @@ func TestHandlerDataIsInvalidCmdSequence(t *testing.T) {
 	})
 
 	t.Run("when mailfrom, rcptto previous commands were failure", func(t *testing.T) {
-		message, errorMessage := new(message), configuration.msgInvalidCmdDataSequence
+		message, errorMessage := new(Message), configuration.msgInvalidCmdDataSequence
 		message.helo = true
 		handler, err := newHandlerData(session, message, configuration), errors.New(errorMessage)
 		session.On("addError", err).Once().Return(nil)
@@ -172,7 +172,7 @@ func TestHandlerDataIsInvalidCmdSequence(t *testing.T) {
 	})
 
 	t.Run("when all of the previous commands was successful", func(t *testing.T) {
-		message := new(message)
+		message := new(Message)
 		message.helo, message.mailfrom, message.rcptto = true, true, true
 		handler := newHandlerData(session, message, configuration)
 
@@ -187,7 +187,7 @@ func TestHandlerDataIsInvalidCmd(t *testing.T) {
 	configuration, session := createConfiguration(), &sessionMock{}
 
 	t.Run("when request includes invalid command DATA", func(t *testing.T) {
-		request, message, errorMessage := "DATA ", new(message), configuration.msgInvalidCmdDataSequence
+		request, message, errorMessage := "DATA ", new(Message), configuration.msgInvalidCmdDataSequence
 		handler, err := newHandlerData(session, message, configuration), errors.New(errorMessage)
 		session.On("addError", err).Once().Return(nil)
 		session.On("writeResponse", errorMessage, configuration.responseDelayData).Once().Return(nil)
@@ -199,7 +199,7 @@ func TestHandlerDataIsInvalidCmd(t *testing.T) {
 	})
 
 	t.Run("when request includes valid command DATA", func(t *testing.T) {
-		message := new(message)
+		message := new(Message)
 		handler := newHandlerData(session, message, configuration)
 
 		assert.False(t, handler.isInvalidCmd("DATA"))
@@ -213,7 +213,7 @@ func TestHandlerDataIsInvalidRequest(t *testing.T) {
 	request, configuration, session := "DATA", createConfiguration(), &sessionMock{}
 
 	t.Run("when request includes invalid DATA command sequence", func(t *testing.T) {
-		message, errorMessage := new(message), configuration.msgInvalidCmdDataSequence
+		message, errorMessage := new(Message), configuration.msgInvalidCmdDataSequence
 		handler, err := newHandlerData(session, message, configuration), errors.New(errorMessage)
 		session.On("addError", err).Once().Return(nil)
 		session.On("writeResponse", errorMessage, configuration.responseDelayData).Once().Return(nil)
@@ -225,7 +225,7 @@ func TestHandlerDataIsInvalidRequest(t *testing.T) {
 	})
 
 	t.Run("when request includes invalid command DATA", func(t *testing.T) {
-		request, message, errorMessage := "DATA:", new(message), configuration.msgInvalidCmd
+		request, message, errorMessage := "DATA:", new(Message), configuration.msgInvalidCmd
 		message.helo, message.mailfrom, message.rcptto = true, true, true
 		handler, err := newHandlerData(session, message, configuration), errors.New(errorMessage)
 		session.On("addError", err).Once().Return(nil)
@@ -238,7 +238,7 @@ func TestHandlerDataIsInvalidRequest(t *testing.T) {
 	})
 
 	t.Run("when valid DATA request", func(t *testing.T) {
-		message := new(message)
+		message := new(Message)
 		message.helo, message.mailfrom, message.rcptto = true, true, true
 		handler := newHandlerData(session, message, configuration)
 
