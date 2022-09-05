@@ -21,8 +21,8 @@ func createConfiguration() *configuration {
 }
 
 // Creates not empty message
-func createNotEmptyMessage() *message {
-	return &message{
+func createNotEmptyMessage() *Message {
+	return &Message{
 		heloRequest:      "a",
 		heloResponse:     "b",
 		mailfromRequest:  "c",
@@ -60,11 +60,60 @@ func messageBody(from, to string) []byte {
 	)
 }
 
+// Runs full smtp flow
+func runFullFlow(client *smtp.Client) error {
+	var err error
+	var wc io.WriteCloser
+
+	sender, receiver1, receiver2 := "user@molo.com", "user1@olo.com", "user2@olo.com"
+
+	if err = client.Mail(sender); err != nil {
+		return err
+	}
+	if err = client.Rcpt(receiver1); err != nil {
+		return err
+	}
+	wc, err = client.Data()
+	if err != nil {
+		return err
+	}
+	_, err = wc.Write(messageBody(sender, receiver1))
+	if err != nil {
+		return err
+	}
+	err = wc.Close()
+	if err != nil {
+		return err
+	}
+	if err = client.Reset(); err != nil {
+		return err
+	}
+	if err = client.Mail(sender); err != nil {
+		return err
+	}
+	if err = client.Rcpt(receiver2); err != nil {
+		return err
+	}
+	wc, err = client.Data()
+	if err != nil {
+		return err
+	}
+	_, err = wc.Write(messageBody(sender, receiver2))
+	if err != nil {
+		return err
+	}
+	err = wc.Close()
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
 // Runs successful SMTP session with target host
 func runSuccessfulSMTPSession(hostAddress string, portNumber int, fullFlow bool) error {
 	connection, _ := net.DialTimeout(networkProtocol, serverWithPortNumber(hostAddress, portNumber), time.Duration(2)*time.Second)
 	client, _ := smtp.NewClient(connection, hostAddress)
-	var wc io.WriteCloser
 	var err error
 
 	if err = client.Hello("olo.com"); err != nil {
@@ -72,45 +121,7 @@ func runSuccessfulSMTPSession(hostAddress string, portNumber int, fullFlow bool)
 	}
 
 	if fullFlow {
-		sender, receiver1, receiver2 := "user@molo.com", "user1@olo.com", "user2@olo.com"
-
-		if err = client.Mail(sender); err != nil {
-			return err
-		}
-		if err = client.Rcpt(receiver1); err != nil {
-			return err
-		}
-		wc, err = client.Data()
-		if err != nil {
-			return err
-		}
-		_, err = wc.Write(messageBody(sender, receiver1))
-		if err != nil {
-			return err
-		}
-		err = wc.Close()
-		if err != nil {
-			return err
-		}
-		if err = client.Reset(); err != nil {
-			return err
-		}
-		if err = client.Mail(sender); err != nil {
-			return err
-		}
-		if err = client.Rcpt(receiver2); err != nil {
-			return err
-		}
-		wc, err = client.Data()
-		if err != nil {
-			return err
-		}
-		_, err = wc.Write(messageBody(sender, receiver2))
-		if err != nil {
-			return err
-		}
-		err = wc.Close()
-		if err != nil {
+		if err = runFullFlow(client); err != nil {
 			return err
 		}
 	}

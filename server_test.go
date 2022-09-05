@@ -95,6 +95,39 @@ func TestServerRemoveFromWaitGroup(t *testing.T) {
 	})
 }
 
+func TestServerIsAbleToEndSession(t *testing.T) {
+	t.Run("when quit command has been sent", func(t *testing.T) {
+		server, message, session := newServer(createConfiguration()), &Message{quitSent: true}, new(session)
+		server.messages.append(message)
+
+		assert.True(t, server.isAbleToEndSession(message, session))
+	})
+
+	t.Run("when quit command has not been sent, error has been found, fail fast scenario has been enabled", func(t *testing.T) {
+		server, message, session := newServer(createConfiguration()), new(Message), new(session)
+		server.messages.append(message)
+		session.err = errors.New("some error")
+		server.configuration.isCmdFailFast = true
+
+		assert.True(t, server.isAbleToEndSession(message, session))
+	})
+
+	t.Run("when quit command has not been sent, no errors", func(t *testing.T) {
+		server, message, session := newServer(createConfiguration()), new(Message), new(session)
+		server.messages.append(message)
+
+		assert.False(t, server.isAbleToEndSession(message, session))
+	})
+
+	t.Run("when quit command has not been sent, error has been found, fail fast scenario has not been enabled", func(t *testing.T) {
+		server, message, session := newServer(createConfiguration()), new(Message), new(session)
+		server.messages.append(message)
+		session.err = errors.New("some error")
+
+		assert.False(t, server.isAbleToEndSession(message, session))
+	})
+}
+
 func TestServerHandleSession(t *testing.T) {
 	t.Run("when complex successful session, multiple message receiving scenario disabled", func(t *testing.T) {
 		session, configuration := &sessionMock{}, createConfiguration()

@@ -8,7 +8,7 @@ import (
 
 func TestMessageHeloRequest(t *testing.T) {
 	t.Run("getter for heloRequest field", func(t *testing.T) {
-		message := &message{heloRequest: "some context"}
+		message := &Message{heloRequest: "some context"}
 
 		assert.Equal(t, message.heloRequest, message.HeloRequest())
 	})
@@ -16,7 +16,7 @@ func TestMessageHeloRequest(t *testing.T) {
 
 func TestMessageHeloResponse(t *testing.T) {
 	t.Run("getter for heloRequest field", func(t *testing.T) {
-		message := &message{heloResponse: "some context"}
+		message := &Message{heloResponse: "some context"}
 
 		assert.Equal(t, message.heloResponse, message.HeloResponse())
 	})
@@ -24,7 +24,7 @@ func TestMessageHeloResponse(t *testing.T) {
 
 func TestMessageHelo(t *testing.T) {
 	t.Run("getter for helo field", func(t *testing.T) {
-		message := &message{helo: true}
+		message := &Message{helo: true}
 
 		assert.Equal(t, message.helo, message.Helo())
 	})
@@ -32,7 +32,7 @@ func TestMessageHelo(t *testing.T) {
 
 func TestMessageMailfromRequest(t *testing.T) {
 	t.Run("getter for mailfromRequest field", func(t *testing.T) {
-		message := &message{mailfromRequest: "some context"}
+		message := &Message{mailfromRequest: "some context"}
 
 		assert.Equal(t, message.mailfromRequest, message.MailfromRequest())
 	})
@@ -40,7 +40,7 @@ func TestMessageMailfromRequest(t *testing.T) {
 
 func TestMessageMailfromResponse(t *testing.T) {
 	t.Run("getter for mailfromResponse field", func(t *testing.T) {
-		message := &message{mailfromResponse: "some context"}
+		message := &Message{mailfromResponse: "some context"}
 
 		assert.Equal(t, message.mailfromResponse, message.MailfromResponse())
 	})
@@ -48,7 +48,7 @@ func TestMessageMailfromResponse(t *testing.T) {
 
 func TestMessageMailfrom(t *testing.T) {
 	t.Run("getter for mailfrom field", func(t *testing.T) {
-		message := &message{mailfrom: true}
+		message := &Message{mailfrom: true}
 
 		assert.Equal(t, message.mailfrom, message.Mailfrom())
 	})
@@ -56,7 +56,7 @@ func TestMessageMailfrom(t *testing.T) {
 
 func TestMessageRcpttoRequest(t *testing.T) {
 	t.Run("getter for rcpttoRequest field", func(t *testing.T) {
-		message := &message{rcpttoRequest: "some context"}
+		message := &Message{rcpttoRequest: "some context"}
 
 		assert.Equal(t, message.rcpttoRequest, message.RcpttoRequest())
 	})
@@ -64,7 +64,7 @@ func TestMessageRcpttoRequest(t *testing.T) {
 
 func TestMessageRcpttoResponse(t *testing.T) {
 	t.Run("getter for rcpttoResponse field", func(t *testing.T) {
-		message := &message{rcpttoResponse: "some context"}
+		message := &Message{rcpttoResponse: "some context"}
 
 		assert.Equal(t, message.rcpttoResponse, message.RcpttoResponse())
 	})
@@ -72,7 +72,7 @@ func TestMessageRcpttoResponse(t *testing.T) {
 
 func TestMessageRcptto(t *testing.T) {
 	t.Run("getter for rcptto field", func(t *testing.T) {
-		message := &message{rcptto: true}
+		message := &Message{rcptto: true}
 
 		assert.Equal(t, message.rcptto, message.Rcptto())
 	})
@@ -80,7 +80,7 @@ func TestMessageRcptto(t *testing.T) {
 
 func TestMessageDataRequest(t *testing.T) {
 	t.Run("getter for dataRequest field", func(t *testing.T) {
-		message := &message{dataRequest: "some context"}
+		message := &Message{dataRequest: "some context"}
 
 		assert.Equal(t, message.dataRequest, message.DataRequest())
 	})
@@ -88,7 +88,7 @@ func TestMessageDataRequest(t *testing.T) {
 
 func TestMessageDataResponse(t *testing.T) {
 	t.Run("getter for dataResponse field", func(t *testing.T) {
-		message := &message{dataResponse: "some context"}
+		message := &Message{dataResponse: "some context"}
 
 		assert.Equal(t, message.dataResponse, message.DataResponse())
 	})
@@ -96,7 +96,7 @@ func TestMessageDataResponse(t *testing.T) {
 
 func TestMessageData(t *testing.T) {
 	t.Run("getter for data field", func(t *testing.T) {
-		message := &message{data: true}
+		message := &Message{data: true}
 
 		assert.Equal(t, message.data, message.Data())
 	})
@@ -104,7 +104,7 @@ func TestMessageData(t *testing.T) {
 
 func TestMessageMsgRequest(t *testing.T) {
 	t.Run("getter for msgRequest field", func(t *testing.T) {
-		message := &message{msgRequest: "some context"}
+		message := &Message{msgRequest: "some context"}
 
 		assert.Equal(t, message.msgRequest, message.MsgRequest())
 	})
@@ -112,7 +112,7 @@ func TestMessageMsgRequest(t *testing.T) {
 
 func TestMessageMsgResponse(t *testing.T) {
 	t.Run("getter for msgRequest field", func(t *testing.T) {
-		message := &message{msgResponse: "some context"}
+		message := &Message{msgResponse: "some context"}
 
 		assert.Equal(t, message.msgResponse, message.MsgResponse())
 	})
@@ -120,7 +120,7 @@ func TestMessageMsgResponse(t *testing.T) {
 
 func TestMessageMsg(t *testing.T) {
 	t.Run("getter for msg field", func(t *testing.T) {
-		message := &message{msg: true}
+		message := &Message{msg: true}
 
 		assert.Equal(t, message.msg, message.Msg())
 	})
@@ -128,7 +128,7 @@ func TestMessageMsg(t *testing.T) {
 
 func TestMessageRsetRequest(t *testing.T) {
 	t.Run("getter for rsetRequest field", func(t *testing.T) {
-		message := &message{rsetRequest: "some context"}
+		message := &Message{rsetRequest: "some context"}
 
 		assert.Equal(t, message.rsetRequest, message.RsetRequest())
 	})
@@ -136,7 +136,7 @@ func TestMessageRsetRequest(t *testing.T) {
 
 func TestMessageRsetResponse(t *testing.T) {
 	t.Run("getter for rsetRequest field", func(t *testing.T) {
-		message := &message{rsetResponse: "some context"}
+		message := &Message{rsetResponse: "some context"}
 
 		assert.Equal(t, message.rsetResponse, message.RsetResponse())
 	})
@@ -144,7 +144,7 @@ func TestMessageRsetResponse(t *testing.T) {
 
 func TestMessageRset(t *testing.T) {
 	t.Run("getter for rset field", func(t *testing.T) {
-		message := &message{rset: true}
+		message := &Message{rset: true}
 
 		assert.Equal(t, message.rset, message.Rset())
 	})
@@ -152,7 +152,7 @@ func TestMessageRset(t *testing.T) {
 
 func TestMessageQuitSent(t *testing.T) {
 	t.Run("getter for quitSent field", func(t *testing.T) {
-		message := &message{quitSent: true}
+		message := &Message{quitSent: true}
 
 		assert.Equal(t, message.quitSent, message.QuitSent())
 	})
@@ -160,30 +160,30 @@ func TestMessageQuitSent(t *testing.T) {
 
 func TestMessageIsConsistent(t *testing.T) {
 	t.Run("when consistent", func(t *testing.T) {
-		message := &message{mailfrom: true, rcptto: true, data: true, msg: true}
+		message := &Message{mailfrom: true, rcptto: true, data: true, msg: true}
 
 		assert.True(t, message.isConsistent())
 	})
 
 	t.Run("when not consistent MAILFROM", func(t *testing.T) {
 
-		assert.False(t, new(message).isConsistent())
+		assert.False(t, new(Message).isConsistent())
 	})
 
 	t.Run("when not consistent RCPTTO", func(t *testing.T) {
-		message := &message{mailfrom: true}
+		message := &Message{mailfrom: true}
 
 		assert.False(t, message.isConsistent())
 	})
 
 	t.Run("when not consistent DATA", func(t *testing.T) {
-		message := &message{mailfrom: true, rcptto: true}
+		message := &Message{mailfrom: true, rcptto: true}
 
 		assert.False(t, message.isConsistent())
 	})
 
 	t.Run("when not consistent MSG", func(t *testing.T) {
-		message := &message{mailfrom: true, rcptto: true, data: true}
+		message := &Message{mailfrom: true, rcptto: true, data: true}
 
 		assert.False(t, message.isConsistent())
 	})
@@ -191,7 +191,7 @@ func TestMessageIsConsistent(t *testing.T) {
 
 func TestMessagesAppend(t *testing.T) {
 	t.Run("addes message pointer into items slice", func(t *testing.T) {
-		message, messages := new(message), new(messages)
+		message, messages := new(Message), new(messages)
 		messages.append(message)
 
 		assert.Same(t, message, messages.items[0])

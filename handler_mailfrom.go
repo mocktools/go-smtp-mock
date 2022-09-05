@@ -8,7 +8,7 @@ type handlerMailfrom struct {
 }
 
 // MAILFROM command handler builder. Returns pointer to new handlerHelo structure
-func newHandlerMailfrom(session sessionInterface, message *message, configuration *configuration) *handlerMailfrom {
+func newHandlerMailfrom(session sessionInterface, message *Message, configuration *configuration) *handlerMailfrom {
 	return &handlerMailfrom{&handler{session: session, message: message, configuration: configuration}}
 }
 
@@ -29,7 +29,7 @@ func (handler *handlerMailfrom) run(request string) {
 // Erases all message data from MAILFROM command
 func (handler *handlerMailfrom) clearMessage() {
 	messageWithData := handler.message
-	clearedMessage := &message{
+	clearedMessage := &Message{
 		heloRequest:  messageWithData.heloRequest,
 		heloResponse: messageWithData.heloResponse,
 		helo:         messageWithData.helo,

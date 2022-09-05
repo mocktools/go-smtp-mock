@@ -8,7 +8,7 @@ type handlerHelo struct {
 }
 
 // HELO command handler builder. Returns pointer to new handlerHelo structure
-func newHandlerHelo(session sessionInterface, message *message, configuration *configuration) *handlerHelo {
+func newHandlerHelo(session sessionInterface, message *Message, configuration *configuration) *handlerHelo {
 	return &handlerHelo{&handler{session: session, message: message, configuration: configuration}}
 }
 
@@ -28,8 +28,8 @@ func (handler *handlerHelo) run(request string) {
 
 // Erases all message data
 func (handler *handlerHelo) clearMessage() {
-	message := handler.message
-	*message = *zeroMessage
+	Message := handler.message
+	*Message = *zeroMessage
 }
 
 // Writes handled HELO result to session, message. Always returns true

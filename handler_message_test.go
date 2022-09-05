@@ -9,7 +9,7 @@ import (
 
 func TestNewHandlerMessage(t *testing.T) {
 	t.Run("returns new handlerMessage", func(t *testing.T) {
-		session, message, configuration := new(session), new(message), new(configuration)
+		session, message, configuration := new(session), new(Message), new(configuration)
 		handler := newHandlerMessage(session, message, configuration)
 
 		assert.Same(t, session, handler.session)
@@ -20,7 +20,7 @@ func TestNewHandlerMessage(t *testing.T) {
 
 func TestHandlerMessageRun(t *testing.T) {
 	t.Run("when read request error", func(t *testing.T) {
-		session, message, configuration := new(sessionMock), new(message), createConfiguration()
+		session, message, configuration := new(sessionMock), new(Message), createConfiguration()
 		configuration.isCmdFailFast = true
 		handler, err := newHandlerMessage(session, message, configuration), errors.New("some read error")
 		session.On("readBytes").Once().Return([]byte{}, err)
@@ -32,7 +32,7 @@ func TestHandlerMessageRun(t *testing.T) {
 	})
 
 	t.Run("when message size limit reached", func(t *testing.T) {
-		session, message, configuration := new(sessionMock), new(message), newConfiguration(ConfigurationAttr{MsgSizeLimit: 1})
+		session, message, configuration := new(sessionMock), new(Message), newConfiguration(ConfigurationAttr{MsgSizeLimit: 1})
 		errorMessage := configuration.msgMsgSizeIsTooBig
 		handler, err := newHandlerMessage(session, message, configuration), errors.New(errorMessage)
 		session.On("readBytes").Once().Return([]uint8("some message"), nil)
@@ -48,7 +48,7 @@ func TestHandlerMessageRun(t *testing.T) {
 	})
 
 	t.Run("when message received", func(t *testing.T) {
-		session, message, configuration := new(sessionMock), new(message), createConfiguration()
+		session, message, configuration := new(sessionMock), new(Message), createConfiguration()
 		handler, msgContext := newHandlerMessage(session, message, configuration), "some message"
 		session.On("readBytes").Once().Return([]uint8("."+msgContext), nil)
 		session.On("readBytes").Once().Return([]uint8(".\r\n"), nil)
@@ -66,7 +66,7 @@ func TestHandlerMessageWriteResult(t *testing.T) {
 	configuration, session := createConfiguration(), &sessionMock{}
 
 	t.Run("when successful request received", func(t *testing.T) {
-		message := new(message)
+		message := new(Message)
 		handler := newHandlerMessage(session, message, configuration)
 		session.On("writeResponse", response, configuration.responseDelayMessage).Once().Return(nil)
 
@@ -77,7 +77,7 @@ func TestHandlerMessageWriteResult(t *testing.T) {
 	})
 
 	t.Run("when failed request received", func(t *testing.T) {
-		message, err := new(message), errors.New(response)
+		message, err := new(Message), errors.New(response)
 		handler := newHandlerMessage(session, message, configuration)
 		session.On("addError", err).Once().Return(nil)
 		session.On("writeResponse", response, configuration.responseDelayMessage).Once().Return(nil)
