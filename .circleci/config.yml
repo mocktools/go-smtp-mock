@@ -46,10 +46,14 @@ jobs:
 
   release:
     docker:
-      - image: cimg/go:1.17
+      - image: cimg/go:1.19
     steps:
       - checkout
       - run: curl -sL https://git.io/goreleaser | bash
+      - run:
+          name: Publishing on Go reference
+          command: |
+            . ./script/publish.sh
 
 workflows:
   build:
