@@ -10,7 +10,7 @@ const (
 	defaultReceivedMsg                   = "250 Received"
 	defaultReadyForReceiveMsg            = "354 Ready for receive message. End data with <CR><LF>.<CR><LF>"
 	defaultTransientNegativeMsg          = "421 Service not available"
-	defaultInvalidCmdHeloArgMsg          = "501 HELO requires domain address"
+	defaultInvalidCmdHeloArgMsg          = "501 HELO requires domain address or valid address literal"
 	defaultInvalidCmdMailfromArgMsg      = "501 MAIL FROM requires valid email address"
 	defaultInvalidCmdRcpttoArgMsg        = "501 RCPT TO requires valid email address"
 	defaultInvalidCmdMsg                 = "502 Command unrecognized. Available commands: HELO, EHLO, MAIL FROM:, RCPT TO:, DATA, RSET, QUIT"
@@ -60,9 +60,11 @@ const (
 	validDataCmdRegexPattern           = `\A(?i)data\z`
 	validRsetCmdRegexPattern           = `\A(?i)rset\z`
 	validQuitCmdRegexPattern           = `\A(?i)quit\z`
-	validHeloComplexCmdRegexPattern    = `\A(` + validHeloCmdsRegexPattern + `) (` + domainRegexPattern + `|localhost)\z`
+	validHeloComplexCmdRegexPattern    = `\A(` + validHeloCmdsRegexPattern + `) (` + domainRegexPattern + `|localhost|` + addressLiteralRegexPattern + `|` + ipAddressRegexPattern + `)\z`
 	validMailromComplexCmdRegexPattern = `\A(` + validMailfromCmdRegexPattern + `) ?(` + emailRegexPattern + `)\z`
 	validRcpttoComplexCmdRegexPattern  = `\A(` + validRcpttoCmdRegexPattern + `) ?(` + emailRegexPattern + `)\z`
+	ipAddressRegexPattern              = `(\b25[0-5]|\b2[0-4][0-9]|\b[01]?[0-9][0-9]?)(\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)){3}`
+	addressLiteralRegexPattern         = `\[` + ipAddressRegexPattern + `\]`
 
 	// Helpers
 	emptyString = ""
