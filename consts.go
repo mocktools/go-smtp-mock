@@ -60,10 +60,11 @@ const (
 	validDataCmdRegexPattern           = `\A(?i)data\z`
 	validRsetCmdRegexPattern           = `\A(?i)rset\z`
 	validQuitCmdRegexPattern           = `\A(?i)quit\z`
-	validHeloComplexCmdRegexPattern    = `\A(` + validHeloCmdsRegexPattern + `) (` + domainRegexPattern + `|localhost|` + addressLiteralRegexPattern + `)\z`
+	validHeloComplexCmdRegexPattern    = `\A(` + validHeloCmdsRegexPattern + `) (` + domainRegexPattern + `|localhost|` + addressLiteralRegexPattern + `|` + ipAddressRegexPattern + `)\z`
 	validMailromComplexCmdRegexPattern = `\A(` + validMailfromCmdRegexPattern + `) ?(` + emailRegexPattern + `)\z`
 	validRcpttoComplexCmdRegexPattern  = `\A(` + validRcpttoCmdRegexPattern + `) ?(` + emailRegexPattern + `)\z`
-	addressLiteralRegexPattern         = `\[(\b25[0-5]|\b2[0-4][0-9]|\b[01]?[0-9][0-9]?)(\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)){3}\]`
+	ipAddressRegexPattern              = `(\b25[0-5]|\b2[0-4][0-9]|\b[01]?[0-9][0-9]?)(\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)){3}`
+	addressLiteralRegexPattern         = `\[` + ipAddressRegexPattern + `\]`
 
 	// Helpers
 	emptyString = ""
