@@ -19,7 +19,7 @@ func TestNewHandlerHelo(t *testing.T) {
 }
 
 func TestHandlerHeloRun(t *testing.T) {
-	t.Run("when successful HELO request", func(t *testing.T) {
+	t.Run("when successful HELO domain request", func(t *testing.T) {
 		request := "HELO example.com"
 		session, message, configuration := new(sessionMock), new(Message), createConfiguration()
 		receivedMessage := configuration.msgHeloReceived
@@ -31,6 +31,35 @@ func TestHandlerHeloRun(t *testing.T) {
 		assert.True(t, message.helo)
 		assert.Equal(t, request, message.heloRequest)
 		assert.Equal(t, receivedMessage, message.heloResponse)
+	})
+
+	t.Run("when successful HELO address literal request", func(t *testing.T) {
+		request := "HELO [192.168.8.1]"
+		session, message, configuration := new(sessionMock), new(Message), createConfiguration()
+		receivedMessage := configuration.msgHeloReceived
+		handler := newHandlerHelo(session, message, configuration)
+		session.On("clearError").Once().Return(nil)
+		session.On("writeResponse", receivedMessage, configuration.responseDelayHelo).Once().Return(nil)
+		handler.run(request)
+
+		assert.True(t, message.helo)
+		assert.Equal(t, request, message.heloRequest)
+		assert.Equal(t, receivedMessage, message.heloResponse)
+	})
+
+	t.Run("when failure HELO request, invalid address literal", func(t *testing.T) {
+		request := "HELO [999.999.999.999]"
+		session, message, configuration := new(sessionMock), new(Message), createConfiguration()
+		errorMessage := configuration.msgInvalidCmdHeloArg
+		handler, err := newHandlerHelo(session, message, configuration), errors.New(errorMessage)
+		session.On("clearError").Once().Return(nil)
+		session.On("addError", err).Once().Return(nil)
+		session.On("writeResponse", errorMessage, configuration.responseDelayHelo).Once().Return(nil)
+		handler.run(request)
+
+		assert.False(t, message.helo)
+		assert.Equal(t, request, message.heloRequest)
+		assert.Equal(t, errorMessage, message.heloResponse)
 	})
 
 	t.Run("when failure HELO request, invalid command argument", func(t *testing.T) {
