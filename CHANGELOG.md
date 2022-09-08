@@ -2,6 +2,20 @@
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/), and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.9.2] - 2022-09-08
+
+### Added
+
+- Ability to trigger Go reference
+
+### Updated
+
+- Updated CircleCI config
+
+### Removed
+
+- Removed `yaml.v3` indirect development dependency
+
 ## [1.9.1] - 2022-09-05
 
 ### Added
