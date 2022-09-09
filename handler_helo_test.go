@@ -135,6 +135,84 @@ func TestHandlerHeloIsInvalidCmdArg(t *testing.T) {
 		assert.Empty(t, message.heloRequest)
 		assert.Empty(t, message.heloResponse)
 	})
+
+	t.Run("when request includes localhost HELO argument", func(t *testing.T) {
+		message := new(Message)
+		handler := newHandlerHelo(session, message, configuration)
+
+		assert.False(t, handler.isInvalidCmdArg("HELO localhost"))
+		assert.False(t, message.helo)
+		assert.Empty(t, message.heloRequest)
+		assert.Empty(t, message.heloResponse)
+	})
+
+	t.Run("when request includes valid ip address HELO argument", func(t *testing.T) {
+		message := new(Message)
+		handler := newHandlerHelo(session, message, configuration)
+
+		assert.False(t, handler.isInvalidCmdArg("HELO 1.2.3.4"))
+		assert.False(t, message.helo)
+		assert.Empty(t, message.heloRequest)
+		assert.Empty(t, message.heloResponse)
+	})
+
+	t.Run("when request includes valid address literal HELO argument", func(t *testing.T) {
+		message := new(Message)
+		handler := newHandlerHelo(session, message, configuration)
+
+		assert.False(t, handler.isInvalidCmdArg("HELO [1.2.3.4]"))
+		assert.False(t, message.helo)
+		assert.Empty(t, message.heloRequest)
+		assert.Empty(t, message.heloResponse)
+	})
+
+	t.Run("when request includes invalid ip address HELO argument", func(t *testing.T) {
+		request, message, errorMessage := "HELO 999.999.999.999", new(Message), configuration.msgInvalidCmdHeloArg
+		handler, err := newHandlerHelo(session, message, configuration), errors.New(errorMessage)
+		session.On("addError", err).Once().Return(nil)
+		session.On("writeResponse", errorMessage, configuration.responseDelayHelo).Once().Return(nil)
+
+		assert.True(t, handler.isInvalidCmdArg(request))
+		assert.False(t, message.helo)
+		assert.Equal(t, request, message.heloRequest)
+		assert.Equal(t, errorMessage, message.heloResponse)
+	})
+
+	t.Run("when request includes invalid address literal HELO argument", func(t *testing.T) {
+		request, message, errorMessage := "HELO [999.999.999.999]", new(Message), configuration.msgInvalidCmdHeloArg
+		handler, err := newHandlerHelo(session, message, configuration), errors.New(errorMessage)
+		session.On("addError", err).Once().Return(nil)
+		session.On("writeResponse", errorMessage, configuration.responseDelayHelo).Once().Return(nil)
+
+		assert.True(t, handler.isInvalidCmdArg(request))
+		assert.False(t, message.helo)
+		assert.Equal(t, request, message.heloRequest)
+		assert.Equal(t, errorMessage, message.heloResponse)
+	})
+
+	t.Run("when request includes malformed (left) address literal HELO argument", func(t *testing.T) {
+		request, message, errorMessage := "HELO 1.2.3.4]", new(Message), configuration.msgInvalidCmdHeloArg
+		handler, err := newHandlerHelo(session, message, configuration), errors.New(errorMessage)
+		session.On("addError", err).Once().Return(nil)
+		session.On("writeResponse", errorMessage, configuration.responseDelayHelo).Once().Return(nil)
+
+		assert.True(t, handler.isInvalidCmdArg(request))
+		assert.False(t, message.helo)
+		assert.Equal(t, request, message.heloRequest)
+		assert.Equal(t, errorMessage, message.heloResponse)
+	})
+
+	t.Run("when request includes malformed (right) address literal HELO argument", func(t *testing.T) {
+		request, message, errorMessage := "HELO [1.2.3.4", new(Message), configuration.msgInvalidCmdHeloArg
+		handler, err := newHandlerHelo(session, message, configuration), errors.New(errorMessage)
+		session.On("addError", err).Once().Return(nil)
+		session.On("writeResponse", errorMessage, configuration.responseDelayHelo).Once().Return(nil)
+
+		assert.True(t, handler.isInvalidCmdArg(request))
+		assert.False(t, message.helo)
+		assert.Equal(t, request, message.heloRequest)
+		assert.Equal(t, errorMessage, message.heloResponse)
+	})
 }
 
 func TestHandlerHeloHeloDomain(t *testing.T) {
@@ -204,7 +282,7 @@ func TestHandlerHeloIsInvalidRequest(t *testing.T) {
 		assert.Equal(t, errorMessage, message.heloResponse)
 	})
 
-	heloDomains := []string{"example.com", "localhost"}
+	heloDomains := []string{"example.com", "localhost", "1.2.3.4", "[1.2.3.4]"}
 
 	for _, heloDomain := range heloDomains {
 		t.Run("when valid HELO request", func(t *testing.T) {
