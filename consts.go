@@ -51,20 +51,21 @@ const (
 	serverForceStopMsg               = "SMTP mock server was force stopped by timeout"
 
 	// Regex patterns
-	availableCmdsRegexPattern          = `(?i)helo|ehlo|mail from:|rcpt to:|data|rset|quit`
-	domainRegexPattern                 = `(?i)([\p{L}0-9]+([\-.]{1}[\p{L}0-9]+)*\.\p{L}{2,63})`
-	emailRegexPattern                  = `(?i)<?((.+)@` + domainRegexPattern + `)>?`
+	availableCmdsRegexPattern  = `(?i)helo|ehlo|mail from:|rcpt to:|data|rset|quit`
+	domainRegexPattern         = `(?i)([\p{L}0-9]+([\-.]{1}[\p{L}0-9]+)*\.\p{L}{2,63})`
+	emailRegexPattern          = `(?i)<?((.+)@` + domainRegexPattern + `)>?`
+	ipAddressRegexPattern      = `(\b25[0-5]|\b2[0-4][0-9]|\b[01]?[0-9][0-9]?)(\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)){3}`
+	addressLiteralRegexPattern = `|\[` + ipAddressRegexPattern + `\]`
+
 	validHeloCmdsRegexPattern          = `(?i)helo|ehlo`
 	validMailfromCmdRegexPattern       = `(?i)mail from:`
 	validRcpttoCmdRegexPattern         = `(?i)rcpt to:`
 	validDataCmdRegexPattern           = `\A(?i)data\z`
 	validRsetCmdRegexPattern           = `\A(?i)rset\z`
 	validQuitCmdRegexPattern           = `\A(?i)quit\z`
-	validHeloComplexCmdRegexPattern    = `\A(` + validHeloCmdsRegexPattern + `) (` + domainRegexPattern + `|localhost|` + addressLiteralRegexPattern + `|` + ipAddressRegexPattern + `)\z`
+	validHeloComplexCmdRegexPattern    = `\A(` + validHeloCmdsRegexPattern + `) (` + domainRegexPattern + `|localhost|` + ipAddressRegexPattern + addressLiteralRegexPattern + `)\z`
 	validMailromComplexCmdRegexPattern = `\A(` + validMailfromCmdRegexPattern + `) ?(` + emailRegexPattern + `)\z`
 	validRcpttoComplexCmdRegexPattern  = `\A(` + validRcpttoCmdRegexPattern + `) ?(` + emailRegexPattern + `)\z`
-	ipAddressRegexPattern              = `(\b25[0-5]|\b2[0-4][0-9]|\b[01]?[0-9][0-9]?)(\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)){3}`
-	addressLiteralRegexPattern         = `\[` + ipAddressRegexPattern + `\]`
 
 	// Helpers
 	emptyString = ""
