@@ -26,6 +26,7 @@
     - [Configuring with command line arguments](#configuring-with-command-line-arguments)
     - [Other options](#other-options)
     - [Stopping server](#stopping-server)
+  - [Implemented SMTP commands](#implemented-smtp-commands)
 - [Contributing](#contributing)
 - [License](#license)
 - [Code of Conduct](#code-of-conduct)
@@ -82,6 +83,7 @@ import "github.com/mocktools/go-smtp-mock"
   - [Configuring with command line arguments](#configuring-with-command-line-arguments)
   - [Other options](#other-options)
   - [Stopping server](#stopping-server)
+- [Implemented SMTP commands](#implemented-smtp-commands)
 
 ### Inside of Golang ecosystem
 
@@ -422,6 +424,20 @@ Available not configuration `smtpmock` options:
 #### Stopping server
 
 `smtpmock` accepts 3 shutdown signals: `SIGINT`, `SIGQUIT`, `SIGTERM`.
+
+### Implemented SMTP commands
+
+| id | Command | Sequenceable |  Available args | Example of usage |
+| --- | --- | --- | --- | --- |
+| `1` | `HELO` | no | `domain name`, `localhost`, `ip address`, `[ip address]` | `HELO example.com` |
+| `1` | `EHLO` | no | `domain name`, `localhost`, `ip address`, `[ip address]` | `EHLO example.com` |
+| `2` | `MAIL FROM` | can be used after command with id `1` and greater | `email address`, `<email address>` | `MAIL FROM: user@domain.com` |
+| `3` | `RCPT TO` | can be used after command with id `2` and greater | `email address`, `<email address>` | `RCPT TO: user@domain.com` |
+| `4` | `DATA` | can be used after command with id `3` | - | `DATA` |
+| `5` | `RSET` | can be used after command with id `1` and greater | - | `RSET` |
+| `6` | `QUIT` | no | - | `QUIT` |
+
+Please note in case when same command used more the one time during same session all saved data upper this command will be erased.
 
 ## Contributing
 

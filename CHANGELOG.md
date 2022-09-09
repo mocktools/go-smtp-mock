@@ -2,6 +2,18 @@
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/), and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.10.0] - 2022-09-09
+
+### Added
+
+- Ability to use address literal as `HELO` command args, following [RFC 5321](https://www.rfc-editor.org/rfc/rfc5321.html#section-4.1.1.1) (section 4.1.1.1). Thanks [@dandare100](https://github.com/dandare100) for investigation, report and brilliant PR.
+
+### Updated
+
+- Updated consts
+- Updated `handlerHelo` tests
+- Updated project documentation
+
 ## [1.9.3] - 2022-09-08
 
 ### Updated
