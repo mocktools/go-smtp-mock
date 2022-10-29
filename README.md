@@ -7,6 +7,7 @@
 [![PkgGoDev](https://pkg.go.dev/badge/github.com/mocktools/go-smtp-mock)](https://pkg.go.dev/github.com/mocktools/go-smtp-mock)
 [![Mentioned in Awesome Go](https://awesome.re/mentioned-badge.svg)](https://github.com/avelino/awesome-go)
 [![GitHub](https://img.shields.io/github/license/mocktools/go-smtp-mock)](LICENSE.txt)
+[![FOSSA Status](https://app.fossa.com/api/projects/git%2Bgithub.com%2Fmocktools%2Fgo-smtp-mock.svg?type=shield)](https://app.fossa.com/projects/git%2Bgithub.com%2Fmocktools%2Fgo-smtp-mock?ref=badge_shield)
 [![Contributor Covenant](https://img.shields.io/badge/Contributor%20Covenant-v1.4%20adopted-ff69b4.svg)](CODE_OF_CONDUCT.md)
 
 `smtpmock` is lightweight configurable multithreaded fake SMTP server written in Go. It meets the minimum requirements specified by [RFC 2821](https://datatracker.ietf.org/doc/html/rfc2821) & [RFC 5321](https://datatracker.ietf.org/doc/html/rfc5321). Allows to mimic any SMTP server behaviour for your test environment and even more 🚀
