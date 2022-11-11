@@ -53,7 +53,7 @@ func TestNew(t *testing.T) {
 		assert.NotNil(t, server.logger)
 		assert.NotNil(t, server.wg)
 		assert.Nil(t, server.quit)
-		assert.False(t, server.isStarted)
+		assert.False(t, server.isStarted())
 	})
 
 	t.Run("creates new server with custom configuration settings", func(t *testing.T) {
@@ -135,7 +135,7 @@ func TestNew(t *testing.T) {
 		assert.NotNil(t, server.logger)
 		assert.NotNil(t, server.wg)
 		assert.Nil(t, server.quit)
-		assert.False(t, server.isStarted)
+		assert.False(t, server.isStarted())
 	})
 
 	t.Run("successful iteration with new server", func(t *testing.T) {
@@ -146,17 +146,17 @@ func TestNew(t *testing.T) {
 		assert.NotNil(t, server.logger)
 		assert.NotNil(t, server.wg)
 		assert.Nil(t, server.quit)
-		assert.False(t, server.isStarted)
+		assert.False(t, server.isStarted())
 
 		assert.NoError(t, server.Start())
-		assert.True(t, server.isStarted)
-		_ = runSuccessfulSMTPSession(configuration.hostAddress, server.PortNumber, true)
+		assert.True(t, server.isStarted())
+		_ = runSuccessfulSMTPSession(configuration.hostAddress, server.PortNumber(), true)
 		_ = server.Stop()
 
 		assert.Equal(t, 2, len(messages.items))
 		assert.NotNil(t, server.quit)
-		assert.False(t, server.isStarted)
-		assert.Greater(t, server.PortNumber, 0)
+		assert.False(t, server.isStarted())
+		assert.Greater(t, server.PortNumber(), 0)
 
 		receivedMessages := messages.items
 		firstMessage, secondMessage := receivedMessages[0], receivedMessages[1]

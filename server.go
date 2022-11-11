@@ -24,9 +24,10 @@ type Server struct {
 	listener      net.Listener
 	wg            waitGroup
 	quit          chan interface{}
-	isStarted     bool
-	PortNumber    int
+	started       bool
+	portNumber    int
 	quitTimeout   chan interface{}
+	sync.Mutex
 }
 
 // SMTP mock server builder, creates new server
@@ -44,7 +45,7 @@ func newServer(configuration *configuration) *Server {
 // Start binds and runs SMTP mock server on specified port or random free port. Returns error for
 // case when server is active. Server port number will be assigned after successful start only
 func (server *Server) Start() (err error) {
-	if server.isStarted {
+	if server.isStarted() {
 		return errors.New(serverStartErrorMsg)
 	}
 
@@ -59,7 +60,9 @@ func (server *Server) Start() (err error) {
 	}
 
 	portNumber = listener.Addr().(*net.TCPAddr).Port
-	server.listener, server.isStarted, server.PortNumber = listener, true, portNumber
+	server.setListener(listener)
+	server.setPortNumber(portNumber)
+	server.start()
 	server.quit, server.quitTimeout = make(chan interface{}), make(chan interface{})
 	logger.infoActivity(fmt.Sprintf("%s: %d", serverStartMsg, portNumber))
 
@@ -88,24 +91,66 @@ func (server *Server) Start() (err error) {
 	return err
 }
 
+// thread-safe set of server net.Listener
+func (server *Server) setListener(listener net.Listener) {
+	server.Lock()
+	defer server.Unlock()
+	server.listener = listener
+}
+
+// thread-safe set of server port value
+func (server *Server) setPortNumber(port int) {
+	server.Lock()
+	defer server.Unlock()
+	server.portNumber = port
+}
+
+// thread-safe read of server port value
+func (server *Server) PortNumber() int {
+	server.Lock()
+	defer server.Unlock()
+	return server.portNumber
+}
+
+// thread-safe read to check if server has been started
+func (server *Server) isStarted() bool {
+	server.Lock()
+	defer server.Unlock()
+	return server.started
+}
+
+// thread-safe setting of started flag to indicate server has been started
+func (server *Server) start() {
+	server.Lock()
+	defer server.Unlock()
+	server.started = true
+}
+
+// thread-safe setting of started flag to indicate server has been stopped
+func (server *Server) finish() {
+	server.Lock()
+	defer server.Unlock()
+	server.started = false
+}
+
 // Stop shutdowns server gracefully or force by timeout.
 // Returns error for case when server is not active
 func (server *Server) Stop() (err error) {
-	if server.isStarted {
+	if server.isStarted() {
 		close(server.quit)
 		server.listener.Close()
 
 		go func() {
 			server.wg.Wait()
 			server.quitTimeout <- true
-			server.isStarted = false
+			server.finish()
 			server.logger.infoActivity(serverStopMsg)
 		}()
 
 		select {
 		case <-server.quitTimeout:
 		case <-time.After(time.Duration(server.configuration.shutdownTimeout) * time.Second):
-			server.isStarted = false
+			server.finish()
 			server.logger.infoActivity(serverForceStopMsg)
 		}
 
@@ -116,9 +161,15 @@ func (server *Server) Stop() (err error) {
 }
 
 // Public interface to get access to server messages
-// Returns slice of message pointers
-func (server *Server) Messages() []*Message {
-	return server.messages.items
+// Returns copy of message data
+func (server *Server) Messages() []Message {
+	server.Lock()
+	defer server.Unlock()
+	copiedItems := []Message{}
+	for i := 0; i < len(server.messages.items); i++ {
+		copiedItems = append(copiedItems, *server.messages.items[i])
+	}
+	return copiedItems
 }
 
 // Creates and assigns new message to server.messages

@@ -21,8 +21,8 @@ func TestNewServer(t *testing.T) {
 		assert.Nil(t, server.listener)
 		assert.NotNil(t, server.wg)
 		assert.Nil(t, server.quit)
-		assert.False(t, server.isStarted)
-		assert.Equal(t, 0, server.PortNumber)
+		assert.False(t, server.isStarted())
+		assert.Equal(t, 0, server.PortNumber())
 	})
 }
 
@@ -338,12 +338,12 @@ func TestServerStart(t *testing.T) {
 		server := newServer(configuration)
 
 		assert.NoError(t, server.Start())
-		_ = runSuccessfulSMTPSession(configuration.hostAddress, server.PortNumber, false)
+		_ = runSuccessfulSMTPSession(configuration.hostAddress, server.PortNumber(), false)
 		assert.NotEmpty(t, server.messages)
 		assert.NotNil(t, server.quit)
 		assert.NotNil(t, server.quitTimeout)
-		assert.True(t, server.isStarted)
-		assert.Greater(t, server.PortNumber, 0)
+		assert.True(t, server.isStarted())
+		assert.Greater(t, server.PortNumber(), 0)
 
 		_ = server.Stop()
 	})
@@ -358,17 +358,17 @@ func TestServerStart(t *testing.T) {
 		assert.NotEmpty(t, server.messages)
 		assert.NotNil(t, server.quit)
 		assert.NotNil(t, server.quitTimeout)
-		assert.True(t, server.isStarted)
-		assert.Equal(t, portNumber, server.PortNumber)
+		assert.True(t, server.isStarted())
+		assert.Equal(t, portNumber, server.PortNumber())
 
 		_ = server.Stop()
 	})
 
 	t.Run("when active server doesn't start current server", func(t *testing.T) {
-		server := &Server{isStarted: true}
+		server := &Server{started: true}
 
 		assert.EqualError(t, server.Start(), serverStartErrorMsg)
-		assert.Equal(t, 0, server.PortNumber)
+		assert.Equal(t, 0, server.PortNumber())
 	})
 
 	t.Run("when listener error happens during starting the server doesn't start current server", func(t *testing.T) {
@@ -381,8 +381,8 @@ func TestServerStart(t *testing.T) {
 		logger.On("error", errorMessage).Once().Return(nil)
 
 		assert.EqualError(t, server.Start(), errorMessage)
-		assert.False(t, server.isStarted)
-		assert.Equal(t, 0, server.PortNumber)
+		assert.False(t, server.isStarted())
+		assert.Equal(t, 0, server.PortNumber())
 		listener.Close()
 	})
 }
@@ -396,7 +396,7 @@ func TestServerStop(t *testing.T) {
 			listener:      listener,
 			wg:            waitGroup,
 			quit:          quitChannel,
-			isStarted:     true,
+			started:       true,
 			quitTimeout:   make(chan interface{}),
 		}
 		listener.On("Close").Once().Return(nil)
@@ -404,7 +404,7 @@ func TestServerStop(t *testing.T) {
 		logger.On("infoActivity", serverStopMsg).Once().Return(nil)
 
 		assert.NoError(t, server.Stop())
-		assert.False(t, server.isStarted)
+		assert.False(t, server.isStarted())
 		_, isChannelOpened := <-server.quit
 		assert.False(t, isChannelOpened)
 	})
@@ -417,14 +417,14 @@ func TestServerStop(t *testing.T) {
 			listener:      listener,
 			wg:            waitGroup,
 			quit:          quitChannel,
-			isStarted:     true,
+			started:       true,
 		}
 		listener.On("Close").Once().Return(nil)
 		waitGroup.On("Wait").Once().Return(nil)
 		logger.On("infoActivity", serverForceStopMsg).Once().Return(nil)
 
 		assert.NoError(t, server.Stop())
-		assert.False(t, server.isStarted)
+		assert.False(t, server.isStarted())
 		_, isChannelOpened := <-server.quit
 		assert.False(t, isChannelOpened)
 	})
