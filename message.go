@@ -125,7 +125,7 @@ var zeroMessage = &Message{}
 
 // Concurrent type that can be safely shared between goroutines
 type messages struct {
-	sync.RWMutex
+	sync.Mutex
 	items []*Message
 }
 
