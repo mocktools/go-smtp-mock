@@ -449,4 +449,43 @@ func TestServerMessages(t *testing.T) {
 
 		assert.NotEmpty(t, server.Messages())
 	})
+
+	t.Run("confirm message data of internal server.messages.items and exported Messages() slice are identical for a given moment", func(t *testing.T) {
+		server := &Server{messages: new(messages)}
+		// confirm message list empty
+		assert.Empty(t, server.messages.items)
+		assert.Empty(t, server.Messages())
+
+		// make a new blank message on the server, confirm this is stored internally
+		newMessage := server.newMessage()
+		assert.NotEmpty(t, server.messages.items)
+		assert.NotEmpty(t, server.Messages())
+		// validate individual message data stored at `server.messages.items` to begin with
+		assert.Equal(t, 1, len(server.messages.items))
+		assert.Equal(t, newMessage, server.messages.items[0])
+		// confirm Messages() method is in sync
+		assert.Equal(t, 1, len(server.Messages()))
+		assert.Equal(t, len(server.messages.items), len(server.Messages()))
+		assert.Equal(t, *newMessage, server.Messages()[0])
+
+		// make new message with Helo context
+		heloRequest, heloResponse, helo := "heloRequest", "heloResponse", true
+		newMessage.heloRequest, newMessage.heloResponse, newMessage.helo = heloRequest, heloResponse, helo
+		newMessageWithContext := server.newMessageWithHeloContext(newMessage)
+		// validate individual message data stored at `server.messages.items` to begin with
+		// then confirm server.messages.items and server.Messages() method have identical data
+		assert.NotEmpty(t, server.messages.items)
+		assert.NotEmpty(t, server.Messages())
+		assert.Equal(t, 2, len(server.messages.items))
+		assert.Equal(t, len(server.messages.items), len(server.Messages()))
+		assert.Equal(t, newMessage, server.messages.items[0])
+		assert.Equal(t, *newMessage, server.Messages()[0])
+		assert.Equal(t, *server.messages.items[0], server.Messages()[0])
+		assert.Equal(t, heloRequest, newMessageWithContext.heloRequest)
+		assert.Equal(t, heloResponse, newMessageWithContext.heloResponse)
+		assert.Equal(t, helo, newMessageWithContext.helo)
+		assert.Equal(t, newMessageWithContext, server.messages.items[1])
+		assert.Equal(t, *newMessageWithContext, server.Messages()[1])
+		assert.Equal(t, *server.messages.items[1], server.Messages()[1])
+	})
 }
