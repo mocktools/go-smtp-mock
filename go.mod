@@ -1,4 +1,4 @@
-module github.com/mocktools/go-smtp-mock
+module github.com/mocktools/go-smtp-mock/v2
 
 go 1.15
 

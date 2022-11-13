@@ -10,8 +10,8 @@ import (
 	"strings"
 	"syscall"
 
-	smtpmock "github.com/mocktools/go-smtp-mock"
-	version "github.com/mocktools/go-smtp-mock/cmd/version"
+	smtpmock "github.com/mocktools/go-smtp-mock/v2"
+	version "github.com/mocktools/go-smtp-mock/v2/cmd/version"
 )
 
 const (
@@ -88,6 +88,7 @@ func attrFromCommandLine(args []string, options ...flag.ErrorHandling) (bool, *s
 		sessionTimeout                = flags.Int("sessionTimeout", 0, "Session timeout in seconds. It's equal to 30 seconds by default")
 		shutdownTimeout               = flags.Int("shutdownTimeout", 0, "Graceful shutdown timeout in seconds. It's equal to 1 second by default")
 		failFast                      = flags.Bool("failFast", false, "Enables fail fast scenario. Disabled by default")
+		multipleRcptto                = flags.Bool("multipleRcptto", false, "Enables multiple RCPT TO receiving scenario. Disabled by default")
 		multipleMessageReceiving      = flags.Bool("multipleMessageReceiving", false, "Enables multiple message receiving scenario. Disabled by default")
 		blacklistedHeloDomains        = flags.String("blacklistedHeloDomains", "", "Blacklisted HELO domains, separated by commas")
 		blacklistedMailfromEmails     = flags.String("blacklistedMailfromEmails", "", "Blacklisted MAIL FROM emails, separated by commas")
@@ -137,6 +138,7 @@ func attrFromCommandLine(args []string, options ...flag.ErrorHandling) (bool, *s
 		SessionTimeout:                *sessionTimeout,
 		ShutdownTimeout:               *shutdownTimeout,
 		IsCmdFailFast:                 *failFast,
+		MultipleRcptto:                *multipleRcptto,
 		MultipleMessageReceiving:      *multipleMessageReceiving,
 		BlacklistedHeloDomains:        toSlice(*blacklistedHeloDomains),
 		BlacklistedMailfromEmails:     toSlice(*blacklistedMailfromEmails),
