@@ -54,19 +54,11 @@ func TestMessageMailfrom(t *testing.T) {
 	})
 }
 
-func TestMessageRcpttoRequest(t *testing.T) {
-	t.Run("getter for rcpttoRequest field", func(t *testing.T) {
-		message := &Message{rcpttoRequest: "some context"}
+func TestMessageRcpttoRequestResponse(t *testing.T) {
+	t.Run("getter for rcpttoRequestResponse field", func(t *testing.T) {
+		message := &Message{rcpttoRequestResponse: [][]string{[]string{"request", "response"}}}
 
-		assert.Equal(t, message.rcpttoRequest, message.RcpttoRequest())
-	})
-}
-
-func TestMessageRcpttoResponse(t *testing.T) {
-	t.Run("getter for rcpttoResponse field", func(t *testing.T) {
-		message := &Message{rcpttoResponse: "some context"}
-
-		assert.Equal(t, message.rcpttoResponse, message.RcpttoResponse())
+		assert.Equal(t, message.rcpttoRequestResponse, message.RcpttoRequestResponse())
 	})
 }
 
@@ -186,6 +178,20 @@ func TestMessageIsConsistent(t *testing.T) {
 		message := &Message{mailfrom: true, rcptto: true, data: true}
 
 		assert.False(t, message.isConsistent())
+	})
+}
+
+func TestMessageIsIncludesSuccessfulRcpttoResponse(t *testing.T) {
+	targetSuccessfulResponse := "response"
+
+	t.Run("when successful RCPTTO response exists", func(t *testing.T) {
+		message := &Message{rcpttoRequestResponse: [][]string{{"request", targetSuccessfulResponse}}}
+
+		assert.True(t, message.isIncludesSuccessfulRcpttoResponse(targetSuccessfulResponse))
+	})
+
+	t.Run("when successful RCPTTO response not exists", func(t *testing.T) {
+		assert.False(t, new(Message).isIncludesSuccessfulRcpttoResponse(targetSuccessfulResponse))
 	})
 }
 

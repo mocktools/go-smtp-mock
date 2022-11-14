@@ -73,15 +73,14 @@ func TestHandlerDataClearMessage(t *testing.T) {
 		notEmptyMessage := createNotEmptyMessage()
 		handler := newHandlerData(new(session), notEmptyMessage, new(configuration))
 		clearedMessage := &Message{
-			heloRequest:      notEmptyMessage.heloRequest,
-			heloResponse:     notEmptyMessage.heloResponse,
-			helo:             notEmptyMessage.helo,
-			mailfromRequest:  notEmptyMessage.mailfromRequest,
-			mailfromResponse: notEmptyMessage.mailfromResponse,
-			mailfrom:         notEmptyMessage.mailfrom,
-			rcpttoRequest:    notEmptyMessage.rcpttoRequest,
-			rcpttoResponse:   notEmptyMessage.rcpttoResponse,
-			rcptto:           notEmptyMessage.rcptto,
+			heloRequest:           notEmptyMessage.heloRequest,
+			heloResponse:          notEmptyMessage.heloResponse,
+			helo:                  notEmptyMessage.helo,
+			mailfromRequest:       notEmptyMessage.mailfromRequest,
+			mailfromResponse:      notEmptyMessage.mailfromResponse,
+			mailfrom:              notEmptyMessage.mailfrom,
+			rcpttoRequestResponse: notEmptyMessage.rcpttoRequestResponse,
+			rcptto:                notEmptyMessage.rcptto,
 		}
 		handler.clearMessage()
 

@@ -1,8 +1,6 @@
 package smtpmock
 
-import (
-	"errors"
-)
+import "errors"
 
 // DATA command handler
 type handlerData struct {
@@ -37,15 +35,14 @@ func (handler *handlerData) run(request string) {
 func (handler *handlerData) clearMessage() {
 	messageWithData := handler.message
 	clearedMessage := &Message{
-		heloRequest:      messageWithData.heloRequest,
-		heloResponse:     messageWithData.heloResponse,
-		helo:             messageWithData.helo,
-		mailfromRequest:  messageWithData.mailfromRequest,
-		mailfromResponse: messageWithData.mailfromResponse,
-		mailfrom:         messageWithData.mailfrom,
-		rcpttoRequest:    messageWithData.rcpttoRequest,
-		rcpttoResponse:   messageWithData.rcpttoResponse,
-		rcptto:           messageWithData.rcptto,
+		heloRequest:           messageWithData.heloRequest,
+		heloResponse:          messageWithData.heloResponse,
+		helo:                  messageWithData.helo,
+		mailfromRequest:       messageWithData.mailfromRequest,
+		mailfromResponse:      messageWithData.mailfromResponse,
+		mailfrom:              messageWithData.mailfrom,
+		rcpttoRequestResponse: messageWithData.rcpttoRequestResponse,
+		rcptto:                messageWithData.rcptto,
 	}
 	*messageWithData = *clearedMessage
 }

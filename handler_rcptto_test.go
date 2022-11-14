@@ -30,8 +30,7 @@ func TestHandlerRcpttoRun(t *testing.T) {
 		handler.run(request)
 
 		assert.True(t, message.rcptto)
-		assert.Equal(t, request, message.rcpttoRequest)
-		assert.Equal(t, receivedMessage, message.rcpttoResponse)
+		assert.Equal(t, [][]string{{request, receivedMessage}}, message.rcpttoRequestResponse)
 	})
 
 	t.Run("when failure RCPTTO request, invalid command sequence", func(t *testing.T) {
@@ -45,8 +44,7 @@ func TestHandlerRcpttoRun(t *testing.T) {
 		handler.run(request)
 
 		assert.False(t, message.rcptto)
-		assert.Equal(t, request, message.rcpttoRequest)
-		assert.Equal(t, errorMessage, message.rcpttoResponse)
+		assert.Equal(t, [][]string{{request, errorMessage}}, message.rcpttoRequestResponse)
 	})
 
 	t.Run("when failure RCPTTO request, invalid command argument", func(t *testing.T) {
@@ -61,8 +59,7 @@ func TestHandlerRcpttoRun(t *testing.T) {
 		handler.run(request)
 
 		assert.False(t, message.rcptto)
-		assert.Equal(t, request, message.rcpttoRequest)
-		assert.Equal(t, errorMessage, message.rcpttoResponse)
+		assert.Equal(t, [][]string{{request, errorMessage}}, message.rcpttoRequestResponse)
 	})
 
 	t.Run("when failure RCPTTO request, request includes blacklisted RCPTTO email", func(t *testing.T) {
@@ -79,8 +76,7 @@ func TestHandlerRcpttoRun(t *testing.T) {
 		handler.run(request)
 
 		assert.False(t, message.rcptto)
-		assert.Equal(t, request, message.rcpttoRequest)
-		assert.Equal(t, errorMessage, message.rcpttoResponse)
+		assert.Equal(t, [][]string{{request, errorMessage}}, message.rcpttoRequestResponse)
 	})
 
 	t.Run("when failure RCPTTO request, request includes not registered RCPTTO email", func(t *testing.T) {
@@ -97,13 +93,12 @@ func TestHandlerRcpttoRun(t *testing.T) {
 		handler.run(request)
 
 		assert.False(t, message.rcptto)
-		assert.Equal(t, request, message.rcpttoRequest)
-		assert.Equal(t, errorMessage, message.rcpttoResponse)
+		assert.Equal(t, [][]string{{request, errorMessage}}, message.rcpttoRequestResponse)
 	})
 }
 
 func TestHandlerRcpttoClearMessage(t *testing.T) {
-	t.Run("erases all handler message data from RCPTTO command", func(t *testing.T) {
+	t.Run("when multiple RCPTTO is disabled erases all handler message data from RCPTTO command", func(t *testing.T) {
 		notEmptyMessage := createNotEmptyMessage()
 		handler := newHandlerRcptto(new(session), notEmptyMessage, new(configuration))
 		clearedMessage := &Message{
@@ -119,37 +114,117 @@ func TestHandlerRcpttoClearMessage(t *testing.T) {
 		assert.Same(t, notEmptyMessage, handler.message)
 		assert.Equal(t, clearedMessage, handler.message)
 
-		handler.message.rcpttoRequest = "42"
+		handler.message.rcpttoRequestResponse = [][]string{{"request", "response"}}
 		handler.clearMessage()
 		assert.Equal(t, clearedMessage, handler.message)
+	})
+
+	t.Run("when multiple RCPTTO is enabled not erases all handler message data from RCPTTO command", func(t *testing.T) {
+		notEmptyMessage, configuration := createNotEmptyMessage(), new(configuration)
+		configuration.multipleRcptto = true
+		handler := newHandlerRcptto(new(session), notEmptyMessage, configuration)
+		handler.clearMessage()
+
+		assert.Same(t, notEmptyMessage, handler.message)
+	})
+}
+
+func TestHandlerRcpttoResolveMessageStatus(t *testing.T) {
+	t.Run("when current RCPTTO status is true", func(t *testing.T) {
+		handler := newHandlerRcptto(new(session), new(Message), createConfiguration())
+
+		assert.True(t, handler.resolveMessageStatus(true))
+	})
+
+	t.Run("when current RCPTTO status is false, multiple RCPTTO is enabled, includes successful RCPTTO responses", func(t *testing.T) {
+		msgRcpttoReceived := "response"
+		message := &Message{rcpttoRequestResponse: [][]string{{"request", msgRcpttoReceived}}}
+		configuration := &configuration{multipleRcptto: true, msgRcpttoReceived: msgRcpttoReceived}
+		handler := newHandlerRcptto(new(session), message, configuration)
+
+		assert.True(t, handler.resolveMessageStatus(false))
+	})
+
+	t.Run("when current RCPTTO status is false, multiple RCPTTO is enabled, not includes successful RCPTTO responses", func(t *testing.T) {
+		handler := newHandlerRcptto(new(session), new(Message), &configuration{multipleRcptto: true})
+
+		assert.False(t, handler.resolveMessageStatus(false))
+	})
+
+	t.Run("when current RCPTTO status is false, multiple RCPTTO is disabled, not includes successful RCPTTO responses", func(t *testing.T) {
+		handler := newHandlerRcptto(new(session), new(Message), createConfiguration())
+
+		assert.False(t, handler.resolveMessageStatus(false))
+	})
+
+	t.Run("when current RCPTTO status is false, multiple RCPTTO is disabled, includes successful RCPTTO responses", func(t *testing.T) {
+		msgRcpttoReceived := "response"
+		message := &Message{rcpttoRequestResponse: [][]string{{"request", msgRcpttoReceived}}}
+		configuration := &configuration{msgRcpttoReceived: msgRcpttoReceived}
+		handler := newHandlerRcptto(new(session), message, configuration)
+
+		assert.False(t, handler.resolveMessageStatus(false))
 	})
 }
 
 func TestHandlerRcpttoWriteResult(t *testing.T) {
-	request, response := "request context", "response context"
-	configuration, session := createConfiguration(), &sessionMock{}
+	request, response, session := "request context", "response context", &sessionMock{}
 
-	t.Run("when successful request received", func(t *testing.T) {
-		message := new(Message)
+	t.Run("when successful request received, current RCPTTO status is true", func(t *testing.T) {
+		message, configuration := new(Message), createConfiguration()
 		handler := newHandlerRcptto(session, message, configuration)
 		session.On("writeResponse", response, configuration.responseDelayRcptto).Once().Return(nil)
 
 		assert.True(t, handler.writeResult(true, request, response))
 		assert.True(t, message.rcptto)
-		assert.Equal(t, request, message.rcpttoRequest)
-		assert.Equal(t, response, message.rcpttoResponse)
+		assert.Equal(t, [][]string{{request, response}}, message.rcpttoRequestResponse)
 	})
 
-	t.Run("when failed request received", func(t *testing.T) {
+	t.Run("when successful request received, current RCPTTO status is false, multiple RCPTTO is enabled, includes successful RCPTTO responses", func(t *testing.T) {
+		configuration := &configuration{multipleRcptto: true, msgRcpttoReceived: response}
 		message, err := new(Message), errors.New(response)
 		handler := newHandlerRcptto(session, message, configuration)
 		session.On("addError", err).Once().Return(nil)
 		session.On("writeResponse", response, configuration.responseDelayRcptto).Once().Return(nil)
 
 		assert.True(t, handler.writeResult(false, request, response))
+		assert.True(t, message.rcptto)
+		assert.Equal(t, [][]string{{request, response}}, message.rcpttoRequestResponse)
+	})
+
+	t.Run("when failed request received, RCPTTO status is false, multiple RCPTTO is enabled, not includes successful RCPTTO responses", func(t *testing.T) {
+		message, configuration, err := new(Message), &configuration{multipleRcptto: true}, errors.New(response)
+		handler := newHandlerRcptto(session, message, configuration)
+		session.On("addError", err).Once().Return(nil)
+		session.On("writeResponse", response, configuration.responseDelayRcptto).Once().Return(nil)
+
+		assert.True(t, handler.writeResult(false, request, response))
 		assert.False(t, message.rcptto)
-		assert.Equal(t, request, message.rcpttoRequest)
-		assert.Equal(t, response, message.rcpttoResponse)
+		assert.Equal(t, [][]string{{request, response}}, message.rcpttoRequestResponse)
+	})
+
+	t.Run("when failed request received, RCPTTO status is false, multiple RCPTTO is disabled, not includes successful RCPTTO responses", func(t *testing.T) {
+		message, configuration, err := new(Message), createConfiguration(), errors.New(response)
+		handler := newHandlerRcptto(session, message, configuration)
+		session.On("addError", err).Once().Return(nil)
+		session.On("writeResponse", response, configuration.responseDelayRcptto).Once().Return(nil)
+
+		assert.True(t, handler.writeResult(false, request, response))
+		assert.False(t, message.rcptto)
+		assert.Equal(t, [][]string{{request, response}}, message.rcpttoRequestResponse)
+	})
+
+	t.Run("when failed request received, RCPTTO status is false, multiple RCPTTO is disabled, includes successful RCPTTO responses", func(t *testing.T) {
+		successfulResponse := "successfulResponse"
+		configuration := &configuration{msgRcpttoReceived: successfulResponse}
+		message, err := &Message{rcpttoRequestResponse: [][]string{{request, successfulResponse}}}, errors.New(response)
+		handler := newHandlerRcptto(session, message, configuration)
+		session.On("addError", err).Once().Return(nil)
+		session.On("writeResponse", response, configuration.responseDelayRcptto).Once().Return(nil)
+
+		assert.True(t, handler.writeResult(false, request, response))
+		assert.False(t, message.rcptto)
+		assert.Equal(t, [][]string{{request, successfulResponse}, {request, response}}, message.rcpttoRequestResponse)
 	})
 }
 
@@ -164,8 +239,7 @@ func TestHandlerRcpttoIsInvalidCmdSequence(t *testing.T) {
 
 		assert.True(t, handler.isInvalidCmdSequence(request))
 		assert.False(t, message.rcptto)
-		assert.Equal(t, request, message.rcpttoRequest)
-		assert.Equal(t, errorMessage, message.rcpttoResponse)
+		assert.Equal(t, [][]string{{request, errorMessage}}, message.rcpttoRequestResponse)
 	})
 
 	t.Run("when mailfrom previous command was failure", func(t *testing.T) {
@@ -177,8 +251,7 @@ func TestHandlerRcpttoIsInvalidCmdSequence(t *testing.T) {
 
 		assert.True(t, handler.isInvalidCmdSequence(request))
 		assert.False(t, message.rcptto)
-		assert.Equal(t, request, message.rcpttoRequest)
-		assert.Equal(t, errorMessage, message.rcpttoResponse)
+		assert.Equal(t, [][]string{{request, errorMessage}}, message.rcpttoRequestResponse)
 	})
 
 	t.Run("when all of the previous commands was successful", func(t *testing.T) {
@@ -188,8 +261,7 @@ func TestHandlerRcpttoIsInvalidCmdSequence(t *testing.T) {
 
 		assert.False(t, handler.isInvalidCmdSequence(request))
 		assert.False(t, message.rcptto)
-		assert.Empty(t, message.rcpttoRequest)
-		assert.Empty(t, message.rcpttoResponse)
+		assert.Empty(t, message.rcpttoRequestResponse)
 	})
 }
 
@@ -204,8 +276,7 @@ func TestHandlerRcpttoIsInvalidCmdArg(t *testing.T) {
 
 		assert.True(t, handler.isInvalidCmdArg(request))
 		assert.False(t, message.rcptto)
-		assert.Equal(t, request, message.rcpttoRequest)
-		assert.Equal(t, errorMessage, message.rcpttoResponse)
+		assert.Equal(t, [][]string{{request, errorMessage}}, message.rcpttoRequestResponse)
 	})
 
 	t.Run("when request includes valid command RCPTTO argument without <> sign", func(t *testing.T) {
@@ -214,8 +285,7 @@ func TestHandlerRcpttoIsInvalidCmdArg(t *testing.T) {
 
 		assert.False(t, handler.isInvalidCmdArg("RCPT TO: user@example.com"))
 		assert.False(t, message.rcptto)
-		assert.Empty(t, message.rcpttoRequest)
-		assert.Empty(t, message.rcpttoResponse)
+		assert.Empty(t, message.rcpttoRequestResponse)
 	})
 
 	t.Run("when request includes valid command RCPTTO argument without <> sign without space", func(t *testing.T) {
@@ -224,8 +294,7 @@ func TestHandlerRcpttoIsInvalidCmdArg(t *testing.T) {
 
 		assert.False(t, handler.isInvalidCmdArg("RCPT TO:user@example.com"))
 		assert.False(t, message.rcptto)
-		assert.Empty(t, message.rcpttoRequest)
-		assert.Empty(t, message.rcpttoResponse)
+		assert.Empty(t, message.rcpttoRequestResponse)
 	})
 
 	t.Run("when request includes valid command RCPTTO argument with <> sign", func(t *testing.T) {
@@ -234,8 +303,7 @@ func TestHandlerRcpttoIsInvalidCmdArg(t *testing.T) {
 
 		assert.False(t, handler.isInvalidCmdArg("RCPT TO: <user@example.com>"))
 		assert.False(t, message.rcptto)
-		assert.Empty(t, message.rcpttoRequest)
-		assert.Empty(t, message.rcpttoResponse)
+		assert.Empty(t, message.rcpttoRequestResponse)
 	})
 
 	t.Run("when request includes valid command RCPTTO argument with <> sign withoyt space", func(t *testing.T) {
@@ -244,8 +312,7 @@ func TestHandlerRcpttoIsInvalidCmdArg(t *testing.T) {
 
 		assert.False(t, handler.isInvalidCmdArg("RCPT TO:<user@example.com>"))
 		assert.False(t, message.rcptto)
-		assert.Empty(t, message.rcpttoRequest)
-		assert.Empty(t, message.rcpttoResponse)
+		assert.Empty(t, message.rcpttoRequestResponse)
 	})
 }
 
@@ -285,8 +352,7 @@ func TestHandlerRcpttoIsBlacklistedEmail(t *testing.T) {
 
 		assert.True(t, handler.isBlacklistedEmail(request))
 		assert.False(t, message.rcptto)
-		assert.Equal(t, request, message.rcpttoRequest)
-		assert.Equal(t, errorMessage, message.rcpttoResponse)
+		assert.Equal(t, [][]string{{request, errorMessage}}, message.rcpttoRequestResponse)
 	})
 
 	t.Run("when request not includes blacklisted domain name", func(t *testing.T) {
@@ -295,8 +361,7 @@ func TestHandlerRcpttoIsBlacklistedEmail(t *testing.T) {
 
 		assert.False(t, handler.isBlacklistedEmail(request))
 		assert.False(t, message.rcptto)
-		assert.Empty(t, message.rcpttoRequest)
-		assert.Empty(t, message.rcpttoResponse)
+		assert.Empty(t, message.rcpttoRequestResponse)
 	})
 }
 
@@ -314,8 +379,7 @@ func TestHandlerRcpttoIsNotRegisteredEmail(t *testing.T) {
 
 		assert.True(t, handler.isNotRegisteredEmail(request))
 		assert.False(t, message.rcptto)
-		assert.Equal(t, request, message.rcpttoRequest)
-		assert.Equal(t, errorMessage, message.rcpttoResponse)
+		assert.Equal(t, [][]string{{request, errorMessage}}, message.rcpttoRequestResponse)
 	})
 
 	t.Run("when request not includes blacklisted domain name", func(t *testing.T) {
@@ -324,8 +388,7 @@ func TestHandlerRcpttoIsNotRegisteredEmail(t *testing.T) {
 
 		assert.False(t, handler.isNotRegisteredEmail(request))
 		assert.False(t, message.rcptto)
-		assert.Empty(t, message.rcpttoRequest)
-		assert.Empty(t, message.rcpttoResponse)
+		assert.Empty(t, message.rcpttoRequestResponse)
 	})
 }
 
@@ -341,8 +404,7 @@ func TestHandlerRcpttoIsInvalidRequest(t *testing.T) {
 
 		assert.True(t, handler.isInvalidRequest(request))
 		assert.False(t, message.rcptto)
-		assert.Equal(t, request, message.rcpttoRequest)
-		assert.Equal(t, errorMessage, message.rcpttoResponse)
+		assert.Equal(t, [][]string{{request, errorMessage}}, message.rcpttoRequestResponse)
 	})
 
 	t.Run("when request includes invalid RCPTTO command argument", func(t *testing.T) {
@@ -355,8 +417,7 @@ func TestHandlerRcpttoIsInvalidRequest(t *testing.T) {
 
 		assert.True(t, handler.isInvalidRequest(request))
 		assert.False(t, message.rcptto)
-		assert.Equal(t, request, message.rcpttoRequest)
-		assert.Equal(t, errorMessage, message.rcpttoResponse)
+		assert.Equal(t, [][]string{{request, errorMessage}}, message.rcpttoRequestResponse)
 	})
 
 	t.Run("when request includes blacklisted RCPTTO email", func(t *testing.T) {
@@ -371,8 +432,7 @@ func TestHandlerRcpttoIsInvalidRequest(t *testing.T) {
 
 		assert.True(t, handler.isInvalidRequest(request))
 		assert.False(t, message.rcptto)
-		assert.Equal(t, request, message.rcpttoRequest)
-		assert.Equal(t, errorMessage, message.rcpttoResponse)
+		assert.Equal(t, [][]string{{request, errorMessage}}, message.rcpttoRequestResponse)
 	})
 
 	t.Run("when request includes not registered RCPTTO email", func(t *testing.T) {
@@ -387,8 +447,7 @@ func TestHandlerRcpttoIsInvalidRequest(t *testing.T) {
 
 		assert.True(t, handler.isInvalidRequest(request))
 		assert.False(t, message.rcptto)
-		assert.Equal(t, request, message.rcpttoRequest)
-		assert.Equal(t, errorMessage, message.rcpttoResponse)
+		assert.Equal(t, [][]string{{request, errorMessage}}, message.rcpttoRequestResponse)
 	})
 
 	t.Run("when valid RCPTTO request", func(t *testing.T) {
@@ -399,7 +458,6 @@ func TestHandlerRcpttoIsInvalidRequest(t *testing.T) {
 
 		assert.False(t, handler.isInvalidRequest(request))
 		assert.False(t, message.rcptto)
-		assert.Empty(t, message.rcpttoRequest)
-		assert.Empty(t, message.rcpttoResponse)
+		assert.Empty(t, message.rcpttoRequestResponse)
 	})
 }

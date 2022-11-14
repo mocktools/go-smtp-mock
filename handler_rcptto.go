@@ -26,18 +26,30 @@ func (handler *handlerRcptto) run(request string) {
 	handler.writeResult(true, request, handler.configuration.msgRcpttoReceived)
 }
 
-// Erases all message data from RCPTTO command
+// Erases all message data from RCPTTO command when multiple RCPTTO scenario is disabled
 func (handler *handlerRcptto) clearMessage() {
-	messageWithData := handler.message
-	clearedMessage := &Message{
-		heloRequest:      messageWithData.heloRequest,
-		heloResponse:     messageWithData.heloResponse,
-		helo:             messageWithData.helo,
-		mailfromRequest:  messageWithData.mailfromRequest,
-		mailfromResponse: messageWithData.mailfromResponse,
-		mailfrom:         messageWithData.mailfrom,
+	if !handler.configuration.multipleRcptto {
+		messageWithData := handler.message
+		clearedMessage := &Message{
+			heloRequest:      messageWithData.heloRequest,
+			heloResponse:     messageWithData.heloResponse,
+			helo:             messageWithData.helo,
+			mailfromRequest:  messageWithData.mailfromRequest,
+			mailfromResponse: messageWithData.mailfromResponse,
+			mailfrom:         messageWithData.mailfrom,
+		}
+		*messageWithData = *clearedMessage
 	}
-	*messageWithData = *clearedMessage
+}
+
+// RCPTTO message status resolver. Returns true when current RCPTTO status is true or
+// when multiple RCPTTO scenario is enabled and message includes at least one successful
+// RCPTTO response. Otherwise returns false
+func (handler *handlerRcptto) resolveMessageStatus(currentRcpttoStatus bool) bool {
+	configuration, message := handler.configuration, handler.message
+	multipleRcptto, msgRcpttoReceived := configuration.multipleRcptto, configuration.msgRcpttoReceived
+
+	return currentRcpttoStatus || (multipleRcptto && message.isIncludesSuccessfulRcpttoResponse(msgRcpttoReceived))
 }
 
 // Writes handled RCPTTO result to session, message. Always returns true
@@ -47,7 +59,8 @@ func (handler *handlerRcptto) writeResult(isSuccessful bool, request, response s
 		session.addError(errors.New(response))
 	}
 
-	message.rcpttoRequest, message.rcpttoResponse, message.rcptto = request, response, isSuccessful
+	message.rcpttoRequestResponse = append(message.rcpttoRequestResponse, []string{request, response})
+	message.rcptto = handler.resolveMessageStatus(isSuccessful)
 	session.writeResponse(response, handler.configuration.responseDelayRcptto)
 	return true
 }

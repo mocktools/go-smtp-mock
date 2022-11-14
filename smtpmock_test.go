@@ -63,6 +63,8 @@ func TestNew(t *testing.T) {
 			LogToStdout:                   true,
 			LogServerActivity:             true,
 			IsCmdFailFast:                 true,
+			MultipleRcptto:                true,
+			MultipleMessageReceiving:      true,
 			MsgGreeting:                   "msgGreeting",
 			MsgInvalidCmd:                 "msgInvalidCmd",
 			MsgQuitCmd:                    "msgQuitCmd",
@@ -97,6 +99,8 @@ func TestNew(t *testing.T) {
 		assert.Equal(t, configAttr.PortNumber, configuration.portNumber)
 		assert.Equal(t, configAttr.LogToStdout, configuration.logToStdout)
 		assert.Equal(t, configAttr.IsCmdFailFast, configuration.isCmdFailFast)
+		assert.Equal(t, configAttr.MultipleRcptto, configuration.multipleRcptto)
+		assert.Equal(t, configAttr.MultipleMessageReceiving, configuration.multipleMessageReceiving)
 		assert.Equal(t, configAttr.LogServerActivity, configuration.logServerActivity)
 		assert.Equal(t, configAttr.MsgGreeting, configuration.msgGreeting)
 		assert.Equal(t, configAttr.MsgInvalidCmd, configuration.msgInvalidCmd)
@@ -139,7 +143,7 @@ func TestNew(t *testing.T) {
 	})
 
 	t.Run("successful iteration with new server", func(t *testing.T) {
-		server := New(ConfigurationAttr{MultipleMessageReceiving: true})
+		server := New(ConfigurationAttr{MultipleRcptto: true, MultipleMessageReceiving: true})
 		configuration, messages := server.configuration, server.messages
 
 		assert.Empty(t, messages)
@@ -169,8 +173,8 @@ func TestNew(t *testing.T) {
 		assert.Equal(t, "MAIL FROM:<user@molo.com>", firstMessage.mailfromRequest)
 		assert.Equal(t, configuration.msgMailfromReceived, firstMessage.mailfromResponse)
 		assert.True(t, firstMessage.rcptto)
-		assert.Equal(t, "RCPT TO:<user1@olo.com>", firstMessage.rcpttoRequest)
-		assert.Equal(t, configuration.msgRcpttoReceived, firstMessage.rcpttoResponse)
+		assert.Equal(t, "RCPT TO:<user1@olo.com>", firstMessage.rcpttoRequestResponse[0][0])
+		assert.Equal(t, configuration.msgRcpttoReceived, firstMessage.rcpttoRequestResponse[0][1])
 		assert.True(t, firstMessage.data)
 		assert.Equal(t, "DATA", firstMessage.dataRequest)
 		assert.Equal(t, configuration.msgDataReceived, firstMessage.dataResponse)
@@ -186,8 +190,11 @@ func TestNew(t *testing.T) {
 		assert.Equal(t, "MAIL FROM:<user@molo.com>", secondMessage.mailfromRequest)
 		assert.Equal(t, configuration.msgMailfromReceived, secondMessage.mailfromResponse)
 		assert.True(t, secondMessage.rcptto)
-		assert.Equal(t, "RCPT TO:<user2@olo.com>", secondMessage.rcpttoRequest)
-		assert.Equal(t, configuration.msgRcpttoReceived, secondMessage.rcpttoResponse)
+		assert.Equal(t, "RCPT TO:<user2@olo.com>", secondMessage.rcpttoRequestResponse[0][0])
+		assert.Equal(t, configuration.msgRcpttoReceived, secondMessage.rcpttoRequestResponse[0][1])
+		assert.Equal(t, "RCPT TO:<user3@olo.com>", secondMessage.rcpttoRequestResponse[1][0])
+		assert.Equal(t, configuration.msgRcpttoReceived, secondMessage.rcpttoRequestResponse[1][1])
+
 		assert.True(t, secondMessage.data)
 		assert.Equal(t, "DATA", secondMessage.dataRequest)
 		assert.Equal(t, configuration.msgDataReceived, secondMessage.dataResponse)

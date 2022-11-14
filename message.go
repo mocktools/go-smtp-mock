@@ -7,7 +7,7 @@ import "sync"
 type Message struct {
 	heloRequest, heloResponse                         string
 	mailfromRequest, mailfromResponse                 string
-	rcpttoRequest, rcpttoResponse                     string
+	rcpttoRequestResponse                             [][]string
 	dataRequest, dataResponse                         string
 	msgRequest, msgResponse                           string
 	rsetRequest, rsetResponse                         string
@@ -48,14 +48,9 @@ func (message *Message) Mailfrom() bool {
 	return message.mailfrom
 }
 
-// Getter for rcpttoRequest field
-func (message *Message) RcpttoRequest() string {
-	return message.rcpttoRequest
-}
-
-// Getter for rcpttoResponse field
-func (message *Message) RcpttoResponse() string {
-	return message.rcpttoResponse
+// Getter for rcpttoRequestResponse field
+func (message *Message) RcpttoRequestResponse() [][]string {
+	return message.rcpttoRequestResponse
 }
 
 // Getter for rcptto field
@@ -118,6 +113,18 @@ func (message *Message) QuitSent() bool {
 // Otherwise returns false
 func (message *Message) isConsistent() bool {
 	return message.mailfrom && message.rcptto && message.data && message.msg
+}
+
+// Message RCPTTO successful response predicate. Returns true when at least one
+// successful RCPTTO response exists. Otherwise returns false
+func (message *Message) isIncludesSuccessfulRcpttoResponse(targetSuccessfulResponse string) bool {
+	for _, slice := range message.rcpttoRequestResponse {
+		if slice[1] == targetSuccessfulResponse {
+			return true
+		}
+	}
+
+	return false
 }
 
 // Pointer to empty message

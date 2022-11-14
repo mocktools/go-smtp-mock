@@ -23,24 +23,23 @@ func createConfiguration() *configuration {
 // Creates not empty message
 func createNotEmptyMessage() *Message {
 	return &Message{
-		heloRequest:      "a",
-		heloResponse:     "b",
-		mailfromRequest:  "c",
-		mailfromResponse: "d",
-		rcpttoRequest:    "a",
-		rcpttoResponse:   "b",
-		dataRequest:      "c",
-		dataResponse:     "d",
-		msgRequest:       "a",
-		msgResponse:      "b",
-		rsetRequest:      "a",
-		rsetResponse:     "b",
-		helo:             true,
-		mailfrom:         true,
-		rcptto:           true,
-		data:             true,
-		msg:              true,
-		rset:             true,
+		heloRequest:           "a",
+		heloResponse:          "b",
+		mailfromRequest:       "c",
+		mailfromResponse:      "d",
+		rcpttoRequestResponse: [][]string{[]string{"request", "response"}},
+		dataRequest:           "c",
+		dataResponse:          "d",
+		msgRequest:            "a",
+		msgResponse:           "b",
+		rsetRequest:           "a",
+		rsetResponse:          "b",
+		helo:                  true,
+		mailfrom:              true,
+		rcptto:                true,
+		data:                  true,
+		msg:                   true,
+		rset:                  true,
 	}
 }
 
@@ -65,7 +64,7 @@ func runFullFlow(client *smtp.Client) error {
 	var err error
 	var wc io.WriteCloser
 
-	sender, receiver1, receiver2 := "user@molo.com", "user1@olo.com", "user2@olo.com"
+	sender, receiver1, receiver2, receiver3 := "user@molo.com", "user1@olo.com", "user2@olo.com", "user3@olo.com"
 
 	if err = client.Mail(sender); err != nil {
 		return err
@@ -92,6 +91,9 @@ func runFullFlow(client *smtp.Client) error {
 		return err
 	}
 	if err = client.Rcpt(receiver2); err != nil {
+		return err
+	}
+	if err = client.Rcpt(receiver3); err != nil {
 		return err
 	}
 	wc, err = client.Data()

@@ -14,6 +14,7 @@ func TestNewConfiguration(t *testing.T) {
 		assert.Equal(t, defaultHostAddress, buildedConfiguration.hostAddress)
 		assert.False(t, buildedConfiguration.logToStdout)
 		assert.False(t, buildedConfiguration.isCmdFailFast)
+		assert.False(t, buildedConfiguration.multipleRcptto)
 		assert.False(t, buildedConfiguration.multipleMessageReceiving)
 		assert.False(t, buildedConfiguration.logServerActivity)
 		assert.Equal(t, defaultGreetingMsg, buildedConfiguration.msgGreeting)
@@ -70,6 +71,7 @@ func TestNewConfiguration(t *testing.T) {
 			LogToStdout:                   true,
 			LogServerActivity:             true,
 			IsCmdFailFast:                 true,
+			MultipleRcptto:                true,
 			MultipleMessageReceiving:      true,
 			MsgGreeting:                   "msgGreeting",
 			MsgInvalidCmd:                 "msgInvalidCmd",
@@ -115,6 +117,7 @@ func TestNewConfiguration(t *testing.T) {
 		assert.Equal(t, configAttr.PortNumber, buildedConfiguration.portNumber)
 		assert.Equal(t, configAttr.LogToStdout, buildedConfiguration.logToStdout)
 		assert.Equal(t, configAttr.IsCmdFailFast, buildedConfiguration.isCmdFailFast)
+		assert.Equal(t, configAttr.MultipleRcptto, buildedConfiguration.multipleRcptto)
 		assert.Equal(t, configAttr.MultipleMessageReceiving, buildedConfiguration.multipleMessageReceiving)
 		assert.Equal(t, configAttr.LogServerActivity, buildedConfiguration.logServerActivity)
 		assert.Equal(t, configAttr.MsgGreeting, buildedConfiguration.msgGreeting)
