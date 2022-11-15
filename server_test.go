@@ -21,8 +21,195 @@ func TestNewServer(t *testing.T) {
 		assert.Nil(t, server.listener)
 		assert.NotNil(t, server.wg)
 		assert.Nil(t, server.quit)
-		assert.False(t, server.isStarted)
-		assert.Equal(t, 0, server.PortNumber)
+		assert.False(t, server.isStarted())
+		assert.Equal(t, 0, server.PortNumber())
+	})
+}
+
+func TestServerStart(t *testing.T) {
+	t.Run("when no errors happens during starting and running the server with default port", func(t *testing.T) {
+		configuration := createConfiguration()
+		server := newServer(configuration)
+
+		assert.NoError(t, server.Start())
+		_ = runSuccessfulSMTPSession(configuration.hostAddress, server.PortNumber(), false)
+		assert.NotEmpty(t, server.messages)
+		assert.NotNil(t, server.quit)
+		assert.NotNil(t, server.quitTimeout)
+		assert.True(t, server.isStarted())
+		assert.Greater(t, server.PortNumber(), 0)
+
+		_ = server.Stop()
+	})
+
+	t.Run("when no errors happens during starting and running the server with custom port", func(t *testing.T) {
+		configuration, portNumber := createConfiguration(), 2525
+		configuration.portNumber = portNumber
+		server := newServer(configuration)
+
+		assert.NoError(t, server.Start())
+		_ = runSuccessfulSMTPSession(configuration.hostAddress, portNumber, false)
+		assert.NotEmpty(t, server.messages)
+		assert.NotNil(t, server.quit)
+		assert.NotNil(t, server.quitTimeout)
+		assert.True(t, server.isStarted())
+		assert.Equal(t, portNumber, server.PortNumber())
+
+		_ = server.Stop()
+	})
+
+	t.Run("when active server doesn't start current server", func(t *testing.T) {
+		server := &Server{started: true}
+
+		assert.EqualError(t, server.Start(), serverStartErrorMsg)
+		assert.Equal(t, 0, server.PortNumber())
+	})
+
+	t.Run("when listener error happens during starting the server doesn't start current server", func(t *testing.T) {
+		configuration := createConfiguration()
+		server, logger := newServer(configuration), new(loggerMock)
+		listener, _ := net.Listen(networkProtocol, emptyString)
+		portNumber := listener.Addr().(*net.TCPAddr).Port
+		errorMessage := fmt.Sprintf("%s: %d", serverErrorMsg, portNumber)
+		configuration.portNumber, server.logger = portNumber, logger
+		logger.On("error", errorMessage).Once().Return(nil)
+
+		assert.EqualError(t, server.Start(), errorMessage)
+		assert.False(t, server.isStarted())
+		assert.Equal(t, 0, server.PortNumber())
+		listener.Close()
+	})
+}
+
+func TestServerStop(t *testing.T) {
+	t.Run("when server active stops current server, graceful shutdown case", func(t *testing.T) {
+		logger, listener, waitGroup, quitChannel := new(loggerMock), new(listenerMock), new(waitGroupMock), make(chan interface{})
+		server := &Server{
+			configuration: createConfiguration(),
+			logger:        logger,
+			listener:      listener,
+			wg:            waitGroup,
+			quit:          quitChannel,
+			started:       true,
+			quitTimeout:   make(chan interface{}),
+		}
+		listener.On("Close").Once().Return(nil)
+		waitGroup.On("Wait").Once().Return(nil)
+		logger.On("infoActivity", serverStopMsg).Once().Return(nil)
+
+		assert.NoError(t, server.Stop())
+		assert.False(t, server.isStarted())
+		_, isChannelOpened := <-server.quit
+		assert.False(t, isChannelOpened)
+	})
+
+	t.Run("when server active stops current server, force shutdown case", func(t *testing.T) {
+		logger, listener, waitGroup, quitChannel := new(loggerMock), new(listenerMock), new(waitGroupMock), make(chan interface{})
+		server := &Server{
+			configuration: createConfiguration(),
+			logger:        logger,
+			listener:      listener,
+			wg:            waitGroup,
+			quit:          quitChannel,
+			started:       true,
+		}
+		listener.On("Close").Once().Return(nil)
+		waitGroup.On("Wait").Once().Return(nil)
+		logger.On("infoActivity", serverForceStopMsg).Once().Return(nil)
+
+		assert.NoError(t, server.Stop())
+		assert.False(t, server.isStarted())
+		_, isChannelOpened := <-server.quit
+		assert.False(t, isChannelOpened)
+	})
+
+	t.Run("when server is inactive doesn't stop current server", func(t *testing.T) {
+		assert.EqualError(t, new(Server).Stop(), serverStopErrorMsg)
+	})
+}
+
+func TestServerMessages(t *testing.T) {
+	configuration := createConfiguration()
+
+	t.Run("when there are no messages on the server", func(t *testing.T) {
+		server := newServer(configuration)
+
+		assert.Empty(t, server.Messages())
+	})
+
+	t.Run("when there are messages on the server", func(t *testing.T) {
+		server := newServer(configuration)
+		server.newMessage()
+
+		assert.NotEmpty(t, server.Messages())
+	})
+
+	t.Run("confirm message data of internal server.messages.items and exported Messages() slice are identical for a given moment", func(t *testing.T) {
+		server := newServer(configuration)
+
+		assert.Empty(t, server.messages.items)
+		assert.Empty(t, server.Messages())
+		assert.NotSame(t, server.messages.items, server.Messages())
+
+		message := server.newMessage()
+
+		assert.Equal(t, []*Message{message}, server.messages.items)
+		assert.Equal(t, []Message{*message}, server.Messages())
+		assert.NotSame(t, server.messages.items, server.Messages())
+	})
+}
+
+func TestServerPortNumber(t *testing.T) {
+	t.Run("returns server port number", func(t *testing.T) {
+		portNumber := 2525
+		server := &Server{portNumber: portNumber}
+
+		assert.Equal(t, portNumber, server.PortNumber())
+	})
+}
+
+func TestServerIsStarted(t *testing.T) {
+	t.Run("returns current server started-flag status", func(t *testing.T) {
+		server := &Server{started: true}
+
+		assert.True(t, server.isStarted())
+	})
+}
+
+func TestServerSetListener(t *testing.T) {
+	t.Run("sets server listener", func(t *testing.T) {
+		server := new(Server)
+		listener, _ := net.Listen("tcp", "localhost:2526")
+		server.setListener(listener)
+
+		assert.Equal(t, listener, server.listener) // TODO: do we need thread-safe getter for server.listener ?
+	})
+}
+
+func TestServerSetPortNumber(t *testing.T) {
+	t.Run("sets server listener", func(t *testing.T) {
+		server, portNumber := new(Server), 2525
+		server.setPortNumber(portNumber)
+
+		assert.Equal(t, portNumber, server.PortNumber())
+	})
+}
+
+func TestServerStartFlag(t *testing.T) {
+	t.Run("sets server started-flag status to true", func(t *testing.T) {
+		server := new(Server)
+		server.start()
+
+		assert.True(t, server.isStarted())
+	})
+}
+
+func TestServerStopFlag(t *testing.T) {
+	t.Run("sets server started-flag status to false", func(t *testing.T) {
+		server := &Server{started: true}
+		server.stop()
+
+		assert.False(t, server.isStarted())
 	})
 }
 
@@ -329,124 +516,5 @@ func TestServerHandleSession(t *testing.T) {
 		session.On("finish").Once().Return(nil)
 
 		server.handleSession(session)
-	})
-}
-
-func TestServerStart(t *testing.T) {
-	t.Run("when no errors happens during starting and running the server with default port", func(t *testing.T) {
-		configuration := createConfiguration()
-		server := newServer(configuration)
-
-		assert.NoError(t, server.Start())
-		_ = runSuccessfulSMTPSession(configuration.hostAddress, server.PortNumber, false)
-		assert.NotEmpty(t, server.messages)
-		assert.NotNil(t, server.quit)
-		assert.NotNil(t, server.quitTimeout)
-		assert.True(t, server.isStarted)
-		assert.Greater(t, server.PortNumber, 0)
-
-		_ = server.Stop()
-	})
-
-	t.Run("when no errors happens during starting and running the server with custom port", func(t *testing.T) {
-		configuration, portNumber := createConfiguration(), 2525
-		configuration.portNumber = portNumber
-		server := newServer(configuration)
-
-		assert.NoError(t, server.Start())
-		_ = runSuccessfulSMTPSession(configuration.hostAddress, portNumber, false)
-		assert.NotEmpty(t, server.messages)
-		assert.NotNil(t, server.quit)
-		assert.NotNil(t, server.quitTimeout)
-		assert.True(t, server.isStarted)
-		assert.Equal(t, portNumber, server.PortNumber)
-
-		_ = server.Stop()
-	})
-
-	t.Run("when active server doesn't start current server", func(t *testing.T) {
-		server := &Server{isStarted: true}
-
-		assert.EqualError(t, server.Start(), serverStartErrorMsg)
-		assert.Equal(t, 0, server.PortNumber)
-	})
-
-	t.Run("when listener error happens during starting the server doesn't start current server", func(t *testing.T) {
-		configuration := createConfiguration()
-		server, logger := newServer(configuration), new(loggerMock)
-		listener, _ := net.Listen(networkProtocol, emptyString)
-		portNumber := listener.Addr().(*net.TCPAddr).Port
-		errorMessage := fmt.Sprintf("%s: %d", serverErrorMsg, portNumber)
-		configuration.portNumber, server.logger = portNumber, logger
-		logger.On("error", errorMessage).Once().Return(nil)
-
-		assert.EqualError(t, server.Start(), errorMessage)
-		assert.False(t, server.isStarted)
-		assert.Equal(t, 0, server.PortNumber)
-		listener.Close()
-	})
-}
-
-func TestServerStop(t *testing.T) {
-	t.Run("when server active stops current server, graceful shutdown case", func(t *testing.T) {
-		logger, listener, waitGroup, quitChannel := new(loggerMock), new(listenerMock), new(waitGroupMock), make(chan interface{})
-		server := &Server{
-			configuration: createConfiguration(),
-			logger:        logger,
-			listener:      listener,
-			wg:            waitGroup,
-			quit:          quitChannel,
-			isStarted:     true,
-			quitTimeout:   make(chan interface{}),
-		}
-		listener.On("Close").Once().Return(nil)
-		waitGroup.On("Wait").Once().Return(nil)
-		logger.On("infoActivity", serverStopMsg).Once().Return(nil)
-
-		assert.NoError(t, server.Stop())
-		assert.False(t, server.isStarted)
-		_, isChannelOpened := <-server.quit
-		assert.False(t, isChannelOpened)
-	})
-
-	t.Run("when server active stops current server, force shutdown case", func(t *testing.T) {
-		logger, listener, waitGroup, quitChannel := new(loggerMock), new(listenerMock), new(waitGroupMock), make(chan interface{})
-		server := &Server{
-			configuration: createConfiguration(),
-			logger:        logger,
-			listener:      listener,
-			wg:            waitGroup,
-			quit:          quitChannel,
-			isStarted:     true,
-		}
-		listener.On("Close").Once().Return(nil)
-		waitGroup.On("Wait").Once().Return(nil)
-		logger.On("infoActivity", serverForceStopMsg).Once().Return(nil)
-
-		assert.NoError(t, server.Stop())
-		assert.False(t, server.isStarted)
-		_, isChannelOpened := <-server.quit
-		assert.False(t, isChannelOpened)
-	})
-
-	t.Run("when server is inactive doesn't stop current server", func(t *testing.T) {
-		assert.EqualError(t, new(Server).Stop(), serverStopErrorMsg)
-	})
-}
-
-func TestServerMessages(t *testing.T) {
-	configuration := createConfiguration()
-
-	t.Run("when there are no messages on the server", func(t *testing.T) {
-		server := newServer(configuration)
-
-		assert.Empty(t, server.Messages())
-	})
-
-	t.Run("when there are messages on the server", func(t *testing.T) {
-		server := newServer(configuration)
-		server.newMessage()
-
-		assert.NotEmpty(t, server.Messages())
 	})
 }

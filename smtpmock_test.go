@@ -53,7 +53,7 @@ func TestNew(t *testing.T) {
 		assert.NotNil(t, server.logger)
 		assert.NotNil(t, server.wg)
 		assert.Nil(t, server.quit)
-		assert.False(t, server.isStarted)
+		assert.False(t, server.isStarted())
 	})
 
 	t.Run("creates new server with custom configuration settings", func(t *testing.T) {
@@ -139,30 +139,30 @@ func TestNew(t *testing.T) {
 		assert.NotNil(t, server.logger)
 		assert.NotNil(t, server.wg)
 		assert.Nil(t, server.quit)
-		assert.False(t, server.isStarted)
+		assert.False(t, server.isStarted())
 	})
 
 	t.Run("successful iteration with new server", func(t *testing.T) {
 		server := New(ConfigurationAttr{MultipleRcptto: true, MultipleMessageReceiving: true})
-		configuration, messages := server.configuration, server.messages
+		configuration, messages := server.configuration, server.Messages()
 
 		assert.Empty(t, messages)
 		assert.NotNil(t, server.logger)
 		assert.NotNil(t, server.wg)
 		assert.Nil(t, server.quit)
-		assert.False(t, server.isStarted)
+		assert.False(t, server.isStarted())
 
 		assert.NoError(t, server.Start())
-		assert.True(t, server.isStarted)
-		_ = runSuccessfulSMTPSession(configuration.hostAddress, server.PortNumber, true)
+		assert.True(t, server.isStarted())
+		_ = runSuccessfulSMTPSession(configuration.hostAddress, server.PortNumber(), true)
 		_ = server.Stop()
 
-		assert.Equal(t, 2, len(messages.items))
+		assert.Equal(t, 2, len(server.Messages()))
 		assert.NotNil(t, server.quit)
-		assert.False(t, server.isStarted)
-		assert.Greater(t, server.PortNumber, 0)
+		assert.False(t, server.isStarted())
+		assert.Greater(t, server.PortNumber(), 0)
 
-		receivedMessages := messages.items
+		receivedMessages := server.Messages()
 		firstMessage, secondMessage := receivedMessages[0], receivedMessages[1]
 
 		assert.True(t, firstMessage.helo)
@@ -181,7 +181,7 @@ func TestNew(t *testing.T) {
 		assert.True(t, firstMessage.msg)
 		assert.Equal(t, string(messageBody("user@molo.com", "user1@olo.com"))+"\r\n", firstMessage.msgRequest)
 		assert.Equal(t, configuration.msgMsgReceived, firstMessage.msgResponse)
-		assert.True(t, firstMessage.isConsistent())
+		assert.True(t, firstMessage.IsConsistent())
 		assert.True(t, firstMessage.rset)
 		assert.Equal(t, "RSET", firstMessage.rsetRequest)
 		assert.Equal(t, configuration.msgRsetReceived, firstMessage.rsetResponse)
@@ -201,7 +201,7 @@ func TestNew(t *testing.T) {
 		assert.True(t, secondMessage.msg)
 		assert.Equal(t, string(messageBody("user@molo.com", "user2@olo.com"))+"\r\n", secondMessage.msgRequest)
 		assert.Equal(t, configuration.msgMsgReceived, secondMessage.msgResponse)
-		assert.True(t, secondMessage.isConsistent())
+		assert.True(t, secondMessage.IsConsistent())
 		assert.True(t, secondMessage.quitSent)
 	})
 }
