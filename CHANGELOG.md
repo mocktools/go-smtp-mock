@@ -2,7 +2,7 @@
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/), and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [2.0.0] - 2022-11-14
+## [2.0.0] - 2022-11-16
 
 ### Added
 
@@ -10,15 +10,25 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 - Added `ConfigurationAttr#MultipleRcptto`, `configuration#multipleRcptto`, tests
 - Added `Message#rcpttoRequestResponse`, `Message#isIncludesSuccessfulRcpttoResponse()`, tests
 - Added `handlerRcptto#resolveMessageStatus()`, tests
+- Added `Message` public methods, tests
+- Added `Server` thread-safe getters/setters, tests
+
+### Fixed
+
+- Fixed race conditions with R/W lock in `Server`. Thanks [@benjamin-rood](https://github.com/benjamin-rood) for [report](https://github.com/mocktools/go-smtp-mock/issues/124) and [pull request](https://github.com/mocktools/go-smtp-mock/pull/125)
+- Fixed race conditions with R/W lock in `Message`
 
 ### Removed
 
 - Removed `Message#rcpttoRequest`, `Message#rcpttoResponse`
+- Removed `&Message` public methods
 
 ### Updated
 
 - Updated `handlerRcptto#clearMessage()`, `handlerRcptto#writeResult()`, `handlerData#clearMessage()`, tests
 - Updated Go reference trigger script
+- Updated `Server#Messages()`, returns slice of `Message` instead `&Message`
+- Updated CircleCI config, added checking for race conditions step
 - Updated project documentation
 
 ## [1.10.0] - 2022-09-09

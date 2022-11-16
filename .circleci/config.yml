@@ -23,6 +23,10 @@ jobs:
           command: gotestsum --format standard-verbose -- -coverprofile=coverage_report ./...
 
       - run:
+          name: Checking for race conditions
+          command: go test -race ./...
+
+      - run:
           name: Creating coverage reports
           command: |
             mkdir -p /tmp/artifacts
