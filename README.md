@@ -1,10 +1,10 @@
 # ![SMTP mock server written on Golang. Mimic any SMTP server behaviour for your test environment with fake SMTP server](https://repository-images.githubusercontent.com/401721985/848bc1dd-fc35-4d78-8bd9-0ac3430270d8)
 
-[![Go Report Card](https://goreportcard.com/badge/github.com/mocktools/go-smtp-mock)](https://goreportcard.com/report/github.com/mocktools/go-smtp-mock)
+[![Go Report Card](https://goreportcard.com/badge/github.com/mocktools/go-smtp-mock/v2)](https://goreportcard.com/report/github.com/mocktools/go-smtp-mock/v2)
 [![Codecov](https://codecov.io/gh/mocktools/go-smtp-mock/branch/master/graph/badge.svg)](https://codecov.io/gh/mocktools/go-smtp-mock)
 [![CircleCI](https://circleci.com/gh/mocktools/go-smtp-mock/tree/master.svg?style=svg)](https://circleci.com/gh/mocktools/go-smtp-mock/tree/master)
 [![GitHub release (latest by date)](https://img.shields.io/github/v/release/mocktools/go-smtp-mock)](https://github.com/mocktools/go-smtp-mock/releases)
-[![PkgGoDev](https://pkg.go.dev/badge/github.com/mocktools/go-smtp-mock)](https://pkg.go.dev/github.com/mocktools/go-smtp-mock)
+[![PkgGoDev](https://pkg.go.dev/badge/github.com/mocktools/go-smtp-mock/v2)](https://pkg.go.dev/github.com/mocktools/go-smtp-mock/v2)
 [![Mentioned in Awesome Go](https://awesome.re/mentioned-badge.svg)](https://github.com/avelino/awesome-go)
 [![GitHub](https://img.shields.io/github/license/mocktools/go-smtp-mock)](LICENSE.txt)
 [![Contributor Covenant](https://img.shields.io/badge/Contributor%20Covenant-v1.4%20adopted-ff69b4.svg)](CODE_OF_CONDUCT.md)
@@ -42,6 +42,7 @@
 - Comes with default settings out of the box, configure only what you need
 - Ability to override previous SMTP commands
 - Fail fast scenario (ability to close client session for case when command was inconsistent or failed)
+- Multiple receivers (ability to configure multiple `RCPT TO` commands receiving during one session)
 - Multiple message receiving (ability to configure multiple message receiving during one session)
 - Mock-server activity logger
 - Ability to do graceful/force shutdown of SMTP mock server
@@ -60,8 +61,8 @@ Golang 1.15+
 Install `smtpmock`:
 
 ```bash
-go get github.com/mocktools/go-smtp-mock
-go install -i github.com/mocktools/go-smtp-mock
+go get github.com/mocktools/go-smtp-mock/v2
+go install -i github.com/mocktools/go-smtp-mock/v2/smtpmock@latest
 ```
 
 Import `smtpmock` dependency into your code:
@@ -69,7 +70,7 @@ Import `smtpmock` dependency into your code:
 ```go
 package main
 
-import "github.com/mocktools/go-smtp-mock"
+import "github.com/mocktools/go-smtp-mock/v2"
 ```
 
 ## Usage
@@ -125,9 +126,16 @@ smtpmock.ConfigurationAttr{
   // It's equal to false by default
   IsCmdFailFast:                 true,
 
+  // Ability to configure multiple RCPT TO command receiving during one session.
+  // It means that server will handle and save all RCPT TO command request-response
+  // pairs until receive succesful response and next SMTP command has been passed.
+  // Please note, by default will be saved only one, the last RCPT TO command
+  // request-response pair. It's equal to false by default
+  MultipleRcptto:                true,
+
   // Ability to configure multiple message receiving during one session. It means that server
   // will create another message during current SMTP session in case when RSET
-  // command has been used after succesful commands chain: MAILFROM, RCPTTO, DATA.
+  // command has been used after succesful commands chain: MAIL FROM, RCPT TO, DATA.
   // Please note, by default RSET command flushes current message in any case.
   // It's equal to false by default
   MultipleMessageReceiving:      true,
@@ -286,7 +294,7 @@ func main() {
 
   // Server's port will be assigned dynamically after server.Start()
   // for case when portNumber wasn't specified
-  hostAddress, portNumber := "127.0.0.1", server.PortNumber
+  hostAddress, portNumber := "127.0.0.1", server.PortNumber()
 
   // Possible SMTP-client stuff for iteration with mock server
   address := fmt.Sprintf("%s:%d", hostAddress, portNumber)
@@ -376,6 +384,7 @@ curl -sL https://raw.githubusercontent.com/mocktools/go-smtp-mock/master/script/
 | `-sessionTimeout` - session timeout in seconds. It's equal to 30 seconds by default | `-sessionTimeout=60` |
 | `-shutdownTimeout` - graceful shutdown timeout in seconds. It's equal to 1 second by default | `-shutdownTimeout=5` |
 | `-failFast` - enables fail fast scenario. Disabled by default | `-failFast` |
+| `-multipleRcptto` - enables multiple `RCPT TO` receiving scenario. Disabled by default | `-multipleRcptto` |
 | `-multipleMessageReceiving` - enables multiple message receiving scenario. Disabled by default | `-multipleMessageReceiving` |
 | `-blacklistedHeloDomains` - blacklisted `HELO` domains, separated by commas | `-blacklistedHeloDomains="example1.com,example2.com"` |
 | `-blacklistedMailfromEmails` - blacklisted `MAIL FROM` emails, separated by commas | `-blacklistedMailfromEmails="a@example1.com,b@example2.com"` |

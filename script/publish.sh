@@ -7,7 +7,7 @@ latest_tag() {
 
 publish_release() {
   echo "Triggering pkg.go.dev about new smtpmock release..."
-  curl -X POST "https://pkg.go.dev/fetch/github.com/mocktools/go-smtp-mock@$(latest_tag)"
+  curl -X POST "https://pkg.go.dev/fetch/github.com/mocktools/go-smtp-mock/v2@$(latest_tag)"
 }
 
 publish_release

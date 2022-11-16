@@ -10,7 +10,7 @@ import (
 	"syscall"
 	"testing"
 
-	version "github.com/mocktools/go-smtp-mock/cmd/version"
+	version "github.com/mocktools/go-smtp-mock/v2/cmd/version"
 	"github.com/stretchr/testify/assert"
 )
 
@@ -133,6 +133,7 @@ func TestAttrFromCommandLine(t *testing.T) {
 				"-sessionTimeout=" + strconv.Itoa(sessionTimeout),
 				"-shutdownTimeout=" + strconv.Itoa(shutdownTimeout),
 				"-failFast",
+				"-multipleRcptto",
 				"-multipleMessageReceiving",
 				"-blacklistedHeloDomains=" + blacklistedHeloDomains,
 				"-blacklistedMailfromEmails=" + blacklistedMailfromEmails,
@@ -178,6 +179,7 @@ func TestAttrFromCommandLine(t *testing.T) {
 		assert.Equal(t, sessionTimeout, configAttr.SessionTimeout)
 		assert.Equal(t, shutdownTimeout, configAttr.ShutdownTimeout)
 		assert.True(t, configAttr.IsCmdFailFast)
+		assert.True(t, configAttr.MultipleRcptto)
 		assert.True(t, configAttr.MultipleMessageReceiving)
 		assert.Equal(t, toSlice(blacklistedHeloDomains), configAttr.BlacklistedHeloDomains)
 		assert.Equal(t, toSlice(blacklistedMailfromEmails), configAttr.BlacklistedMailfromEmails)

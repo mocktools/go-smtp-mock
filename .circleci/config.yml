@@ -3,7 +3,7 @@ version: 2.1
 jobs:
   linters:
     docker:
-      - image: golangci/golangci-lint:v1.49-alpine
+      - image: golangci/golangci-lint:v1.50.1-alpine
     steps:
       - checkout
       - run: golangci-lint run
@@ -21,6 +21,10 @@ jobs:
       - run:
           name: Running tests
           command: gotestsum --format standard-verbose -- -coverprofile=coverage_report ./...
+
+      - run:
+          name: Checking for race conditions
+          command: go test -race ./...
 
       - run:
           name: Creating coverage reports

@@ -9,6 +9,7 @@ type configuration struct {
 	logToStdout                   bool
 	logServerActivity             bool
 	isCmdFailFast                 bool
+	multipleRcptto                bool
 	multipleMessageReceiving      bool
 	msgGreeting                   string
 	msgInvalidCmd                 string
@@ -61,6 +62,7 @@ func newConfiguration(config ConfigurationAttr) *configuration {
 		logToStdout:                   config.LogToStdout,
 		logServerActivity:             config.LogServerActivity,
 		isCmdFailFast:                 config.IsCmdFailFast,
+		multipleRcptto:                config.MultipleRcptto,
 		multipleMessageReceiving:      config.MultipleMessageReceiving,
 		msgGreeting:                   config.MsgGreeting,
 		msgInvalidCmd:                 config.MsgInvalidCmd,
@@ -109,6 +111,7 @@ type ConfigurationAttr struct {
 	LogToStdout                   bool
 	LogServerActivity             bool
 	IsCmdFailFast                 bool
+	MultipleRcptto                bool
 	MultipleMessageReceiving      bool
 	MsgGreeting                   string
 	MsgInvalidCmd                 string
