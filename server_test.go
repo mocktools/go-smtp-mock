@@ -144,7 +144,7 @@ func TestServerMessages(t *testing.T) {
 		assert.NotEmpty(t, server.Messages())
 	})
 
-	t.Run("confirm message data of internal server.messages.items and exported Messages() slice are identical for a given moment", func(t *testing.T) {
+	t.Run("message data are identical", func(t *testing.T) {
 		server := newServer(configuration)
 
 		assert.Empty(t, server.messages.items)

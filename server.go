@@ -118,7 +118,7 @@ func (server *Server) Stop() (err error) {
 	return errors.New(serverStopErrorMsg)
 }
 
-// Public interface to get access to server messages
+// Public interface to get access to server messages.
 // Returns slice with copy of messages
 func (server *Server) Messages() []Message {
 	server.Lock()
@@ -131,7 +131,7 @@ func (server *Server) Messages() []Message {
 	return copiedMessages
 }
 
-// Thread-safe getter of server port
+// Thread-safe getter of server port.
 // Returns server.portNumber
 func (server *Server) PortNumber() int {
 	server.Lock()
@@ -139,7 +139,7 @@ func (server *Server) PortNumber() int {
 	return server.portNumber
 }
 
-// Thread-safe getter to check if server has been started
+// Thread-safe getter to check if server has been started.
 // Returns server.started
 func (server *Server) isStarted() bool {
 	server.Lock()

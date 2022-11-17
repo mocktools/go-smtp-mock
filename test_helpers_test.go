@@ -27,7 +27,7 @@ func createNotEmptyMessage() *Message {
 		heloResponse:          "b",
 		mailfromRequest:       "c",
 		mailfromResponse:      "d",
-		rcpttoRequestResponse: [][]string{[]string{"request", "response"}},
+		rcpttoRequestResponse: [][]string{{"request", "response"}},
 		dataRequest:           "c",
 		dataResponse:          "d",
 		msgRequest:            "a",
