@@ -144,7 +144,7 @@ func TestServerMessages(t *testing.T) {
 		assert.NotEmpty(t, server.Messages())
 	})
 
-	t.Run("confirm message data of internal server.messages.items and exported Messages() slice are identical for a given moment", func(t *testing.T) {
+	t.Run("message data are identical", func(t *testing.T) {
 		server := newServer(configuration)
 
 		assert.Empty(t, server.messages.items)
@@ -182,7 +182,7 @@ func TestServerSetListener(t *testing.T) {
 		listener, _ := net.Listen("tcp", "localhost:2526")
 		server.setListener(listener)
 
-		assert.Equal(t, listener, server.listener) // TODO: do we need thread-safe getter for server.listener ?
+		assert.Equal(t, listener, server.listener)
 	})
 }
 
