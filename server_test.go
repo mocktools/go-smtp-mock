@@ -182,7 +182,7 @@ func TestServerSetListener(t *testing.T) {
 		listener, _ := net.Listen("tcp", "localhost:2526")
 		server.setListener(listener)
 
-		assert.Equal(t, listener, server.listener) // TODO: do we need thread-safe getter for server.listener ?
+		assert.Equal(t, listener, server.listener)
 	})
 }
 

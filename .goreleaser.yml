@@ -12,9 +12,9 @@ builds:
       - amd64
     ldflags:
       - -s -w
-      - -X github.com/mocktools/go-smtp-mock/cmd/version.Version={{.Version}}
-      - -X github.com/mocktools/go-smtp-mock/cmd/version.GitCommit={{.Commit}}
-      - -X github.com/mocktools/go-smtp-mock/cmd/version.BuildTime={{.Date}}
+      - -X github.com/mocktools/go-smtp-mock/v2/cmd/version.Version={{.Version}}
+      - -X github.com/mocktools/go-smtp-mock/v2/cmd/version.GitCommit={{.Commit}}
+      - -X github.com/mocktools/go-smtp-mock/v2/cmd/version.BuildTime={{.Date}}
 archives:
   - id: smtpmock-archive
     builds:
