@@ -62,7 +62,7 @@ Install `smtpmock`:
 
 ```bash
 go get github.com/mocktools/go-smtp-mock/v2
-go install -i github.com/mocktools/go-smtp-mock/v2/smtpmock@latest
+go install github.com/mocktools/go-smtp-mock/v2
 ```
 
 Import `smtpmock` dependency into your code:
@@ -70,7 +70,7 @@ Import `smtpmock` dependency into your code:
 ```go
 package main
 
-import "github.com/mocktools/go-smtp-mock/v2"
+import smtpmock "github.com/mocktools/go-smtp-mock/v2"
 ```
 
 ## Usage
