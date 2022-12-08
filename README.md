@@ -1,4 +1,4 @@
-# ![SMTP mock server written on Golang. Mimic any SMTP server behaviour for your test environment with fake SMTP server](https://repository-images.githubusercontent.com/401721985/848bc1dd-fc35-4d78-8bd9-0ac3430270d8)
+# ![SMTP mock server written on Golang. Mimic any SMTP server behavior for your test environment with fake SMTP server](https://repository-images.githubusercontent.com/401721985/848bc1dd-fc35-4d78-8bd9-0ac3430270d8)
 
 [![Go Report Card](https://goreportcard.com/badge/github.com/mocktools/go-smtp-mock/v2)](https://goreportcard.com/report/github.com/mocktools/go-smtp-mock/v2)
 [![Codecov](https://codecov.io/gh/mocktools/go-smtp-mock/branch/master/graph/badge.svg)](https://codecov.io/gh/mocktools/go-smtp-mock)
@@ -9,7 +9,7 @@
 [![GitHub](https://img.shields.io/github/license/mocktools/go-smtp-mock)](LICENSE.txt)
 [![Contributor Covenant](https://img.shields.io/badge/Contributor%20Covenant-v1.4%20adopted-ff69b4.svg)](CODE_OF_CONDUCT.md)
 
-`smtpmock` is lightweight configurable multithreaded fake SMTP server written in Go. It meets the minimum requirements specified by [RFC 2821](https://datatracker.ietf.org/doc/html/rfc2821) & [RFC 5321](https://datatracker.ietf.org/doc/html/rfc5321). Allows to mimic any SMTP server behaviour for your test environment and even more 🚀
+`smtpmock` is lightweight configurable multithreaded fake SMTP server written in Go. It meets the minimum requirements specified by [RFC 2821](https://datatracker.ietf.org/doc/html/rfc2821) & [RFC 5321](https://datatracker.ietf.org/doc/html/rfc5321). Allows to mimic any SMTP server behavior for your test environment and even more 🚀
 
 ## Table of Contents
 
@@ -38,7 +38,7 @@
 
 - Configurable multithreaded RFC compatible SMTP server
 - Implements the minimum command set, responds to commands and adds a valid received header to messages as specified in [RFC 2821](https://datatracker.ietf.org/doc/html/rfc2821) & [RFC 5321](https://datatracker.ietf.org/doc/html/rfc5321)
-- Ability to configure behaviour for each SMTP command
+- Ability to configure behavior for each SMTP command
 - Comes with default settings out of the box, configure only what you need
 - Ability to override previous SMTP commands
 - Fail fast scenario (ability to close client session for case when command was inconsistent or failed)
@@ -92,12 +92,12 @@ You have to create your SMTP mock server using `smtpmock.New()` and `smtpmock.Co
 
 #### Configuring
 
-`smtpmock` is SMTP server for test environment with configurable behaviour. It comes with default settings out of the box. But you can override any default behaviour if you need.
+`smtpmock` is SMTP server for test environment with configurable behavior. It comes with default settings out of the box. But you can override any default behavior if you need.
 
 ```go
 smtpmock.ConfigurationAttr{
 
-  // Customizing server behaviour
+  // Customizing server behavior
   // ---------------------------------------------------------------------
   // Host address where smtpmock will run, it's equal to "127.0.0.1" by default
   HostAddress:                   "[::]",
@@ -119,7 +119,7 @@ smtpmock.ConfigurationAttr{
   ShutdownTimeout:               5,
 
 
-  // Customizing SMTP command handlers behaviour
+  // Customizing SMTP command handlers behavior
   // ---------------------------------------------------------------------
   // Ability to configure fail fast scenario. It means that server will
   // close client session for case when command was inconsistent or failed.
@@ -128,14 +128,14 @@ smtpmock.ConfigurationAttr{
 
   // Ability to configure multiple RCPT TO command receiving during one session.
   // It means that server will handle and save all RCPT TO command request-response
-  // pairs until receive succesful response and next SMTP command has been passed.
+  // pairs until receive successful response and next SMTP command has been passed.
   // Please note, by default will be saved only one, the last RCPT TO command
   // request-response pair. It's equal to false by default
   MultipleRcptto:                true,
 
   // Ability to configure multiple message receiving during one session. It means that server
   // will create another message during current SMTP session in case when RSET
-  // command has been used after succesful commands chain: MAIL FROM, RCPT TO, DATA.
+  // command has been used after successful commands chain: MAIL FROM, RCPT TO, DATA.
   // Please note, by default RSET command flushes current message in any case.
   // It's equal to false by default
   MultipleMessageReceiving:      true,
@@ -185,7 +185,7 @@ smtpmock.ConfigurationAttr{
   MsgSizeLimit:                  5,
 
 
-  // Customazing SMTP command handler messages context
+  // Customizing SMTP command handler messages context
   // ---------------------------------------------------------------------
   // Custom server greeting message. Base on defaultGreetingMsg by default
   MsgGreeting:                   "msgGreeting",
@@ -230,7 +230,7 @@ smtpmock.ConfigurationAttr{
   MsgInvalidCmdRcpttoArg:        "msgInvalidCmdRcpttoArg",
 
   // Custom RCPT TO not registered email message.
-  // Based on defaultNotRegistredRcpttoEmailMsg by default
+  // Based on defaultNotRegisteredRcpttoEmailMsg by default
   MsgRcpttoNotRegisteredEmail:   "msgRcpttoNotRegisteredEmail",
 
   // Custom RCPT TO blacklisted email message. Based on defaultQuitMsg by default
@@ -321,7 +321,7 @@ func main() {
 
 Code from example above will produce next output to stdout:
 
-```
+```code
 INFO: 2021/11/30 22:07:30.554827 SMTP mock server started on port: 2525
 INFO: 2021/11/30 22:07:30.554961 SMTP session started
 INFO: 2021/11/30 22:07:30.554998 SMTP response: 220 Welcome

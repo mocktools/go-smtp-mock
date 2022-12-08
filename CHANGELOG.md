@@ -6,7 +6,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ### Fixed
 
-- Fixed wrong link for `ldflags` in goreleaser config
+- Fixed wrong link for `ldflags` in `goreleaser` config
 
 ## [2.0.0] - 2022-11-16
 
@@ -80,11 +80,11 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 - Updated `message` to exported struct `Message`
 - Updated `Server#handleSession`
 - Updated test helpers
-- Updated golangci/circleci configs
+- Updated `golangci`/`circleci` configs
 
 ### Fixed
 
-- Fixed project's codesmells issues
+- Fixed project's code smells issues
 
 ## [1.9.0] - 2022-07-12
 
@@ -110,7 +110,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ### Fixed
 
-- Updated `yaml.v3` indirect dependency. An issue in the Unmarshal function in Go-Yaml v3 causes the program to crash when attempting to deserialize invalid input, [CVE-2022-28948](https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2022-28948)
+- Updated `yaml.v3` indirect dependency. An issue in the `Unmarshal` function in Go-Yaml v3 causes the program to crash when attempting to deserialize invalid input, [CVE-2022-28948](https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2022-28948)
 
 ## [1.8.0] - 2022-04-25
 
@@ -178,7 +178,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ### Updated
 
-- Updated goreleaser config
+- Updated `goreleaser` config
 - Updated package documentation
 
 ## [1.4.2] - 2022-01-03
@@ -216,7 +216,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 ### Updated
 
 - Updated CircleCI config
-- Updated goreleaser config
+- Updated `goreleaser` config
 
 ## [1.3.4] - 2021-12-16
 
@@ -240,20 +240,20 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ### Added
 
-- Added goreleaser config
+- Added `goreleaser` config
 
 ## [1.3.0] - 2021-12-16
 
 ### Added
 
-- Added ability to run smtpmock as service
+- Added ability to run `smtpmock` as service
 - Implemented package main, tests
 
 ### Fixed
 
 - Fixed documentation issues. Thanks [@vpakhuchyi](https://github.com/vpakhuchyi) for report and PR.
 - Fixed `MsgSizeLimit`, `msgSizeLimit` typo in fields naming. Thanks [@vanyavasylyshyn](https://github.com/vanyavasylyshyn) for report.
-- Fixed project gihub templates
+- Fixed project github templates
 
 ### Updated
 

@@ -2,7 +2,7 @@ package smtpmock
 
 import "fmt"
 
-// SMTP mock configuration structure. Provides to configure mock behaviour
+// SMTP mock configuration structure. Provides to configure mock behavior
 type configuration struct {
 	hostAddress                   string
 	portNumber                    int

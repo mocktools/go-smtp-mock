@@ -74,7 +74,7 @@ func (handler *handlerMailfrom) mailfromEmail(request string) string {
 	return regexCaptureGroup(request, validMailromComplexCmdRegexPattern, 3)
 }
 
-// Custom behaviour for MAILFROM email. Returns true and writes result for case when
+// Custom behavior for MAILFROM email. Returns true and writes result for case when
 // MAILFROM email is included in configuration.blacklistedMailfromEmails slice
 func (handler *handlerMailfrom) isBlacklistedEmail(request string) bool {
 	configuration := handler.configuration

@@ -7,7 +7,7 @@ ARCH_TYPE=".tar.gz"
 TAR_FILE="$BINARY_NAME$ARCH_TYPE"
 
 latest_release() {
-  curl -sL -o /dev/null -w %{url_effective} "$RELEASES_URL/latest" | rev | cut -f1 -d'/'| rev
+  curl -sL -o /dev/null -w '%{url_effective}' "$RELEASES_URL/latest" | rev | cut -f1 -d'/'| rev
 }
 
 remove_tmp_download() {
