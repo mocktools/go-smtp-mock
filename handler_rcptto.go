@@ -91,7 +91,7 @@ func (handler *handlerRcptto) rcpttoEmail(request string) string {
 	return regexCaptureGroup(request, validRcpttoComplexCmdRegexPattern, 3)
 }
 
-// Custom behaviour for RCPTTO email. Returns true and writes result for case when
+// Custom behavior for RCPTTO email. Returns true and writes result for case when
 // RCPTTO email is included in configuration.blacklistedRcpttoEmails slice
 func (handler *handlerRcptto) isBlacklistedEmail(request string) bool {
 	configuration := handler.configuration
@@ -103,7 +103,7 @@ func (handler *handlerRcptto) isBlacklistedEmail(request string) bool {
 	return false
 }
 
-// Custom behaviour for RCPTTO email. Returns true and writes result for case when
+// Custom behavior for RCPTTO email. Returns true and writes result for case when
 // RCPTTO email is included in configuration.notRegisteredEmails slice
 func (handler *handlerRcptto) isNotRegisteredEmail(request string) bool {
 	configuration := handler.configuration

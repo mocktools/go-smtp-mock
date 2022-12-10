@@ -59,7 +59,7 @@ func (handler *handlerHelo) heloDomain(request string) string {
 	return regexCaptureGroup(request, validHeloComplexCmdRegexPattern, 2)
 }
 
-// Custom behaviour for HELO domain. Returns true and writes result for case when HELO domain
+// Custom behavior for HELO domain. Returns true and writes result for case when HELO domain
 // is included in configuration.blacklistedHeloDomains slice
 func (handler *handlerHelo) isBlacklistedDomain(request string) bool {
 	configuration := handler.configuration

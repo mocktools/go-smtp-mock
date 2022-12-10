@@ -1,19 +1,37 @@
+---
+
 version: 2.1
+
+defaults: &defaults
+  working_directory: ~/go-smtp-mock
+  docker:
+    - image: cimg/go:1.19
 
 jobs:
   linters:
     docker:
       - image: golangci/golangci-lint:v1.50.1-alpine
-    steps:
-      - checkout
-      - run: golangci-lint run
 
-  test:
-    docker:
-      - image: golang:1.15
-    working_directory: /go/src/github.com/mocktools/go-smtp-mock
     steps:
       - checkout
+
+      - run:
+          name: Installing linters
+          command: |
+                apk add --update npm shellcheck yamllint
+                npm install -g git+https://github.com/streetsidesoftware/cspell-cli markdownlint-cli lefthook --save-dev
+                cp .circleci/linter_configs/.lefthook.yml lefthook.yml
+
+      - run:
+          name: Running linters
+          command: lefthook run linters
+
+  tests:
+    <<: *defaults
+
+    steps:
+      - checkout
+
       - run:
           name: Installing Gotestsum
           command: go get gotest.tools/gotestsum
@@ -49,21 +67,26 @@ jobs:
             bash <(curl -s https://codecov.io/bash) -f coverage_report
 
   release:
-    docker:
-      - image: cimg/go:1.19
+    <<: *defaults
+
     steps:
       - checkout
-      - run: curl -sL https://git.io/goreleaser | bash
+
       - run:
-          name: Publishing on Go reference
+          name: Publishing new release to GitHub
           command: |
-            . ./script/publish.sh
+            curl -sL https://git.io/goreleaser | bash
+
+      - run:
+          name: Publishing new release to Go Packages
+          command: |
+            ./.circleci/scripts/release.sh
 
 workflows:
   build:
     jobs:
       - linters
-      - test
+      - tests
       - release:
           filters:
             branches:

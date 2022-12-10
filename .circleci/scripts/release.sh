@@ -2,7 +2,7 @@
 set -e
 
 latest_tag() {
-  git tag -l | egrep "^v[0-9]+\.[0-9]+\.[0-9]+" | cut -d"-" -f 1 | sort | tail -n 1
+  git tag -l | grep -E "^v[0-9]+\.[0-9]+\.[0-9]+" | cut -d"-" -f 1 | sort | tail -n 1
 }
 
 publish_release() {

@@ -1,0 +1,18 @@
+---
+
+skip_output:
+  - meta
+
+linters:
+  commands:
+    cspell:
+      run: cspell-cli lint -c '.circleci/linter_configs/.cspell.yml' '**/*.{txt,md}'
+    golangci:
+      run: golangci-lint -c '.circleci/linter_configs/.golangci.yml' run
+    markdownlint:
+      run: markdownlint -c'.circleci/linter_configs/.markdownlint.yml' '**/*.md'
+    shellcheck:
+      glob: "*.{sh}"
+      run: shellcheck --norc {all_files}
+    yamllint:
+      run: yamllint -c '.circleci/linter_configs/.yamllint.yml' .
