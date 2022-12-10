@@ -2,21 +2,33 @@
 
 version: 2.1
 
+defaults: &defaults
+  working_directory: ~/go-smtp-mock
+  docker:
+    - image: cimg/go:1.19
+
 jobs:
   linters:
     docker:
       - image: golangci/golangci-lint:v1.50.1-alpine
+
     steps:
       - checkout
 
       - run:
-          name: Running Go linters aggregator
-          command: golangci-lint run
+          name: Installing linters
+          command: |
+                apk add --update npm shellcheck yamllint
+                npm install -g git+https://github.com/streetsidesoftware/cspell-cli markdownlint-cli lefthook --save-dev
+                cp .circleci/linter_configs/.lefthook.yml lefthook.yml
 
-  test:
-    docker:
-      - image: golang:1.15
-    working_directory: ~/go-smtp-mock
+      - run:
+          name: Running linters
+          command: lefthook run linters
+
+  tests:
+    <<: *defaults
+
     steps:
       - checkout
 
@@ -55,10 +67,9 @@ jobs:
             bash <(curl -s https://codecov.io/bash) -f coverage_report
 
   release:
-    docker:
-      - image: cimg/go:1.19
-    steps:
+    <<: *defaults
 
+    steps:
       - checkout
 
       - run:
@@ -75,7 +86,7 @@ workflows:
   build:
     jobs:
       - linters
-      - test
+      - tests
       - release:
           filters:
             branches:

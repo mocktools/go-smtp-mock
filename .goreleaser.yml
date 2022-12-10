@@ -1,3 +1,5 @@
+---
+
 builds:
   - id: "smtpmock-build"
     dir: cmd
