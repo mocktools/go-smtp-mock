@@ -73,12 +73,12 @@ jobs:
       - checkout
 
       - run:
-          name: Publishing new release
+          name: Publishing new release to GitHub
           command: |
             curl -sL https://git.io/goreleaser | bash
 
       - run:
-          name: Informing Go reference
+          name: Publishing new release to Go Packages
           command: |
             ./.circleci/scripts/release.sh
 
