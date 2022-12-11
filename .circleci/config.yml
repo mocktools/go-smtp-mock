@@ -19,7 +19,7 @@ jobs:
           name: Installing linters
           command: |
                 apk add --update npm shellcheck yamllint
-                npm install -g git+https://github.com/streetsidesoftware/cspell-cli markdownlint-cli lefthook --save-dev
+                npm install --global --save-dev git+https://github.com/streetsidesoftware/cspell-cli markdownlint-cli lefthook
                 cp .circleci/linter_configs/.lefthook.yml lefthook.yml
 
       - run:
