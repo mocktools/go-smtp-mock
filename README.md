@@ -277,7 +277,7 @@ import (
   "net"
   "net/smtp"
 
-  "github.com/mocktools/go-smtp-mock"
+  smtpmock "github.com/mocktools/go-smtp-mock/v2"
 )
 
 func main() {
