@@ -1,5 +1,6 @@
 ---
 
+no_tty: true
 skip_output:
   - meta
 
