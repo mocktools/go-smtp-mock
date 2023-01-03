@@ -90,8 +90,7 @@ jobs:
       - run:
           name: Publishing new release to GitHub
           command: |
-            cp .circleci/.goreleaser.yml .goreleaser.yml
-            curl -sL https://git.io/goreleaser | bash
+            curl -sL https://git.io/goreleaser | bash -s -- --config ".circleci/.goreleaser.yml"
 
       - run:
           name: Publishing new release to Go Packages
