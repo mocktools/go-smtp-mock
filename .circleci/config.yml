@@ -19,7 +19,7 @@ jobs:
           name: Installing linters
           command: |
                 apk add --update npm shellcheck yamllint
-                npm install -g git+https://github.com/streetsidesoftware/cspell-cli markdownlint-cli lefthook --save-dev
+                npm install --global --save-dev git+https://github.com/streetsidesoftware/cspell-cli markdownlint-cli lefthook
                 cp .circleci/linter_configs/.lefthook.yml lefthook.yml
 
       - run:
@@ -66,6 +66,21 @@ jobs:
           command: |
             bash <(curl -s https://codecov.io/bash) -f coverage_report
 
+  tag:
+    <<: *defaults
+
+    steps:
+      - checkout
+
+      - add_ssh_keys:
+          fingerprints:
+            - "0e:85:9a:34:c5:46:7a:67:2d:62:de:70:c9:d5:85:01"
+
+      - run:
+          name: Publishing new tag to GitHub
+          command: |
+            ./.circleci/scripts/tag.sh
+
   release:
     <<: *defaults
 
@@ -75,18 +90,26 @@ jobs:
       - run:
           name: Publishing new release to GitHub
           command: |
+            cp .circleci/.goreleaser.yml .goreleaser.yml
             curl -sL https://git.io/goreleaser | bash
 
       - run:
           name: Publishing new release to Go Packages
           command: |
-            ./.circleci/scripts/release.sh
+            ./.circleci/scripts/release.sh mocktools go-smtp-mock
 
 workflows:
   build:
     jobs:
       - linters
       - tests
+      - tag:
+          requires:
+            - linters
+            - tests
+          filters:
+            branches:
+              only: master
       - release:
           filters:
             branches:

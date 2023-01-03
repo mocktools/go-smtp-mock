@@ -1,5 +1,6 @@
 ---
 
+no_tty: true
 skip_output:
   - meta
 
@@ -10,9 +11,9 @@ linters:
     golangci:
       run: golangci-lint -c '.circleci/linter_configs/.golangci.yml' run
     markdownlint:
-      run: markdownlint -c'.circleci/linter_configs/.markdownlint.yml' '**/*.md'
+      run: markdownlint -c '.circleci/linter_configs/.markdownlint.yml' '**/*.md'
     shellcheck:
-      glob: "*.{sh}"
+      glob: '*.{sh}'
       run: shellcheck --norc {all_files}
     yamllint:
       run: yamllint -c '.circleci/linter_configs/.yamllint.yml' .
