@@ -5,7 +5,7 @@ github_namespace=$1
 github_repository=$2
 
 get_latest_tag() {
-  git tag -l | grep -E "^v[0-9]+\.[0-9]+\.[0-9]+" | cut -d"-" -f 1 | sort | tail -n 1
+  git tag --sort=v:refname | grep -E "v[0-9]+\.[0-9]+\.[0-9]+" | tail -n 1
 }
 
 latest_tag=$(get_latest_tag)
