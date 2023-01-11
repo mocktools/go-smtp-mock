@@ -21,6 +21,10 @@ then
   echo "Pushing new semver tag to GitHub..."
   git tag "$tag_candidate"
   git push --tags
+  echo "Updating develop branch with new semver tag..."
+  git checkout develop
+  git merge "$tag_candidate" --ff --no-edit
+  git push origin develop
 else
   echo "Latest changelog tag ($tag_candidate) already released on GitHub. Tagging is not required."
 fi
