@@ -150,6 +150,14 @@ func TestMessageQuitSent(t *testing.T) {
 	})
 }
 
+func TestMessageNoopCount(t *testing.T) {
+	t.Run("getter for noopCount field", func(t *testing.T) {
+		message := Message{noopCount: 5}
+
+		assert.Equal(t, message.noopCount, message.NoopCount())
+	})
+}
+
 func TestMessageIsConsistent(t *testing.T) {
 	t.Run("when consistent", func(t *testing.T) {
 		message := &Message{mailfrom: true, rcptto: true, data: true, msg: true}

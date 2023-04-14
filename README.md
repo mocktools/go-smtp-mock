@@ -13,26 +13,27 @@
 
 ## Table of Contents
 
-- [Features](#features)
-- [Requirements](#requirements)
-- [Installation](#installation)
-- [Usage](#usage)
-  - [Inside of Golang ecosystem](#inside-of-golang-ecosystem)
-    - [Configuring](#configuring)
-    - [Manipulation with server](#manipulation-with-server)
-  - [Inside of Ruby ecosystem](#inside-of-ruby-ecosystem)
-    - [Example of usage](#example-of-usage)
-  - [Inside of any ecosystem](#inside-of-any-ecosystem)
-    - [Configuring with command line arguments](#configuring-with-command-line-arguments)
-    - [Other options](#other-options)
-    - [Stopping server](#stopping-server)
-  - [Implemented SMTP commands](#implemented-smtp-commands)
-- [Contributing](#contributing)
-- [License](#license)
-- [Code of Conduct](#code-of-conduct)
-- [Credits](#credits)
-- [Versioning](#versioning)
-- [Changelog](CHANGELOG.md)
+- [](#)
+  - [Table of Contents](#table-of-contents)
+  - [Features](#features)
+  - [Requirements](#requirements)
+  - [Installation](#installation)
+  - [Usage](#usage)
+    - [Inside of Golang ecosystem](#inside-of-golang-ecosystem)
+      - [Configuring](#configuring)
+      - [Manipulation with server](#manipulation-with-server)
+    - [Inside of Ruby ecosystem](#inside-of-ruby-ecosystem)
+      - [Example of usage](#example-of-usage)
+    - [Inside of any ecosystem](#inside-of-any-ecosystem)
+      - [Configuring with command line arguments](#configuring-with-command-line-arguments)
+      - [Other options](#other-options)
+      - [Stopping server](#stopping-server)
+    - [Implemented SMTP commands](#implemented-smtp-commands)
+  - [Contributing](#contributing)
+  - [License](#license)
+  - [Code of Conduct](#code-of-conduct)
+  - [Credits](#credits)
+  - [Versioning](#versioning)
 
 ## Features
 
@@ -75,16 +76,27 @@ import smtpmock "github.com/mocktools/go-smtp-mock/v2"
 
 ## Usage
 
-- [Inside of Golang ecosystem](#inside-of-golang-ecosystem)
-  - [Configuring](#configuring)
-  - [Manipulation with server](#manipulation-with-server)
-- [Inside of Ruby ecosystem](#inside-of-ruby-ecosystem)
-  - [Example of usage](#example-of-usage)
-- [Inside of any ecosystem](#inside-of-any-ecosystem)
-  - [Configuring with command line arguments](#configuring-with-command-line-arguments)
-  - [Other options](#other-options)
-  - [Stopping server](#stopping-server)
-- [Implemented SMTP commands](#implemented-smtp-commands)
+- [](#)
+  - [Table of Contents](#table-of-contents)
+  - [Features](#features)
+  - [Requirements](#requirements)
+  - [Installation](#installation)
+  - [Usage](#usage)
+    - [Inside of Golang ecosystem](#inside-of-golang-ecosystem)
+      - [Configuring](#configuring)
+      - [Manipulation with server](#manipulation-with-server)
+    - [Inside of Ruby ecosystem](#inside-of-ruby-ecosystem)
+      - [Example of usage](#example-of-usage)
+    - [Inside of any ecosystem](#inside-of-any-ecosystem)
+      - [Configuring with command line arguments](#configuring-with-command-line-arguments)
+      - [Other options](#other-options)
+      - [Stopping server](#stopping-server)
+    - [Implemented SMTP commands](#implemented-smtp-commands)
+  - [Contributing](#contributing)
+  - [License](#license)
+  - [Code of Conduct](#code-of-conduct)
+  - [Credits](#credits)
+  - [Versioning](#versioning)
 
 ### Inside of Golang ecosystem
 
@@ -264,6 +276,9 @@ smtpmock.ConfigurationAttr{
 
   // Custom quit command message. Based on defaultQuitMsg by default
   MsgQuitCmd:                    "msgQuitCmd",
+
+  // Custom NOOP command message. Based on defaultNoopMsg (NOOP) by default
+  MsgNoopCmd:                    "msgQuitCmd",
 }
 ```
 
@@ -421,6 +436,7 @@ curl -sL https://raw.githubusercontent.com/mocktools/go-smtp-mock/master/script/
 | `-msgInvalidCmdRsetArg` - custom invalid command `RSET` message | `-msgInvalidCmdRsetArg="Invalid command RSET message"` |
 | `-msgRsetReceived` - custom `RSET` received message | `-msgRsetReceived="RSET received message"` |
 | `-msgQuitCmd` - custom quit command message | `-msgQuitCmd="Quit command message"` |
+| `-msgNoopCmd` - custom NOOP command message | `-msgQuitCmd="NOOP command message"` |
 
 #### Other options
 
@@ -445,6 +461,7 @@ Available not configuration `smtpmock` options:
 | `4` | `DATA` | can be used after command with id `3` | - | `DATA` |
 | `5` | `RSET` | can be used after command with id `1` and greater | - | `RSET` |
 | `6` | `QUIT` | no | - | `QUIT` |
+| `7` | `NOOP` | no | - | `NOOP` |
 
 Please note in case when same command used more the one time during same session all saved data upper this command will be erased.
 

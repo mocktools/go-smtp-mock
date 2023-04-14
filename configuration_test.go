@@ -20,6 +20,7 @@ func TestNewConfiguration(t *testing.T) {
 		assert.Equal(t, defaultGreetingMsg, buildedConfiguration.msgGreeting)
 		assert.Equal(t, defaultInvalidCmdMsg, buildedConfiguration.msgInvalidCmd)
 		assert.Equal(t, defaultQuitMsg, buildedConfiguration.msgQuitCmd)
+		assert.Equal(t, defaultOkMsg, buildedConfiguration.msgNoopCmd)
 		assert.Equal(t, defaultSessionTimeout, buildedConfiguration.sessionTimeout)
 		assert.Equal(t, defaultShutdownTimeout, buildedConfiguration.shutdownTimeout)
 
@@ -76,6 +77,7 @@ func TestNewConfiguration(t *testing.T) {
 			MsgGreeting:                   "msgGreeting",
 			MsgInvalidCmd:                 "msgInvalidCmd",
 			MsgQuitCmd:                    "msgQuitCmd",
+			MsgNoopCmd:                    "msgNoopCmd",
 			MsgInvalidCmdHeloSequence:     "msgInvalidCmdHeloSequence",
 			MsgInvalidCmdHeloArg:          "msgInvalidCmdHeloArg",
 			MsgHeloBlacklistedDomain:      "msgHeloBlacklistedDomain",
@@ -123,6 +125,7 @@ func TestNewConfiguration(t *testing.T) {
 		assert.Equal(t, configAttr.MsgGreeting, buildedConfiguration.msgGreeting)
 		assert.Equal(t, configAttr.MsgInvalidCmd, buildedConfiguration.msgInvalidCmd)
 		assert.Equal(t, configAttr.MsgQuitCmd, buildedConfiguration.msgQuitCmd)
+		assert.Equal(t, configAttr.MsgNoopCmd, buildedConfiguration.msgNoopCmd)
 		assert.Equal(t, configAttr.SessionTimeout, buildedConfiguration.sessionTimeout)
 		assert.Equal(t, configAttr.ShutdownTimeout, buildedConfiguration.shutdownTimeout)
 
@@ -177,6 +180,7 @@ func TestConfigurationAttrAssignDefaultValues(t *testing.T) {
 		assert.Equal(t, defaultGreetingMsg, configurationAttr.MsgGreeting)
 		assert.Equal(t, defaultInvalidCmdMsg, configurationAttr.MsgInvalidCmd)
 		assert.Equal(t, defaultQuitMsg, configurationAttr.MsgQuitCmd)
+		assert.Equal(t, defaultOkMsg, configurationAttr.MsgNoopCmd)
 		assert.Equal(t, defaultSessionTimeout, configurationAttr.SessionTimeout)
 		assert.Equal(t, defaultShutdownTimeout, configurationAttr.ShutdownTimeout)
 

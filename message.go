@@ -12,6 +12,7 @@ type Message struct {
 	msgRequest, msgResponse                           string
 	rsetRequest, rsetResponse                         string
 	helo, mailfrom, rcptto, data, msg, rset, quitSent bool
+	noopCount                                         int
 }
 
 // message methods
@@ -106,6 +107,13 @@ func (message Message) Rset() bool {
 // Getter for quitSent field
 func (message Message) QuitSent() bool {
 	return message.quitSent
+}
+
+// Getter for noopCount field
+//
+// The count of received NOOP messages
+func (message Message) NoopCount() int {
+	return message.noopCount
 }
 
 // Getter for message consistency status predicate. Returns true

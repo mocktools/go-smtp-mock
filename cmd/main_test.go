@@ -123,6 +123,7 @@ func TestAttrFromCommandLine(t *testing.T) {
 		msgMsgReceived := "msgMsgReceived"
 		msgRsetReceived := "msgRsetReceived"
 		msgQuitCmd := "msgQuitCmd"
+		msgNoopCmd := "msgNoopCmd"
 		ver, configAttr, err := attrFromCommandLine(
 			[]string{
 				"some-path-to-the-program",
@@ -168,6 +169,7 @@ func TestAttrFromCommandLine(t *testing.T) {
 				"-msgMsgReceived=" + msgMsgReceived,
 				"-msgRsetReceived=" + msgRsetReceived,
 				"-msgQuitCmd=" + msgQuitCmd,
+				"-msgNoopCmd=" + msgNoopCmd,
 			},
 		)
 
@@ -214,6 +216,7 @@ func TestAttrFromCommandLine(t *testing.T) {
 		assert.Equal(t, msgMsgReceived, configAttr.MsgMsgReceived)
 		assert.Equal(t, msgRsetReceived, configAttr.MsgRsetReceived)
 		assert.Equal(t, msgQuitCmd, configAttr.MsgQuitCmd)
+		assert.Equal(t, msgNoopCmd, configAttr.MsgNoopCmd)
 		assert.NoError(t, err)
 	})
 

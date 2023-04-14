@@ -14,6 +14,7 @@ type configuration struct {
 	msgGreeting                   string
 	msgInvalidCmd                 string
 	msgQuitCmd                    string
+	msgNoopCmd                    string
 	msgInvalidCmdHeloSequence     string
 	msgInvalidCmdHeloArg          string
 	msgHeloBlacklistedDomain      string
@@ -45,6 +46,7 @@ type configuration struct {
 	responseDelayMessage          int
 	responseDelayRset             int
 	responseDelayQuit             int
+	responseDelayNoop             int
 	msgSizeLimit                  int
 	sessionTimeout                int
 	shutdownTimeout               int
@@ -87,6 +89,7 @@ func newConfiguration(config ConfigurationAttr) *configuration {
 		msgInvalidCmdRsetArg:          config.MsgInvalidCmdRsetArg,
 		msgRsetReceived:               config.MsgRsetReceived,
 		msgQuitCmd:                    config.MsgQuitCmd,
+		msgNoopCmd:                    config.MsgNoopCmd,
 		blacklistedHeloDomains:        config.BlacklistedHeloDomains,
 		blacklistedMailfromEmails:     config.BlacklistedMailfromEmails,
 		blacklistedRcpttoEmails:       config.BlacklistedRcpttoEmails,
@@ -98,6 +101,7 @@ func newConfiguration(config ConfigurationAttr) *configuration {
 		responseDelayMessage:          config.ResponseDelayMessage,
 		responseDelayRset:             config.ResponseDelayRset,
 		responseDelayQuit:             config.ResponseDelayQuit,
+		responseDelayNoop:             config.ResponseDelayNoop,
 		msgSizeLimit:                  config.MsgSizeLimit,
 		sessionTimeout:                config.SessionTimeout,
 		shutdownTimeout:               config.ShutdownTimeout,
@@ -116,6 +120,7 @@ type ConfigurationAttr struct {
 	MsgGreeting                   string
 	MsgInvalidCmd                 string
 	MsgQuitCmd                    string
+	MsgNoopCmd                    string
 	MsgInvalidCmdHeloSequence     string
 	MsgInvalidCmdHeloArg          string
 	MsgHeloBlacklistedDomain      string
@@ -147,6 +152,7 @@ type ConfigurationAttr struct {
 	ResponseDelayMessage          int
 	ResponseDelayRset             int
 	ResponseDelayQuit             int
+	ResponseDelayNoop             int
 	MsgSizeLimit                  int
 	SessionTimeout                int
 	ShutdownTimeout               int
@@ -167,6 +173,9 @@ func (config *ConfigurationAttr) assignServerDefaultValues() {
 	}
 	if config.MsgQuitCmd == emptyString {
 		config.MsgQuitCmd = defaultQuitMsg
+	}
+	if config.MsgNoopCmd == emptyString {
+		config.MsgNoopCmd = defaultOkMsg
 	}
 	if config.SessionTimeout == 0 {
 		config.SessionTimeout = defaultSessionTimeout

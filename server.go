@@ -257,6 +257,8 @@ func (server *Server) handleSession(session sessionInterface) {
 				newHandlerRset(session, message, configuration).run(request)
 			case "QUIT":
 				newHandlerQuit(session, message, configuration).run(request)
+			case "NOOP":
+				newHandlerNoop(session, message, configuration).run(request)
 			}
 
 			if server.isAbleToEndSession(message, session) {

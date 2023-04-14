@@ -125,6 +125,7 @@ func attrFromCommandLine(args []string, options ...flag.ErrorHandling) (bool, *s
 		msgInvalidCmdRsetArg          = flags.String("msgInvalidCmdRsetArg", "", "Custom invalid command RSET message")
 		msgRsetReceived               = flags.String("msgRsetReceived", "", "Custom RSET received message")
 		msgQuitCmd                    = flags.String("msgQuitCmd", "", "Custom quit command message")
+		msgNoopCmd                    = flags.String("msgNoopCmd", "", "Custom NOOP command message")
 	)
 	if err := flags.Parse(args[1:]); err != nil {
 		return *ver, nil, err
@@ -175,5 +176,6 @@ func attrFromCommandLine(args []string, options ...flag.ErrorHandling) (bool, *s
 		MsgInvalidCmdRsetArg:          *msgInvalidCmdRsetArg,
 		MsgRsetReceived:               *msgRsetReceived,
 		MsgQuitCmd:                    *msgQuitCmd,
+		MsgNoopCmd:                    *msgNoopCmd,
 	}, nil
 }
