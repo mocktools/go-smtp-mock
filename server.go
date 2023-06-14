@@ -218,7 +218,7 @@ func (server *Server) isAbleToEndSession(message *Message, session sessionInterf
 	return message.quitSent || (session.isErrorFound() && server.configuration.isCmdFailFast)
 }
 
-// SMTP client-server session handler
+//nolint:gocyclo // SMTP client-server session handler
 func (server *Server) handleSession(session sessionInterface) {
 	defer session.finish()
 	message, configuration := server.newMessage(), server.configuration
@@ -255,6 +255,8 @@ func (server *Server) handleSession(session sessionInterface) {
 				newHandlerData(session, message, configuration).run(request)
 			case "RSET":
 				newHandlerRset(session, message, configuration).run(request)
+			case "NOOP":
+				newHandlerNoop(session, message, configuration).run(request)
 			case "QUIT":
 				newHandlerQuit(session, message, configuration).run(request)
 			}

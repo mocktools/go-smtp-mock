@@ -177,6 +177,10 @@ smtpmock.ConfigurationAttr{
   // equals to 0 seconds by default
   ResponseDelayRset:             2,
 
+  // Ability to specify NOOP response delay in seconds. It runs immediately,
+  // equals to 0 seconds by default
+  ResponseDelayNoop:             2,
+
   // Ability to specify QUIT response delay in seconds. It runs immediately,
   // equals to 0 seconds by default
   ResponseDelayQuit:             2,
@@ -261,6 +265,9 @@ smtpmock.ConfigurationAttr{
 
   // Custom RSET received message. Based on defaultOkMsg by default
   MsgRsetReceived:               "msgRsetReceived",
+
+  // Custom NOOP received message. Based on defaultOkMsg by default
+  MsgNoopReceived:               "msgNoopReceived",
 
   // Custom quit command message. Based on defaultQuitMsg by default
   MsgQuitCmd:                    "msgQuitCmd",
@@ -396,6 +403,7 @@ curl -sL https://raw.githubusercontent.com/mocktools/go-smtp-mock/master/script/
 | `-responseDelayData` - `DATA` response delay in seconds. It's equal to 0 seconds by default | `-responseDelayData=2` |
 | `-responseDelayMessage` - Message response delay in seconds. It's equal to 0 seconds by default | `-responseDelayMessage=2` |
 | `-responseDelayRset` - `RSET` response delay in seconds. It's equal to 0 seconds by default | `-responseDelayRset=2` |
+| `-responseDelayNoop` - `NOOP` response delay in seconds. It's equal to 0 seconds by default | `-responseDelayNoop=2` |
 | `-responseDelayQuit` - `QUIT` response delay in seconds. It's equal to 0 seconds by default | `-responseDelayQuit=2` |
 | `-msgSizeLimit` - message body size limit in bytes. It's equal to `10485760` bytes | `-msgSizeLimit=42` |
 | `-msgGreeting` - custom server greeting message | `-msgGreeting="Greeting message"` |
@@ -420,7 +428,8 @@ curl -sL https://raw.githubusercontent.com/mocktools/go-smtp-mock/master/script/
 | `-msgInvalidCmdRsetSequence` - custom invalid command `RSET` sequence message | `-msgInvalidCmdRsetSequence="Invalid command RSET sequence message"` |
 | `-msgInvalidCmdRsetArg` - custom invalid command `RSET` message | `-msgInvalidCmdRsetArg="Invalid command RSET message"` |
 | `-msgRsetReceived` - custom `RSET` received message | `-msgRsetReceived="RSET received message"` |
-| `-msgQuitCmd` - custom quit command message | `-msgQuitCmd="Quit command message"` |
+| `-msgNoopReceived` - custom `NOOP` received message | `-msgNoopReceived="NOOP received message"` |
+| `-msgQuitCmd` - custom `QUIT` command message | `-msgQuitCmd="Quit command message"` |
 
 #### Other options
 
@@ -444,7 +453,8 @@ Available not configuration `smtpmock` options:
 | `3` | `RCPT TO` | can be used after command with id `2` and greater | `email address`, `<email address>` | `RCPT TO: user@domain.com` |
 | `4` | `DATA` | can be used after command with id `3` | - | `DATA` |
 | `5` | `RSET` | can be used after command with id `1` and greater | - | `RSET` |
-| `6` | `QUIT` | no | - | `QUIT` |
+| `6` | `NOOP` | no | - | `NOOP` |
+| `7` | `QUIT` | no | - | `QUIT` |
 
 Please note in case when same command used more the one time during same session all saved data upper this command will be erased.
 

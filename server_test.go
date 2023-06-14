@@ -329,6 +329,12 @@ func TestServerHandleSession(t *testing.T) {
 		session.On("isErrorFound").Once().Return(false)
 
 		session.On("setTimeout", defaultSessionTimeout).Once().Return(nil)
+		session.On("readRequest").Once().Return("noop", nil)
+		session.On("clearError").Once().Return(nil)
+		session.On("writeResponse", configuration.msgNoopReceived, configuration.responseDelayNoop).Once().Return(nil)
+		session.On("isErrorFound").Once().Return(false)
+
+		session.On("setTimeout", defaultSessionTimeout).Once().Return(nil)
 		session.On("readRequest").Once().Return("ehlo example.com", nil)
 		session.On("clearError").Once().Return(nil)
 		session.On("writeResponse", configuration.msgHeloReceived, configuration.responseDelayHelo).Once().Return(nil)
@@ -384,6 +390,12 @@ func TestServerHandleSession(t *testing.T) {
 		session.On("readRequest").Once().Return("helo example.com", nil)
 		session.On("clearError").Once().Return(nil)
 		session.On("writeResponse", configuration.msgHeloReceived, configuration.responseDelayHelo).Once().Return(nil)
+		session.On("isErrorFound").Once().Return(false)
+
+		session.On("setTimeout", defaultSessionTimeout).Once().Return(nil)
+		session.On("readRequest").Once().Return("noop", nil)
+		session.On("clearError").Once().Return(nil)
+		session.On("writeResponse", configuration.msgNoopReceived, configuration.responseDelayNoop).Once().Return(nil)
 		session.On("isErrorFound").Once().Return(false)
 
 		session.On("setTimeout", defaultSessionTimeout).Once().Return(nil)

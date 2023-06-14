@@ -34,6 +34,7 @@ type configuration struct {
 	msgInvalidCmdRsetSequence     string
 	msgInvalidCmdRsetArg          string
 	msgRsetReceived               string
+	msgNoopReceived               string
 	blacklistedHeloDomains        []string
 	blacklistedMailfromEmails     []string
 	blacklistedRcpttoEmails       []string
@@ -44,6 +45,7 @@ type configuration struct {
 	responseDelayData             int
 	responseDelayMessage          int
 	responseDelayRset             int
+	responseDelayNoop             int
 	responseDelayQuit             int
 	msgSizeLimit                  int
 	sessionTimeout                int
@@ -86,6 +88,7 @@ func newConfiguration(config ConfigurationAttr) *configuration {
 		msgInvalidCmdRsetSequence:     config.MsgInvalidCmdRsetSequence,
 		msgInvalidCmdRsetArg:          config.MsgInvalidCmdRsetArg,
 		msgRsetReceived:               config.MsgRsetReceived,
+		msgNoopReceived:               config.MsgNoopReceived,
 		msgQuitCmd:                    config.MsgQuitCmd,
 		blacklistedHeloDomains:        config.BlacklistedHeloDomains,
 		blacklistedMailfromEmails:     config.BlacklistedMailfromEmails,
@@ -97,6 +100,7 @@ func newConfiguration(config ConfigurationAttr) *configuration {
 		responseDelayData:             config.ResponseDelayData,
 		responseDelayMessage:          config.ResponseDelayMessage,
 		responseDelayRset:             config.ResponseDelayRset,
+		responseDelayNoop:             config.ResponseDelayNoop,
 		responseDelayQuit:             config.ResponseDelayQuit,
 		msgSizeLimit:                  config.MsgSizeLimit,
 		sessionTimeout:                config.SessionTimeout,
@@ -136,6 +140,7 @@ type ConfigurationAttr struct {
 	MsgInvalidCmdRsetSequence     string
 	MsgInvalidCmdRsetArg          string
 	MsgRsetReceived               string
+	MsgNoopReceived               string
 	BlacklistedHeloDomains        []string
 	BlacklistedMailfromEmails     []string
 	BlacklistedRcpttoEmails       []string
@@ -146,6 +151,7 @@ type ConfigurationAttr struct {
 	ResponseDelayData             int
 	ResponseDelayMessage          int
 	ResponseDelayRset             int
+	ResponseDelayNoop             int
 	ResponseDelayQuit             int
 	MsgSizeLimit                  int
 	SessionTimeout                int
@@ -263,6 +269,13 @@ func (config *ConfigurationAttr) assignHandlerRsetDefaultValues() {
 	}
 }
 
+// Assigns handlerRset defaults
+func (config *ConfigurationAttr) assignHandlerNoopDefaultValues() {
+	if config.MsgNoopReceived == emptyString {
+		config.MsgNoopReceived = defaultOkMsg
+	}
+}
+
 // Assigns default values to ConfigurationAttr fields
 func (config *ConfigurationAttr) assignDefaultValues() {
 	config.assignServerDefaultValues()
@@ -272,4 +285,5 @@ func (config *ConfigurationAttr) assignDefaultValues() {
 	config.assignHandlerDataDefaultValues()
 	config.assignHandlerMessageDefaultValues()
 	config.assignHandlerRsetDefaultValues()
+	config.assignHandlerNoopDefaultValues()
 }

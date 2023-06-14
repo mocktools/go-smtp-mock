@@ -5,13 +5,13 @@ import "sync"
 // Structure for storing the result of SMTP client-server interaction. Context-included
 // commands should be represented as request/response structure fields
 type Message struct {
-	heloRequest, heloResponse                         string
-	mailfromRequest, mailfromResponse                 string
-	rcpttoRequestResponse                             [][]string
-	dataRequest, dataResponse                         string
-	msgRequest, msgResponse                           string
-	rsetRequest, rsetResponse                         string
-	helo, mailfrom, rcptto, data, msg, rset, quitSent bool
+	heloRequest, heloResponse                               string
+	mailfromRequest, mailfromResponse                       string
+	rcpttoRequestResponse                                   [][]string
+	dataRequest, dataResponse                               string
+	msgRequest, msgResponse                                 string
+	rsetRequest, rsetResponse                               string
+	helo, mailfrom, rcptto, data, msg, rset, noop, quitSent bool
 }
 
 // message methods
@@ -101,6 +101,11 @@ func (message Message) RsetResponse() string {
 // Getter for rset field
 func (message Message) Rset() bool {
 	return message.rset
+}
+
+// Getter for noop field
+func (message Message) Noop() bool {
+	return message.noop
 }
 
 // Getter for quitSent field
