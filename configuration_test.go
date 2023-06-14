@@ -46,6 +46,8 @@ func TestNewConfiguration(t *testing.T) {
 		assert.Equal(t, defaultInvalidCmdMsg, buildedConfiguration.msgInvalidCmdRsetArg)
 		assert.Equal(t, defaultOkMsg, buildedConfiguration.msgRsetReceived)
 
+		assert.Equal(t, defaultOkMsg, buildedConfiguration.msgNoopReceived)
+
 		assert.Equal(t, fmt.Sprintf(defaultMsgSizeIsTooBigMsg+" %d bytes", defaultMessageSizeLimit), buildedConfiguration.msgMsgSizeIsTooBig)
 		assert.Equal(t, defaultReceivedMsg, buildedConfiguration.msgMsgReceived)
 		assert.Equal(t, defaultMessageSizeLimit, buildedConfiguration.msgSizeLimit)
@@ -61,6 +63,7 @@ func TestNewConfiguration(t *testing.T) {
 		assert.Equal(t, defaultSessionResponseDelay, buildedConfiguration.responseDelayData)
 		assert.Equal(t, defaultSessionResponseDelay, buildedConfiguration.responseDelayMessage)
 		assert.Equal(t, defaultSessionResponseDelay, buildedConfiguration.responseDelayRset)
+		assert.Equal(t, defaultSessionResponseDelay, buildedConfiguration.responseDelayNoop)
 		assert.Equal(t, defaultSessionResponseDelay, buildedConfiguration.responseDelayQuit)
 	})
 
@@ -96,6 +99,7 @@ func TestNewConfiguration(t *testing.T) {
 			MsgInvalidCmdRsetSequence:     "msgInvalidCmdRsetSequence",
 			MsgInvalidCmdRsetArg:          "msgInvalidCmdRsetArg",
 			MsgRsetReceived:               "msgRsetReceived",
+			MsgNoopReceived:               "msgNoopReceived",
 			BlacklistedHeloDomains:        []string{},
 			BlacklistedMailfromEmails:     []string{},
 			NotRegisteredEmails:           []string{},
@@ -106,6 +110,7 @@ func TestNewConfiguration(t *testing.T) {
 			ResponseDelayData:             2,
 			ResponseDelayMessage:          2,
 			ResponseDelayRset:             2,
+			ResponseDelayNoop:             2,
 			ResponseDelayQuit:             2,
 			MsgSizeLimit:                  42,
 			SessionTimeout:                120,
@@ -149,6 +154,8 @@ func TestNewConfiguration(t *testing.T) {
 		assert.Equal(t, configAttr.MsgInvalidCmdRsetArg, buildedConfiguration.msgInvalidCmdRsetArg)
 		assert.Equal(t, configAttr.MsgRsetReceived, buildedConfiguration.msgRsetReceived)
 
+		assert.Equal(t, configAttr.MsgNoopReceived, buildedConfiguration.msgNoopReceived)
+
 		assert.Equal(t, fmt.Sprintf(defaultMsgSizeIsTooBigMsg+" %d bytes", configAttr.MsgSizeLimit), buildedConfiguration.msgMsgSizeIsTooBig)
 		assert.Equal(t, configAttr.MsgMsgReceived, buildedConfiguration.msgMsgReceived)
 		assert.Equal(t, configAttr.MsgSizeLimit, buildedConfiguration.msgSizeLimit)
@@ -164,6 +171,7 @@ func TestNewConfiguration(t *testing.T) {
 		assert.Equal(t, configAttr.ResponseDelayData, buildedConfiguration.responseDelayData)
 		assert.Equal(t, configAttr.ResponseDelayMessage, buildedConfiguration.responseDelayMessage)
 		assert.Equal(t, configAttr.ResponseDelayRset, buildedConfiguration.responseDelayRset)
+		assert.Equal(t, configAttr.ResponseDelayNoop, buildedConfiguration.responseDelayNoop)
 		assert.Equal(t, configAttr.ResponseDelayQuit, buildedConfiguration.responseDelayQuit)
 	})
 }
@@ -202,6 +210,8 @@ func TestConfigurationAttrAssignDefaultValues(t *testing.T) {
 		assert.Equal(t, defaultInvalidCmdHeloSequenceMsg, configurationAttr.MsgInvalidCmdRsetSequence)
 		assert.Equal(t, defaultInvalidCmdMsg, configurationAttr.MsgInvalidCmdRsetArg)
 		assert.Equal(t, defaultOkMsg, configurationAttr.MsgRsetReceived)
+
+		assert.Equal(t, defaultOkMsg, configurationAttr.MsgNoopReceived)
 
 		assert.Equal(t, fmt.Sprintf(defaultMsgSizeIsTooBigMsg+" %d bytes", defaultMessageSizeLimit), configurationAttr.MsgMsgSizeIsTooBig)
 		assert.Equal(t, defaultReceivedMsg, configurationAttr.MsgMsgReceived)

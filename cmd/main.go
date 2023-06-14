@@ -100,6 +100,7 @@ func attrFromCommandLine(args []string, options ...flag.ErrorHandling) (bool, *s
 		responseDelayData             = flags.Int("responseDelayData", 0, "DATA"+responseDelayFlagInfo)
 		responseDelayMessage          = flags.Int("responseDelayMessage", 0, "Message"+responseDelayFlagInfo)
 		responseDelayRset             = flags.Int("responseDelayRset", 0, "RSET"+responseDelayFlagInfo)
+		responseDelayNoop             = flags.Int("responseDelayNoop", 0, "NOOP"+responseDelayFlagInfo)
 		responseDelayQuit             = flags.Int("responseDelayQuit", 0, "QUIT"+responseDelayFlagInfo)
 		msgSizeLimit                  = flags.Int("msgSizeLimit", 0, "Message body size limit in bytes. It's equal to 10485760 bytes")
 		msgGreeting                   = flags.String("msgGreeting", "", "Custom server greeting message")
@@ -124,7 +125,8 @@ func attrFromCommandLine(args []string, options ...flag.ErrorHandling) (bool, *s
 		msgInvalidCmdRsetSequence     = flags.String("msgInvalidCmdRsetSequence", "", "Custom invalid command RSET sequence message")
 		msgInvalidCmdRsetArg          = flags.String("msgInvalidCmdRsetArg", "", "Custom invalid command RSET message")
 		msgRsetReceived               = flags.String("msgRsetReceived", "", "Custom RSET received message")
-		msgQuitCmd                    = flags.String("msgQuitCmd", "", "Custom quit command message")
+		msgNoopReceived               = flags.String("msgNoopReceived", "", "Custom NOOP received message")
+		msgQuitCmd                    = flags.String("msgQuitCmd", "", "Custom QUIT command message")
 	)
 	if err := flags.Parse(args[1:]); err != nil {
 		return *ver, nil, err
@@ -150,6 +152,7 @@ func attrFromCommandLine(args []string, options ...flag.ErrorHandling) (bool, *s
 		ResponseDelayData:             *responseDelayData,
 		ResponseDelayMessage:          *responseDelayMessage,
 		ResponseDelayRset:             *responseDelayRset,
+		ResponseDelayNoop:             *responseDelayNoop,
 		ResponseDelayQuit:             *responseDelayQuit,
 		MsgSizeLimit:                  *msgSizeLimit,
 		MsgGreeting:                   *msgGreeting,
@@ -174,6 +177,7 @@ func attrFromCommandLine(args []string, options ...flag.ErrorHandling) (bool, *s
 		MsgInvalidCmdRsetSequence:     *msgInvalidCmdRsetSequence,
 		MsgInvalidCmdRsetArg:          *msgInvalidCmdRsetArg,
 		MsgRsetReceived:               *msgRsetReceived,
+		MsgNoopReceived:               *msgNoopReceived,
 		MsgQuitCmd:                    *msgQuitCmd,
 	}, nil
 }

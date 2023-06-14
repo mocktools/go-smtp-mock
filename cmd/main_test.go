@@ -100,7 +100,8 @@ func TestAttrFromCommandLine(t *testing.T) {
 		responseDelayData := 4
 		responseDelayMessage := 5
 		responseDelayRset := 6
-		responseDelayQuit := 7
+		responseDelayNoop := 7
+		responseDelayQuit := 8
 		msgSizeLimit := 1000
 		msgGreeting := "msgGreeting"
 		msgInvalidCmd := "msgInvalidCmd"
@@ -122,6 +123,7 @@ func TestAttrFromCommandLine(t *testing.T) {
 		msgMsgSizeIsTooBig := "msgMsgSizeIsTooBig"
 		msgMsgReceived := "msgMsgReceived"
 		msgRsetReceived := "msgRsetReceived"
+		msgNoopReceived := "msgNoopReceived"
 		msgQuitCmd := "msgQuitCmd"
 		ver, configAttr, err := attrFromCommandLine(
 			[]string{
@@ -145,6 +147,7 @@ func TestAttrFromCommandLine(t *testing.T) {
 				"-responseDelayData=" + strconv.Itoa(responseDelayData),
 				"-responseDelayMessage=" + strconv.Itoa(responseDelayMessage),
 				"-responseDelayRset=" + strconv.Itoa(responseDelayRset),
+				"-responseDelayNoop=" + strconv.Itoa(responseDelayNoop),
 				"-responseDelayQuit=" + strconv.Itoa(responseDelayQuit),
 				"-msgSizeLimit=" + strconv.Itoa(msgSizeLimit),
 				"-msgGreeting=" + msgGreeting,
@@ -167,6 +170,7 @@ func TestAttrFromCommandLine(t *testing.T) {
 				"-msgMsgSizeIsTooBig=" + msgMsgSizeIsTooBig,
 				"-msgMsgReceived=" + msgMsgReceived,
 				"-msgRsetReceived=" + msgRsetReceived,
+				"-msgNoopReceived=" + msgNoopReceived,
 				"-msgQuitCmd=" + msgQuitCmd,
 			},
 		)
@@ -191,6 +195,7 @@ func TestAttrFromCommandLine(t *testing.T) {
 		assert.Equal(t, responseDelayData, configAttr.ResponseDelayData)
 		assert.Equal(t, responseDelayMessage, configAttr.ResponseDelayMessage)
 		assert.Equal(t, responseDelayRset, configAttr.ResponseDelayRset)
+		assert.Equal(t, responseDelayNoop, configAttr.ResponseDelayNoop)
 		assert.Equal(t, responseDelayQuit, configAttr.ResponseDelayQuit)
 		assert.Equal(t, msgSizeLimit, configAttr.MsgSizeLimit)
 		assert.Equal(t, msgGreeting, configAttr.MsgGreeting)
@@ -213,6 +218,7 @@ func TestAttrFromCommandLine(t *testing.T) {
 		assert.Equal(t, msgMsgSizeIsTooBig, configAttr.MsgMsgSizeIsTooBig)
 		assert.Equal(t, msgMsgReceived, configAttr.MsgMsgReceived)
 		assert.Equal(t, msgRsetReceived, configAttr.MsgRsetReceived)
+		assert.Equal(t, msgNoopReceived, configAttr.MsgNoopReceived)
 		assert.Equal(t, msgQuitCmd, configAttr.MsgQuitCmd)
 		assert.NoError(t, err)
 	})

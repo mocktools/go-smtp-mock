@@ -142,6 +142,14 @@ func TestMessageRset(t *testing.T) {
 	})
 }
 
+func TestMessageNoop(t *testing.T) {
+	t.Run("getter for noop field", func(t *testing.T) {
+		message := Message{noop: true}
+
+		assert.Equal(t, message.noop, message.Noop())
+	})
+}
+
 func TestMessageQuitSent(t *testing.T) {
 	t.Run("getter for quitSent field", func(t *testing.T) {
 		message := Message{quitSent: true}
