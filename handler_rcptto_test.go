@@ -288,6 +288,15 @@ func TestHandlerRcpttoIsInvalidCmdArg(t *testing.T) {
 		assert.Empty(t, message.rcpttoRequestResponse)
 	})
 
+	t.Run("when request includes valid command RCPTTO argument with localhost domain", func(t *testing.T) {
+		message := new(Message)
+		handler := newHandlerRcptto(session, message, configuration)
+
+		assert.False(t, handler.isInvalidCmdArg("RCPT TO: user@localhost"))
+		assert.False(t, message.rcptto)
+		assert.Empty(t, message.rcpttoRequestResponse)
+	})
+
 	t.Run("when request includes valid command RCPTTO argument without <> sign without space", func(t *testing.T) {
 		message := new(Message)
 		handler := newHandlerRcptto(session, message, configuration)
