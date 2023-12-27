@@ -94,11 +94,13 @@ func TestHandlerDataClearMessage(t *testing.T) {
 }
 
 func TestHandlerDataProcessIncomingMessage(t *testing.T) {
-	handlerMessage := &handlerMessageMock{}
-	handler := &handlerData{handlerMessage: handlerMessage}
-	handler.handlerMessage = handlerMessage
-	handlerMessage.On("run").Once().Return(nil)
-	handler.processIncomingMessage()
+	t.Run("when successful request received", func(t *testing.T) {
+		handlerMessage := &handlerMessageMock{}
+		handler := &handlerData{handlerMessage: handlerMessage}
+		handler.handlerMessage = handlerMessage
+		handlerMessage.On("run").Once().Return(nil)
+		handler.processIncomingMessage()
+	})
 }
 
 func TestHandlerDataWriteResult(t *testing.T) {
