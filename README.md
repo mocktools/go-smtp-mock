@@ -449,8 +449,8 @@ Available not configuration `smtpmock` options:
 | --- | --- | --- | --- | --- |
 | `1` | `HELO` | no | `domain name`, `localhost`, `ip address`, `[ip address]` | `HELO example.com` |
 | `1` | `EHLO` | no | `domain name`, `localhost`, `ip address`, `[ip address]` | `EHLO example.com` |
-| `2` | `MAIL FROM` | can be used after command with id `1` and greater | `email address`, `<email address>` | `MAIL FROM: user@domain.com` |
-| `3` | `RCPT TO` | can be used after command with id `2` and greater | `email address`, `<email address>` | `RCPT TO: user@domain.com` |
+| `2` | `MAIL FROM` | can be used after command with id `1` and greater | `email address`, `<email address>`, `localhost email address`, `<localhost email address>` | `MAIL FROM: user@domain.com` |
+| `3` | `RCPT TO` | can be used after command with id `2` and greater | `email address`, `<email address>`, `localhost email address`, `<localhost email address>` | `RCPT TO: user@domain.com` |
 | `4` | `DATA` | can be used after command with id `3` | - | `DATA` |
 | `5` | `RSET` | can be used after command with id `1` and greater | - | `RSET` |
 | `6` | `NOOP` | no | - | `NOOP` |
