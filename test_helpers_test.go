@@ -128,10 +128,8 @@ func runSuccessfulSMTPSession(hostAddress string, portNumber int, fullFlow bool)
 		}
 	}
 
+	// client.Quit() will close connection after, so we don't need to use client.Close() after
 	if err = client.Quit(); err != nil {
-		return err
-	}
-	if err = client.Close(); err != nil {
 		return err
 	}
 

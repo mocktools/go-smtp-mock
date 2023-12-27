@@ -184,6 +184,16 @@ func TestHandlerMaifromIsInvalidCmdArg(t *testing.T) {
 		assert.Empty(t, message.mailfromResponse)
 	})
 
+	t.Run("when request includes valid command MAILFROM argument with localhost domain", func(t *testing.T) {
+		message := new(Message)
+		handler := newHandlerMailfrom(session, message, configuration)
+
+		assert.False(t, handler.isInvalidCmdArg("MAIL FROM: user@localhost"))
+		assert.False(t, message.mailfrom)
+		assert.Empty(t, message.mailfromRequest)
+		assert.Empty(t, message.mailfromResponse)
+	})
+
 	t.Run("when request includes valid command MAILFROM argument without <> sign without space", func(t *testing.T) {
 		message := new(Message)
 		handler := newHandlerMailfrom(session, message, configuration)
