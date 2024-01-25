@@ -12,6 +12,7 @@ builds:
       - darwin
     goarch:
       - amd64
+      - arm64
     ldflags:
       - -s -w
       - -X github.com/mocktools/go-smtp-mock/v2/cmd/version.Version={{.Version}}
