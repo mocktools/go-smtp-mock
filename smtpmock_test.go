@@ -3,6 +3,7 @@ package smtpmock
 import (
 	"fmt"
 	"testing"
+	"time"
 
 	"github.com/stretchr/testify/assert"
 )
@@ -204,4 +205,28 @@ func TestNew(t *testing.T) {
 		assert.True(t, secondMessage.IsConsistent())
 		assert.True(t, secondMessage.quitSent)
 	})
+}
+
+func TestRace(t *testing.T) {
+	hostName := "localhost"
+	server := New(ConfigurationAttr{
+		HostAddress: hostName,
+	})
+
+	if err := server.Start(); err != nil {
+		t.Log(err)
+		t.FailNow()
+	}
+
+	go func() {
+		_ = runSuccessfulSMTPSession(hostName, server.PortNumber(), true)
+	}()
+
+	time.Sleep(1 * time.Second)
+	assert.Len(t, server.Messages(), 1)
+
+	if err := server.Stop(); err != nil {
+		t.Log(err)
+		t.FailNow()
+	}
 }

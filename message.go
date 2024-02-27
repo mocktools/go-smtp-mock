@@ -145,16 +145,33 @@ var zeroMessage = &Message{}
 
 // Concurrent type that can be safely shared between goroutines
 type messages struct {
-	sync.Mutex
+	sync.RWMutex
 	items []*Message
 }
 
 // messages methods
 
-// Addes new message pointer into concurrent messages slice
+// Adds new message pointer into concurrent messages slice
 func (messages *messages) append(item *Message) {
 	messages.Lock()
 	defer messages.Unlock()
 
 	messages.items = append(messages.items, item)
+}
+
+// Returns a copy of all messages
+func (messages *messages) copy() []Message {
+	messages.RLock()
+	defer messages.RUnlock()
+
+	return messages.copyInternal()
+}
+
+// Copy without a lock
+func (messages *messages) copyInternal() []Message {
+	copiedMessages := []Message{}
+	for index := range messages.items {
+		copiedMessages = append(copiedMessages, *messages.items[index])
+	}
+	return copiedMessages
 }
