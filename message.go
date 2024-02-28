@@ -167,3 +167,14 @@ func (messages *messages) copyInternal() []Message {
 
 	return copiedMessages
 }
+
+// Returns all messages and removes them at the same time
+func (messages *messages) purge() []Message {
+	messages.Lock()
+	defer messages.Unlock()
+
+	copiedMessages := messages.copyInternal()
+	messages.items = nil
+
+	return copiedMessages
+}

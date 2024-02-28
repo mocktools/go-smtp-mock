@@ -124,6 +124,12 @@ func (server *Server) Messages() []Message {
 	return server.messages.copy()
 }
 
+// Public interface to get access to server messages
+// and at the same time removes them
+func (server *Server) MessagesAndPurge() []Message {
+	return server.messages.purge()
+}
+
 // Thread-safe getter of server port.
 // Returns server.portNumber
 func (server *Server) PortNumber() int {
