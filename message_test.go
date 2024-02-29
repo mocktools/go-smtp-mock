@@ -193,30 +193,30 @@ func TestMessagePointerIsConsistent(t *testing.T) {
 	t.Run("when consistent", func(t *testing.T) {
 		message := &Message{mailfrom: true, rcptto: true, data: true, msg: true}
 
-		assert.True(t, message.isConsistent())
+		assert.True(t, message.IsConsistent())
 	})
 
 	t.Run("when not consistent MAILFROM", func(t *testing.T) {
 
-		assert.False(t, new(Message).isConsistent())
+		assert.False(t, new(Message).IsConsistent())
 	})
 
 	t.Run("when not consistent RCPTTO", func(t *testing.T) {
 		message := &Message{mailfrom: true}
 
-		assert.False(t, message.isConsistent())
+		assert.False(t, message.IsConsistent())
 	})
 
 	t.Run("when not consistent DATA", func(t *testing.T) {
 		message := &Message{mailfrom: true, rcptto: true}
 
-		assert.False(t, message.isConsistent())
+		assert.False(t, message.IsConsistent())
 	})
 
 	t.Run("when not consistent MSG", func(t *testing.T) {
 		message := &Message{mailfrom: true, rcptto: true, data: true}
 
-		assert.False(t, message.isConsistent())
+		assert.False(t, message.IsConsistent())
 	})
 }
 
