@@ -256,3 +256,14 @@ func TestMessagesCopy(t *testing.T) {
 		assert.Equal(t, *message, copyMessages[0])
 	})
 }
+
+func TestMessagesPurge(t *testing.T) {
+	t.Run("purges messages from items slice", func(t *testing.T) {
+		message, messages := new(Message), new(messages)
+		messages.append(message)
+
+		assert.Len(t, messages.copy(), 1)
+		assert.Len(t, messages.purge(), 1)
+		assert.Len(t, messages.copy(), 0)
+	})
+}

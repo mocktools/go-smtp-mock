@@ -163,6 +163,16 @@ func TestServerMessages(t *testing.T) {
 		assert.NotSame(t, server.messages.items, server.Messages())
 		server.messages.RUnlock()
 	})
+
+	t.Run("no messages after purge", func(t *testing.T) {
+		server := newServer(configuration)
+		message := new(Message)
+		server.messages.append(message)
+
+		assert.NotEmpty(t, server.Messages())
+		assert.NotEmpty(t, server.MessagesAndPurge())
+		assert.Empty(t, server.Messages())
+	})
 }
 
 func TestServerPortNumber(t *testing.T) {
