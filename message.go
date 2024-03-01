@@ -148,7 +148,6 @@ type messages struct {
 func (messages *messages) append(item *Message) {
 	messages.Lock()
 	defer messages.Unlock()
-
 	messages.items = append(messages.items, item)
 }
 
@@ -156,15 +155,15 @@ func (messages *messages) append(item *Message) {
 func (messages *messages) copy() []Message {
 	messages.RLock()
 	defer messages.RUnlock()
-
 	return messages.copyInternal()
 }
 
-// Copy without a lock
+// Copy messages without a lock
 func (messages *messages) copyInternal() []Message {
 	copiedMessages := []Message{}
 	for index := range messages.items {
 		copiedMessages = append(copiedMessages, *messages.items[index])
 	}
+
 	return copiedMessages
 }
