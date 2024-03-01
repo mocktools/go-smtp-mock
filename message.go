@@ -121,13 +121,6 @@ func (message Message) IsConsistent() bool {
 	return message.mailfrom && message.rcptto && message.data && message.msg
 }
 
-// Message pointer consistency status predicate. Returns true for case
-// when message struct is consistent. It means that MAILFROM, RCPTTO, DATA
-// commands and message context were successful. Otherwise returns false
-func (message *Message) isConsistent() bool {
-	return message.mailfrom && message.rcptto && message.data && message.msg
-}
-
 // Message RCPTTO successful response predicate. Returns true when at least one
 // successful RCPTTO response exists. Otherwise returns false
 func (message *Message) isIncludesSuccessfulRcpttoResponse(targetSuccessfulResponse string) bool {

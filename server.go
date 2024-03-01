@@ -234,7 +234,7 @@ func (server *Server) handleSession(session sessionInterface) {
 			case "HELO", "EHLO":
 				newHandlerHelo(session, message, configuration).run(request)
 			case "MAIL":
-				if configuration.multipleMessageReceiving && message.rset && message.isConsistent() {
+				if configuration.multipleMessageReceiving && message.rset && message.IsConsistent() {
 					message = server.newMessageWithHeloContext(message)
 				}
 
