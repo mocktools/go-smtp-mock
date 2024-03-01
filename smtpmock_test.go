@@ -207,26 +207,25 @@ func TestNew(t *testing.T) {
 	})
 }
 
-func TestRace(t *testing.T) {
-	hostName := "localhost"
-	server := New(ConfigurationAttr{
-		HostAddress: hostName,
+func TestServerMessagesRaceCondition(t *testing.T) {
+	t.Run("runs without race condition for server.Messages()", func(t *testing.T) {
+		server := New(ConfigurationAttr{})
+
+		if err := server.Start(); err != nil {
+			t.Log(err)
+			t.FailNow()
+		}
+
+		go func() {
+			_ = runSuccessfulSMTPSession(server.configuration.hostAddress, server.PortNumber(), true)
+		}()
+
+		time.Sleep(1 * time.Second)
+		assert.Len(t, server.Messages(), 1)
+
+		if err := server.Stop(); err != nil {
+			t.Log(err)
+			t.FailNow()
+		}
 	})
-
-	if err := server.Start(); err != nil {
-		t.Log(err)
-		t.FailNow()
-	}
-
-	go func() {
-		_ = runSuccessfulSMTPSession(hostName, server.PortNumber(), true)
-	}()
-
-	time.Sleep(1 * time.Second)
-	assert.Len(t, server.Messages(), 1)
-
-	if err := server.Stop(); err != nil {
-		t.Log(err)
-		t.FailNow()
-	}
 }

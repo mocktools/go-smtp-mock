@@ -250,8 +250,8 @@ func TestMessagesCopy(t *testing.T) {
 		message, messages := new(Message), new(messages)
 		message.heloRequest = "foobar"
 		messages.append(message)
-
 		copyMessages := messages.copy()
+
 		assert.Len(t, copyMessages, 1)
 		assert.Equal(t, *message, copyMessages[0])
 	})
