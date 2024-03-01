@@ -239,6 +239,20 @@ func TestMessagesAppend(t *testing.T) {
 		message, messages := new(Message), new(messages)
 		messages.append(message)
 
+		messages.RLock()
 		assert.Same(t, message, messages.items[0])
+		messages.RUnlock()
+	})
+}
+
+func TestMessagesCopy(t *testing.T) {
+	t.Run("copies messages", func(t *testing.T) {
+		message, messages := new(Message), new(messages)
+		message.heloRequest = "foobar"
+		messages.append(message)
+
+		copyMessages := messages.copy()
+		assert.Len(t, copyMessages, 1)
+		assert.Equal(t, *message, copyMessages[0])
 	})
 }
