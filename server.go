@@ -125,7 +125,8 @@ func (server *Server) Messages() []Message {
 }
 
 // Public interface to get access to server messages
-// and at the same time removes them
+// and at the same time removes them.
+// Returns slice with copy of messages
 func (server *Server) MessagesAndPurge() []Message {
 	return server.messages.purge()
 }
