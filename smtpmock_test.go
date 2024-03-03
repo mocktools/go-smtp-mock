@@ -3,6 +3,7 @@ package smtpmock
 import (
 	"fmt"
 	"testing"
+	"time"
 
 	"github.com/stretchr/testify/assert"
 )
@@ -154,7 +155,7 @@ func TestNew(t *testing.T) {
 
 		assert.NoError(t, server.Start())
 		assert.True(t, server.isStarted())
-		_ = runSuccessfulSMTPSession(configuration.hostAddress, server.PortNumber(), true)
+		_ = runSuccessfulSMTPSession(configuration.hostAddress, server.PortNumber(), true, 0)
 		_ = server.Stop()
 
 		assert.Equal(t, 2, len(server.Messages()))
@@ -203,5 +204,33 @@ func TestNew(t *testing.T) {
 		assert.Equal(t, configuration.msgMsgReceived, secondMessage.msgResponse)
 		assert.True(t, secondMessage.IsConsistent())
 		assert.True(t, secondMessage.quitSent)
+	})
+}
+
+func TestServerMessagesRaceCondition(t *testing.T) {
+	t.Run("runs without race condition for server.Messages()", func(t *testing.T) {
+		server := New(ConfigurationAttr{})
+
+		if err := server.Start(); err != nil {
+			t.Log(err)
+			t.FailNow()
+		}
+
+		go func() {
+			_ = runSuccessfulSMTPSession(server.configuration.hostAddress, server.PortNumber(), true, 10)
+		}()
+
+		// ensure that server.MessagesAndPurge() doesn't touch messages from active SMTP-session
+		time.Sleep(5 * time.Millisecond)
+		assert.Empty(t, server.MessagesAndPurge())
+
+		// ensure that messages appears after SMTP-session
+		time.Sleep(100 * time.Millisecond)
+		assert.Len(t, server.Messages(), 1)
+
+		if err := server.Stop(); err != nil {
+			t.Log(err)
+			t.FailNow()
+		}
 	})
 }

@@ -60,10 +60,11 @@ func messageBody(from, to string) []byte {
 }
 
 // Runs full smtp flow
-func runFullFlow(client *smtp.Client) error {
+func runFullFlow(client *smtp.Client, delay int) error {
 	var err error
 	var wc io.WriteCloser
 
+	time.Sleep(time.Duration(delay) * time.Millisecond)
 	sender, receiver1, receiver2, receiver3 := "user@molo.com", "user1@olo.com", "user2@olo.com", "user3@olo.com"
 
 	if err = client.Mail(sender); err != nil {
@@ -112,8 +113,8 @@ func runFullFlow(client *smtp.Client) error {
 	return nil
 }
 
-// Runs successful SMTP session with target host
-func runSuccessfulSMTPSession(hostAddress string, portNumber int, fullFlow bool) error {
+// Runs configurable successful SMTP session with target host
+func runSuccessfulSMTPSession(hostAddress string, portNumber int, fullFlow bool, delayMs int) error {
 	connection, _ := net.DialTimeout(networkProtocol, serverWithPortNumber(hostAddress, portNumber), time.Duration(2)*time.Second)
 	client, _ := smtp.NewClient(connection, hostAddress)
 	var err error
@@ -123,7 +124,7 @@ func runSuccessfulSMTPSession(hostAddress string, portNumber int, fullFlow bool)
 	}
 
 	if fullFlow {
-		if err = runFullFlow(client); err != nil {
+		if err = runFullFlow(client, delayMs); err != nil {
 			return err
 		}
 	}

@@ -32,8 +32,8 @@ func TestServerStart(t *testing.T) {
 		server := newServer(configuration)
 
 		assert.NoError(t, server.Start())
-		_ = runSuccessfulSMTPSession(configuration.hostAddress, server.PortNumber(), false)
-		assert.NotEmpty(t, server.messages)
+		_ = runSuccessfulSMTPSession(configuration.hostAddress, server.PortNumber(), false, 0)
+		assert.NotNil(t, server.messages)
 		assert.NotNil(t, server.quit)
 		assert.NotNil(t, server.quitTimeout)
 		assert.True(t, server.isStarted())
@@ -48,8 +48,8 @@ func TestServerStart(t *testing.T) {
 		server := newServer(configuration)
 
 		assert.NoError(t, server.Start())
-		_ = runSuccessfulSMTPSession(configuration.hostAddress, portNumber, false)
-		assert.NotEmpty(t, server.messages)
+		_ = runSuccessfulSMTPSession(configuration.hostAddress, portNumber, false, 0)
+		assert.NotNil(t, server.messages)
 		assert.NotNil(t, server.quit)
 		assert.NotNil(t, server.quitTimeout)
 		assert.True(t, server.isStarted())
@@ -139,7 +139,8 @@ func TestServerMessages(t *testing.T) {
 
 	t.Run("when there are messages on the server", func(t *testing.T) {
 		server := newServer(configuration)
-		server.newMessage()
+		message := new(Message)
+		server.messages.append(message)
 
 		assert.NotEmpty(t, server.Messages())
 	})
@@ -147,15 +148,30 @@ func TestServerMessages(t *testing.T) {
 	t.Run("message data are identical", func(t *testing.T) {
 		server := newServer(configuration)
 
+		server.messages.RLock()
 		assert.Empty(t, server.messages.items)
 		assert.Empty(t, server.Messages())
 		assert.NotSame(t, server.messages.items, server.Messages())
+		server.messages.RUnlock()
 
-		message := server.newMessage()
+		message := new(Message)
+		server.messages.append(message)
 
+		server.messages.RLock()
 		assert.Equal(t, []*Message{message}, server.messages.items)
 		assert.Equal(t, []Message{*message}, server.Messages())
 		assert.NotSame(t, server.messages.items, server.Messages())
+		server.messages.RUnlock()
+	})
+
+	t.Run("no messages after purge", func(t *testing.T) {
+		server := newServer(configuration)
+		message := new(Message)
+		server.messages.append(message)
+
+		assert.NotEmpty(t, server.Messages())
+		assert.NotEmpty(t, server.MessagesAndPurge())
+		assert.Empty(t, server.Messages())
 	})
 }
 
@@ -213,29 +229,21 @@ func TestServerStopFlag(t *testing.T) {
 	})
 }
 
-func TestServerNewMessage(t *testing.T) {
-	t.Run("pushes new message into server.messages, returns this message", func(t *testing.T) {
-		server := &Server{messages: new(messages)}
-		message, messages := server.newMessage(), server.messages.items
-
-		assert.NotEmpty(t, messages)
-		assert.Equal(t, message, messages[0])
-	})
-}
-
 func TestServerNewMessageWithHeloContext(t *testing.T) {
 	t.Run("pushes new message into server.messages with helo context from other message, returns this message", func(t *testing.T) {
 		server := &Server{messages: new(messages)}
-		message, heloRequest, heloResponse, helo := server.newMessage(), "heloRequest", "heloResponse", true
+		message, heloRequest, heloResponse, helo := new(Message), "heloRequest", "heloResponse", true
 		message.heloRequest, message.heloResponse, message.helo = heloRequest, heloResponse, helo
 		newMessage := server.newMessageWithHeloContext(message)
-		messages := server.messages.items
 
+		server.messages.RLock()
+		messages := server.messages.items
 		assert.Equal(t, heloRequest, newMessage.heloRequest)
 		assert.Equal(t, heloResponse, newMessage.heloResponse)
 		assert.Equal(t, helo, newMessage.helo)
-		assert.Equal(t, newMessage, messages[1])
-		assert.Equal(t, 2, len(messages))
+		assert.Equal(t, newMessage, messages[0])
+		assert.Equal(t, 1, len(messages))
+		server.messages.RUnlock()
 	})
 }
 

@@ -193,30 +193,30 @@ func TestMessagePointerIsConsistent(t *testing.T) {
 	t.Run("when consistent", func(t *testing.T) {
 		message := &Message{mailfrom: true, rcptto: true, data: true, msg: true}
 
-		assert.True(t, message.isConsistent())
+		assert.True(t, message.IsConsistent())
 	})
 
 	t.Run("when not consistent MAILFROM", func(t *testing.T) {
 
-		assert.False(t, new(Message).isConsistent())
+		assert.False(t, new(Message).IsConsistent())
 	})
 
 	t.Run("when not consistent RCPTTO", func(t *testing.T) {
 		message := &Message{mailfrom: true}
 
-		assert.False(t, message.isConsistent())
+		assert.False(t, message.IsConsistent())
 	})
 
 	t.Run("when not consistent DATA", func(t *testing.T) {
 		message := &Message{mailfrom: true, rcptto: true}
 
-		assert.False(t, message.isConsistent())
+		assert.False(t, message.IsConsistent())
 	})
 
 	t.Run("when not consistent MSG", func(t *testing.T) {
 		message := &Message{mailfrom: true, rcptto: true, data: true}
 
-		assert.False(t, message.isConsistent())
+		assert.False(t, message.IsConsistent())
 	})
 }
 
@@ -239,6 +239,31 @@ func TestMessagesAppend(t *testing.T) {
 		message, messages := new(Message), new(messages)
 		messages.append(message)
 
+		messages.RLock()
 		assert.Same(t, message, messages.items[0])
+		messages.RUnlock()
+	})
+}
+
+func TestMessagesCopy(t *testing.T) {
+	t.Run("copies messages", func(t *testing.T) {
+		message, messages := new(Message), new(messages)
+		message.heloRequest = "foobar"
+		messages.append(message)
+		copyMessages := messages.copy()
+
+		assert.Len(t, copyMessages, 1)
+		assert.Equal(t, *message, copyMessages[0])
+	})
+}
+
+func TestMessagesPurge(t *testing.T) {
+	t.Run("purges messages from items slice", func(t *testing.T) {
+		message, messages := new(Message), new(messages)
+		messages.append(message)
+
+		assert.Len(t, messages.copy(), 1)
+		assert.Len(t, messages.purge(), 1)
+		assert.Len(t, messages.copy(), 0)
 	})
 }

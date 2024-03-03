@@ -121,14 +121,14 @@ func (server *Server) Stop() (err error) {
 // Public interface to get access to server messages.
 // Returns slice with copy of messages
 func (server *Server) Messages() []Message {
-	server.Lock()
-	defer server.Unlock()
-	copiedMessages, messages := []Message{}, server.messages.items
-	for index := range messages {
-		copiedMessages = append(copiedMessages, *messages[index])
-	}
+	return server.messages.copy()
+}
 
-	return copiedMessages
+// Public interface to get access to server messages
+// and at the same time removes them.
+// Returns slice with copy of messages
+func (server *Server) MessagesAndPurge() []Message {
+	return server.messages.purge()
 }
 
 // Thread-safe getter of server port.
@@ -175,19 +175,13 @@ func (server *Server) stop() {
 	server.started = false
 }
 
-// Creates and assigns new message to server.messages
-func (server *Server) newMessage() *Message {
-	newMessage := new(Message)
-	server.messages.append(newMessage)
-	return newMessage
-}
-
 // Creates and assigns new message with helo context from other message to server.messages
 func (server *Server) newMessageWithHeloContext(otherMessage *Message) *Message {
-	newMessage := server.newMessage()
+	newMessage := new(Message)
 	newMessage.heloRequest = otherMessage.heloRequest
 	newMessage.heloResponse = otherMessage.heloResponse
 	newMessage.helo = otherMessage.helo
+	server.messages.append(otherMessage)
 	return newMessage
 }
 
@@ -221,7 +215,10 @@ func (server *Server) isAbleToEndSession(message *Message, session sessionInterf
 //nolint:gocyclo // SMTP client-server session handler
 func (server *Server) handleSession(session sessionInterface) {
 	defer session.finish()
-	message, configuration := server.newMessage(), server.configuration
+	message, configuration := new(Message), server.configuration
+	defer func() {
+		server.messages.append(message)
+	}()
 	session.writeResponse(configuration.msgGreeting, defaultSessionResponseDelay)
 
 	for {
@@ -244,7 +241,7 @@ func (server *Server) handleSession(session sessionInterface) {
 			case "HELO", "EHLO":
 				newHandlerHelo(session, message, configuration).run(request)
 			case "MAIL":
-				if configuration.multipleMessageReceiving && message.rset && message.isConsistent() {
+				if configuration.multipleMessageReceiving && message.rset && message.IsConsistent() {
 					message = server.newMessageWithHeloContext(message)
 				}
 

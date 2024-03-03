@@ -2,6 +2,22 @@
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/), and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.3.0] - 2024-03-03
+
+### Added
+
+- Added ability to message purge when retrieving messages, `server.MessagesAndPurge()`. Thanks [@mitar](https://github.com/mitar) for PR
+- Added `commitspell` linter
+
+### Fixed
+
+- Fixed issue with data race condition between newMessage() and Messages(). Thanks [@mitar](https://github.com/mitar) for PR
+
+### Updated
+
+- Updated `lefthook` config
+- Updated project documentation
+
 ## [2.2.1] - 2024-01-25
 
 ### Added

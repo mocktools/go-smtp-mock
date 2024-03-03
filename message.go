@@ -121,13 +121,6 @@ func (message Message) IsConsistent() bool {
 	return message.mailfrom && message.rcptto && message.data && message.msg
 }
 
-// Message pointer consistency status predicate. Returns true for case
-// when message struct is consistent. It means that MAILFROM, RCPTTO, DATA
-// commands and message context were successful. Otherwise returns false
-func (message *Message) isConsistent() bool {
-	return message.mailfrom && message.rcptto && message.data && message.msg
-}
-
 // Message RCPTTO successful response predicate. Returns true when at least one
 // successful RCPTTO response exists. Otherwise returns false
 func (message *Message) isIncludesSuccessfulRcpttoResponse(targetSuccessfulResponse string) bool {
@@ -145,16 +138,43 @@ var zeroMessage = &Message{}
 
 // Concurrent type that can be safely shared between goroutines
 type messages struct {
-	sync.Mutex
+	sync.RWMutex
 	items []*Message
 }
 
 // messages methods
 
-// Addes new message pointer into concurrent messages slice
+// Adds new message pointer into concurrent messages slice
 func (messages *messages) append(item *Message) {
 	messages.Lock()
 	defer messages.Unlock()
-
 	messages.items = append(messages.items, item)
+}
+
+// Returns a copy of all messages
+func (messages *messages) copy() []Message {
+	messages.RLock()
+	defer messages.RUnlock()
+	return messages.copyInternal()
+}
+
+// Copy messages without a lock
+func (messages *messages) copyInternal() []Message {
+	copiedMessages := []Message{}
+	for index := range messages.items {
+		copiedMessages = append(copiedMessages, *messages.items[index])
+	}
+
+	return copiedMessages
+}
+
+// Returns all messages and removes them at the same time
+func (messages *messages) purge() []Message {
+	messages.Lock()
+	defer messages.Unlock()
+
+	copiedMessages := messages.copyInternal()
+	messages.items = nil
+
+	return copiedMessages
 }
