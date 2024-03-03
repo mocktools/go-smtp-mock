@@ -32,7 +32,7 @@ func TestServerStart(t *testing.T) {
 		server := newServer(configuration)
 
 		assert.NoError(t, server.Start())
-		_ = runSuccessfulSMTPSession(configuration.hostAddress, server.PortNumber(), false)
+		_ = runSuccessfulSMTPSession(configuration.hostAddress, server.PortNumber(), false, 0)
 		assert.NotNil(t, server.messages)
 		assert.NotNil(t, server.quit)
 		assert.NotNil(t, server.quitTimeout)
@@ -48,7 +48,7 @@ func TestServerStart(t *testing.T) {
 		server := newServer(configuration)
 
 		assert.NoError(t, server.Start())
-		_ = runSuccessfulSMTPSession(configuration.hostAddress, portNumber, false)
+		_ = runSuccessfulSMTPSession(configuration.hostAddress, portNumber, false, 0)
 		assert.NotNil(t, server.messages)
 		assert.NotNil(t, server.quit)
 		assert.NotNil(t, server.quitTimeout)

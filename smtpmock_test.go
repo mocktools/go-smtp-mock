@@ -155,7 +155,7 @@ func TestNew(t *testing.T) {
 
 		assert.NoError(t, server.Start())
 		assert.True(t, server.isStarted())
-		_ = runSuccessfulSMTPSession(configuration.hostAddress, server.PortNumber(), true)
+		_ = runSuccessfulSMTPSession(configuration.hostAddress, server.PortNumber(), true, 0)
 		_ = server.Stop()
 
 		assert.Equal(t, 2, len(server.Messages()))
@@ -217,10 +217,15 @@ func TestServerMessagesRaceCondition(t *testing.T) {
 		}
 
 		go func() {
-			_ = runSuccessfulSMTPSession(server.configuration.hostAddress, server.PortNumber(), true)
+			_ = runSuccessfulSMTPSession(server.configuration.hostAddress, server.PortNumber(), true, 10)
 		}()
 
-		time.Sleep(1 * time.Second)
+		// ensure that server.MessagesAndPurge() doesn't touch messages from active SMTP-session
+		time.Sleep(5 * time.Millisecond)
+		assert.Empty(t, server.MessagesAndPurge())
+
+		// ensure that messages appears after SMTP-session
+		time.Sleep(100 * time.Millisecond)
 		assert.Len(t, server.Messages(), 1)
 
 		if err := server.Stop(); err != nil {
