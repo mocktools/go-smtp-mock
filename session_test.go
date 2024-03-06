@@ -60,7 +60,7 @@ func TestSessionSetTimeout(t *testing.T) {
 	timeStub, timeout := time.Now(), 42
 	timeNow = func() time.Time { return timeStub }
 
-	t.Run("sets connection deadline for session", func(t *testing.T) {
+	t.Run("sets connection deadline for session", func(*testing.T) {
 		connection := netConnectionMock{}
 		connection.On("SetDeadline", timeNow().Add(time.Duration(timeout)*time.Second)).Once().Return(nil)
 		session := &session{connection: connection}
@@ -81,7 +81,7 @@ func TestSessionSetTimeout(t *testing.T) {
 }
 
 func TestSessionDiscardBufin(t *testing.T) {
-	t.Run("discardes the bufin remnants", func(t *testing.T) {
+	t.Run("discardes the bufin remnants", func(*testing.T) {
 		bufin := new(bufioReaderMock)
 		session := &session{bufin: bufin}
 		bufin.On("Buffered").Once().Return(42)
