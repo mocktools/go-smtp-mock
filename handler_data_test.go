@@ -94,7 +94,7 @@ func TestHandlerDataClearMessage(t *testing.T) {
 }
 
 func TestHandlerDataProcessIncomingMessage(t *testing.T) {
-	t.Run("when successful request received", func(t *testing.T) {
+	t.Run("when successful request received", func(*testing.T) {
 		handlerMessage := &handlerMessageMock{}
 		handler := &handlerData{handlerMessage: handlerMessage}
 		handler.handlerMessage = handlerMessage

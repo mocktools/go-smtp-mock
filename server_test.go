@@ -274,7 +274,7 @@ func TestServerAddToWaitGroup(t *testing.T) {
 	waitGroup := new(waitGroupMock)
 	server := &Server{wg: waitGroup}
 
-	t.Run("increases count of goroutines by one", func(t *testing.T) {
+	t.Run("increases count of goroutines by one", func(*testing.T) {
 		waitGroup.On("Add", 1).Once().Return(nil)
 		server.addToWaitGroup()
 	})
@@ -284,7 +284,7 @@ func TestServerRemoveFromWaitGroup(t *testing.T) {
 	waitGroup := new(waitGroupMock)
 	server := &Server{wg: waitGroup}
 
-	t.Run("decreases count of goroutines by one", func(t *testing.T) {
+	t.Run("decreases count of goroutines by one", func(*testing.T) {
 		waitGroup.On("Done").Once().Return(nil)
 		server.removeFromWaitGroup()
 	})
@@ -473,7 +473,7 @@ func TestServerHandleSession(t *testing.T) {
 		assert.Equal(t, 2, len(server.Messages()))
 	})
 
-	t.Run("when invalid command, fail fast scenario disabled", func(t *testing.T) {
+	t.Run("when invalid command, fail fast scenario disabled", func(*testing.T) {
 		session, configuration := &sessionMock{}, createConfiguration()
 		server := newServer(configuration)
 
@@ -492,7 +492,7 @@ func TestServerHandleSession(t *testing.T) {
 		server.handleSession(session)
 	})
 
-	t.Run("when invalid command, session error, fail fast scenario enabled", func(t *testing.T) {
+	t.Run("when invalid command, session error, fail fast scenario enabled", func(*testing.T) {
 		session, configuration := &sessionMock{}, newConfiguration(ConfigurationAttr{IsCmdFailFast: true})
 		server, errorMessage := newServer(configuration), configuration.msgInvalidCmdHeloArg
 
@@ -514,7 +514,7 @@ func TestServerHandleSession(t *testing.T) {
 		server.handleSession(session)
 	})
 
-	t.Run("when server quit channel was closed", func(t *testing.T) {
+	t.Run("when server quit channel was closed", func(*testing.T) {
 		session, configuration := &sessionMock{}, newConfiguration(ConfigurationAttr{IsCmdFailFast: true})
 		server := newServer(configuration)
 		server.quit = make(chan interface{})
@@ -526,7 +526,7 @@ func TestServerHandleSession(t *testing.T) {
 		server.handleSession(session)
 	})
 
-	t.Run("when read request session error", func(t *testing.T) {
+	t.Run("when read request session error", func(*testing.T) {
 		session, configuration := &sessionMock{}, newConfiguration(ConfigurationAttr{IsCmdFailFast: true})
 		server := newServer(configuration)
 
