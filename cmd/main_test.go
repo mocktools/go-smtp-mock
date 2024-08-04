@@ -15,13 +15,13 @@ import (
 )
 
 func TestMain(t *testing.T) {
-	t.Run("when error not happened", func(t *testing.T) {
+	t.Run("when error not happened", func(*testing.T) {
 		os.Args = []string{os.Args[0]}
 		signals <- syscall.SIGINT
 		main()
 	})
 
-	t.Run("when error happened", func(t *testing.T) {
+	t.Run("when error happened", func(*testing.T) {
 		defer func() { logFatalf = log.Fatalf }()
 		os.Args = []string{os.Args[0], "-host=a"}
 		logMock := new(logMock)

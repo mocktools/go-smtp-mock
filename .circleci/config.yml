@@ -5,12 +5,12 @@ version: 2.1
 defaults: &defaults
   working_directory: ~/go-smtp-mock
   docker:
-    - image: cimg/go:1.21.5
+    - image: cimg/go:1.22.5
 
 jobs:
   linters:
     docker:
-      - image: golangci/golangci-lint:v1.55.2-alpine
+      - image: golangci/golangci-lint:v1.56.2-alpine
 
     steps:
       - checkout
