@@ -5,7 +5,7 @@ version: 2.1
 defaults: &defaults
   working_directory: ~/go-smtp-mock
   docker:
-    - image: cimg/go:1.22.5
+    - image: cimg/go:1.23.0
 
 jobs:
   linters:
