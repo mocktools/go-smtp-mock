@@ -345,6 +345,24 @@ func TestHandlerRcpttoRcpttoEmail(t *testing.T) {
 
 		assert.Equal(t, emptyString, handler.rcpttoEmail("RCPT TO: "+invalidEmail))
 	})
+
+	t.Run("when request includes invalid email address, wrong format", func(t *testing.T) {
+		invalidEmail := "a@a.com@b.com"
+
+		assert.Equal(t, emptyString, handler.rcpttoEmail("RCPT TO: "+invalidEmail))
+	})
+
+	t.Run("when request includes invalid email starting with dot", func(t *testing.T) {
+		invalidEmail := ".user@example.com"
+
+		assert.Equal(t, emptyString, handler.rcpttoEmail("RCPT TO: "+invalidEmail))
+	})
+
+	t.Run("when request includes invalid email ending with dot before @", func(t *testing.T) {
+		invalidEmail := "user.@example.com"
+
+		assert.Equal(t, emptyString, handler.rcpttoEmail("RCPT TO: "+invalidEmail))
+	})
 }
 
 func TestHandlerRcpttoIsBlacklistedEmail(t *testing.T) {

@@ -245,6 +245,24 @@ func TestHandlerMailfromMailfromEmail(t *testing.T) {
 
 		assert.Equal(t, emptyString, handler.mailfromEmail("MAIL FROM: "+invalidEmail))
 	})
+
+	t.Run("when request includes invalid email with multiple @ symbols", func(t *testing.T) {
+		invalidEmail := "a@a.com@b.com"
+
+		assert.Equal(t, emptyString, handler.mailfromEmail("MAIL FROM: "+invalidEmail))
+	})
+
+	t.Run("when request includes invalid email starting with dot", func(t *testing.T) {
+		invalidEmail := ".user@example.com"
+
+		assert.Equal(t, emptyString, handler.mailfromEmail("MAIL FROM: "+invalidEmail))
+	})
+
+	t.Run("when request includes invalid email ending with dot before @", func(t *testing.T) {
+		invalidEmail := "user.@example.com"
+
+		assert.Equal(t, emptyString, handler.mailfromEmail("MAIL FROM: "+invalidEmail))
+	})
 }
 
 func TestHandlerHeloIsBlacklistedEmail(t *testing.T) {
