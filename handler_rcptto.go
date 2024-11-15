@@ -88,7 +88,7 @@ func (handler *handlerRcptto) isInvalidCmdArg(request string) bool {
 
 // Returns email from RCPTTO request
 func (handler *handlerRcptto) rcpttoEmail(request string) string {
-	return regexCaptureGroup(request, validRcpttoComplexCmdRegexPattern, 3)
+	return regexCaptureGroup(request, validRcpttoComplexCmdRegexPattern, 2)
 }
 
 // Custom behavior for RCPTTO email. Returns true and writes result for case when
