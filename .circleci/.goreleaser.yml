@@ -4,7 +4,7 @@ version: 2
 
 builds:
   - id: "smtpmock-build"
-    dir: cmd
+    dir: cmd/smtpmock
     binary: smtpmock
     env:
       - CGO_ENABLED=0
