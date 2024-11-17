@@ -226,18 +226,26 @@ func TestHandlerMaifromIsInvalidCmdArg(t *testing.T) {
 }
 
 func TestHandlerMailfromMailfromEmail(t *testing.T) {
-	handler := new(handlerMailfrom)
+	validEmail, handler := "user@example.com", new(handlerMailfrom)
 
 	t.Run("when request includes valid email address without <> sign", func(t *testing.T) {
-		validEmail := "user@example.com"
-
 		assert.Equal(t, validEmail, handler.mailfromEmail("MAIL FROM: "+validEmail))
 	})
 
 	t.Run("when request includes valid email address with <> sign", func(t *testing.T) {
-		validEmail := "user@example.com"
-
 		assert.Equal(t, validEmail, handler.mailfromEmail("MAIL FROM: "+"<"+validEmail+">"))
+	})
+
+	t.Run("when request includes valid email address without <> sign, with name", func(t *testing.T) {
+		assert.Equal(t, validEmail, handler.mailfromEmail("MAIL FROM: John Doe <"+validEmail+">"))
+	})
+
+	t.Run("when request includes valid email address with <> sign, name with space", func(t *testing.T) {
+		assert.Equal(t, validEmail, handler.mailfromEmail("MAIL FROM: "+"<John Doe <"+validEmail+">>"))
+	})
+
+	t.Run("when request includes valid email address with <> sign and name without space", func(t *testing.T) {
+		assert.Equal(t, validEmail, handler.mailfromEmail("MAIL FROM: "+"<JohnDoe<"+validEmail+">>"))
 	})
 
 	t.Run("when request includes invalid email address", func(t *testing.T) {

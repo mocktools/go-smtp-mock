@@ -3,6 +3,7 @@ package smtpmock
 import (
 	"fmt"
 	"regexp"
+	"time"
 )
 
 // Regex builder
@@ -20,8 +21,8 @@ func matchRegex(strContext, regexPattern string) bool {
 	return regex.MatchString(strContext)
 }
 
-// Returns string by regex pattern capture group index. For cases when regex not matched or
-// capture group not found returns empty string
+// Returns string by regex pattern capture group index.
+// For cases when regex not matched or capture group not found returns empty string
 func regexCaptureGroup(str string, regexPattern string, captureGroup int) (capturedString string) {
 	var regex *regexp.Regexp
 	defer func() { _ = recover() }()
@@ -46,4 +47,9 @@ func isIncluded(slice []string, target string) bool {
 // Returns server with port number follows {server}:{portNumber} pattern
 func serverWithPortNumber(server string, portNumber int) string {
 	return fmt.Sprintf("%s:%d", server, portNumber)
+}
+
+// Sleeps for the given duration in milliseconds
+func sleepMilliseconds(duration int) {
+	time.Sleep(time.Duration(duration) * time.Millisecond)
 }

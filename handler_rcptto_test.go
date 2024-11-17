@@ -326,18 +326,26 @@ func TestHandlerRcpttoIsInvalidCmdArg(t *testing.T) {
 }
 
 func TestHandlerRcpttoRcpttoEmail(t *testing.T) {
-	handler := new(handlerRcptto)
+	validEmail, handler := "user@example.com", new(handlerRcptto)
 
 	t.Run("when request includes valid email address without <> sign", func(t *testing.T) {
-		validEmail := "user@example.com"
-
 		assert.Equal(t, validEmail, handler.rcpttoEmail("RCPT TO: "+validEmail))
 	})
 
 	t.Run("when request includes valid email address with <> sign", func(t *testing.T) {
-		validEmail := "user@example.com"
-
 		assert.Equal(t, validEmail, handler.rcpttoEmail("RCPT TO: "+"<"+validEmail+">"))
+	})
+
+	t.Run("when request includes valid email address without <> sign, with name", func(t *testing.T) {
+		assert.Equal(t, validEmail, handler.rcpttoEmail("RCPT TO: John Doe <"+validEmail+">"))
+	})
+
+	t.Run("when request includes valid email address with <> sign, name with space", func(t *testing.T) {
+		assert.Equal(t, validEmail, handler.rcpttoEmail("RCPT TO: "+"<John Doe <"+validEmail+">>"))
+	})
+
+	t.Run("when request includes valid email address with <> sign and name without space", func(t *testing.T) {
+		assert.Equal(t, validEmail, handler.rcpttoEmail("RCPT TO: "+"<JohnDoe<"+validEmail+">>"))
 	})
 
 	t.Run("when request includes invalid email address", func(t *testing.T) {
