@@ -10,8 +10,8 @@ import (
 	"strings"
 	"syscall"
 
+	smtpmock "github.com/mocktools/go-smtp-mock/v2"
 	version "github.com/mocktools/go-smtp-mock/v2/cmd/version"
-	smtpmock "github.com/mocktools/go-smtp-mock/v2/pkg/smtpmock"
 )
 
 const (
