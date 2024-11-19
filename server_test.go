@@ -6,6 +6,7 @@ import (
 	"net"
 	"strings"
 	"testing"
+	"time"
 
 	"github.com/stretchr/testify/assert"
 )
@@ -163,15 +164,59 @@ func TestServerMessages(t *testing.T) {
 		assert.NotSame(t, server.messages.items, server.Messages())
 		server.messages.RUnlock()
 	})
+}
 
-	t.Run("no messages after purge", func(t *testing.T) {
-		server := newServer(configuration)
-		message := new(Message)
+func TestServerWaitForMessages(t *testing.T) {
+	timeout := 1 * time.Millisecond
+
+	t.Run("when expected number of messages is received without timeout", func(t *testing.T) {
+		server, message := newServer(createConfiguration()), new(Message)
+		server.messages.append(message)
+		messages, err := server.WaitForMessages(len(server.messages.copy()), timeout)
+
+		assert.Equal(t, []Message{*message}, messages)
+		assert.NoError(t, err)
+	})
+
+	t.Run("when timeout occurs before receiving expected number of messages", func(t *testing.T) {
+		server := newServer(createConfiguration())
+		messages, err := server.WaitForMessages(1, timeout)
+
+		assert.EqualError(t, err, fmt.Sprintf("timeout waiting for %d messages, got %d", 1, 0))
+		assert.Empty(t, messages)
+	})
+}
+
+func TestServerMessagesAndPurge(t *testing.T) {
+	t.Run("returns empty messages after purge", func(t *testing.T) {
+		server, message := newServer(createConfiguration()), new(Message)
 		server.messages.append(message)
 
 		assert.NotEmpty(t, server.Messages())
 		assert.NotEmpty(t, server.MessagesAndPurge())
 		assert.Empty(t, server.Messages())
+	})
+}
+
+func TestServerWaitForMessagesAndPurge(t *testing.T) {
+	timeout := 1 * time.Millisecond
+
+	t.Run("when expected number of messages is received without timeout", func(t *testing.T) {
+		server, message := newServer(createConfiguration()), new(Message)
+		server.messages.append(message)
+		messages, err := server.WaitForMessagesAndPurge(len(server.messages.copy()), timeout)
+
+		assert.Equal(t, []Message{*message}, messages)
+		assert.NoError(t, err)
+		assert.Empty(t, server.Messages())
+	})
+
+	t.Run("when timeout occurs before receiving expected number of messages", func(t *testing.T) {
+		server := newServer(createConfiguration())
+		messages, err := server.WaitForMessagesAndPurge(1, timeout)
+
+		assert.EqualError(t, err, fmt.Sprintf("timeout waiting for %d messages, got %d", 1, 0))
+		assert.Empty(t, messages)
 	})
 }
 
@@ -181,6 +226,38 @@ func TestServerPortNumber(t *testing.T) {
 		server := &Server{portNumber: portNumber}
 
 		assert.Equal(t, portNumber, server.PortNumber())
+	})
+}
+
+func TestServerFetchMessages(t *testing.T) {
+	timeout := 1 * time.Millisecond
+
+	t.Run("when expected number of messages is received without timeout", func(t *testing.T) {
+		server, message := newServer(createConfiguration()), new(Message)
+		server.messages.append(message)
+		messages, err := server.fetchMessages(len(server.messages.copy()), timeout, false)
+
+		assert.Equal(t, []Message{*message}, messages)
+		assert.NoError(t, err)
+		assert.NotEmpty(t, server.Messages())
+	})
+
+	t.Run("when expected number of messages is received with purging", func(t *testing.T) {
+		server, message := newServer(createConfiguration()), new(Message)
+		server.messages.append(message)
+		messages, err := server.fetchMessages(len(server.messages.copy()), timeout, true)
+
+		assert.Equal(t, []Message{*message}, messages)
+		assert.NoError(t, err)
+		assert.Empty(t, server.Messages())
+	})
+
+	t.Run("when timeout occurs before receiving expected number of messages", func(t *testing.T) {
+		server := newServer(createConfiguration())
+		messages, err := server.fetchMessages(1, timeout, false)
+
+		assert.EqualError(t, err, fmt.Sprintf("timeout waiting for %d messages, got %d", 1, 0))
+		assert.Empty(t, messages)
 	})
 }
 

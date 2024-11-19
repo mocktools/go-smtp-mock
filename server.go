@@ -124,11 +124,24 @@ func (server *Server) Messages() []Message {
 	return server.messages.copy()
 }
 
+// WaitForMessages waits for the specified number of messages to arrive or until timeout is reached.
+// Returns the messages and an error if timeout occurs before receiving expected number of messages.
+func (server *Server) WaitForMessages(count int, timeout time.Duration) ([]Message, error) {
+	return server.fetchMessages(count, timeout, false)
+}
+
 // Public interface to get access to server messages
 // and at the same time removes them.
 // Returns slice with copy of messages
 func (server *Server) MessagesAndPurge() []Message {
 	return server.messages.purge()
+}
+
+// WaitForMessagesAndPurge waits for the specified number of messages to arrive or until timeout is reached.
+// Returns the messages and an error if timeout occurs before receiving expected number of messages.
+// At the same time removes the messages from the server.
+func (server *Server) WaitForMessagesAndPurge(count int, timeout time.Duration) ([]Message, error) {
+	return server.fetchMessages(count, timeout, true)
 }
 
 // Thread-safe getter of server port.
@@ -137,6 +150,29 @@ func (server *Server) PortNumber() int {
 	server.Lock()
 	defer server.Unlock()
 	return server.portNumber
+}
+
+// fetchMessages fetches messages with timeout from the server with or without purging.
+// Returns messages and an error if timeout occurs before receiving expected number of messages.
+func (server *Server) fetchMessages(count int, timeout time.Duration, withPurge bool) ([]Message, error) {
+	deadline := time.Now().Add(timeout)
+	for {
+		messages := server.Messages()
+		messageCount := len(messages)
+
+		if messageCount >= count {
+			if withPurge {
+				server.messages.clear()
+			}
+			return messages, nil
+		}
+
+		if time.Now().After(deadline) {
+			return messages, fmt.Errorf("timeout waiting for %d messages, got %d", count, messageCount)
+		}
+
+		time.Sleep(1 * time.Millisecond)
+	}
 }
 
 // Thread-safe getter to check if server has been started.
