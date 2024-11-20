@@ -178,3 +178,11 @@ func (messages *messages) purge() []Message {
 
 	return copiedMessages
 }
+
+// Clears the messages slice
+func (messages *messages) clear() {
+	messages.Lock()
+	defer messages.Unlock()
+
+	messages.items = nil
+}

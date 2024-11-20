@@ -267,3 +267,13 @@ func TestMessagesPurge(t *testing.T) {
 		assert.Len(t, messages.copy(), 0)
 	})
 }
+
+func TestMessagesClear(t *testing.T) {
+	t.Run("clears messages from items slice", func(t *testing.T) {
+		message, messages := new(Message), new(messages)
+		messages.append(message)
+		messages.clear()
+
+		assert.Len(t, messages.copy(), 0)
+	})
+}
