@@ -321,6 +321,15 @@ func main() {
   // use MessagesAndPurge() method
   server.MessagesAndPurge()
 
+  // In case with flaky test environment you can wait for the specified number
+  // of messages to arrive or until timeout is reached use WaitForMessages() method
+  server.WaitForMessages(42, 1 * time.Millisecond)
+
+  // In case with flaky test environment you can wait for the specified number
+  // of messages to arrive or until timeout is reached and purge it on server
+  // after use WaitForMessagesAndPurge() method
+  server.WaitForMessagesAndPurge(42, 1 * time.Millisecond)
+
   // To stop the server use Stop() method. Please note, smtpmock uses graceful shutdown.
   // It means that smtpmock will end all sessions after client responses or by session
   // timeouts immediately.

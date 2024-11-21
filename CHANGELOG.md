@@ -2,6 +2,16 @@
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/), and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.4.0] - 2024-11-21
+
+### Added
+
+- Added [ability to wait for the specified number of messages to arrive or until timeout is reached](https://github.com/mocktools/go-smtp-mock/issues/181), `WaitForMessages()` and `WaitForMessagesAndPurge()` methods
+
+### Updated
+
+- Updated project documentation
+
 ## [2.3.3] - 2024-11-17
 
 ### Fixed
