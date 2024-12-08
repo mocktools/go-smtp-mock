@@ -53,7 +53,7 @@ const (
 	// Regex patterns
 	availableCmdsRegexPattern  = `(?i)helo|ehlo|mail from:|rcpt to:|data|rset|noop|quit`
 	domainRegexPattern         = `(?i)([\p{L}0-9]+([\-.]{1}[\p{L}0-9]+)*\.\p{L}{2,63}|localhost)`
-	emailRegexPattern          = `(?i)(?:[\p{L}\p{N}\s]*?<?)*?([a-zA-Z0-9][-a-zA-Z0-9.]*[a-zA-Z0-9]@` + domainRegexPattern + `)>*`
+	emailRegexPattern          = `(?i)(?:[\p{L}\p{N}\s]*?<?)*?([a-zA-Z0-9!#\$%&'\*\+\-/=\?\^_\x60\{\|\}~][-a-zA-Z0-9.!#\$%&'\*\+\-/=\?\^_\x60\{\|\}~]*[a-zA-Z0-9!#\$%&'\*\+\-/=\?\^_\x60\{\|\}~]@` + domainRegexPattern + `)>*`
 	ipAddressRegexPattern      = `(\b25[0-5]|\b2[0-4][0-9]|\b[01]?[0-9][0-9]?)(\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)){3}`
 	addressLiteralRegexPattern = `|\[` + ipAddressRegexPattern + `\]`
 
