@@ -3,6 +3,7 @@ package smtpmock
 import (
 	"errors"
 	"fmt"
+	"log/slog"
 	"net"
 	"strings"
 	"sync"
@@ -20,7 +21,7 @@ type waitGroup interface {
 type Server struct {
 	configuration *configuration
 	messages      *messages
-	logger        logger
+	logger        *slog.Logger
 	listener      net.Listener
 	wg            waitGroup
 	quit          chan interface{}
@@ -35,7 +36,7 @@ func newServer(configuration *configuration) *Server {
 	return &Server{
 		configuration: configuration,
 		messages:      new(messages),
-		logger:        newLogger(configuration.logToStdout, configuration.logServerActivity),
+		logger:        slog.Default(),
 		wg:            new(sync.WaitGroup),
 	}
 }
@@ -55,7 +56,7 @@ func (server *Server) Start() (err error) {
 	listener, err := net.Listen(networkProtocol, serverWithPortNumber(configuration.hostAddress, portNumber))
 	if err != nil {
 		errorMessage := fmt.Sprintf("%s: %d", serverErrorMsg, portNumber)
-		logger.error(errorMessage)
+		logger.Error(errorMessage)
 		return errors.New(errorMessage)
 	}
 
@@ -64,7 +65,7 @@ func (server *Server) Start() (err error) {
 	server.setPortNumber(portNumber)
 	server.start()
 	server.quit, server.quitTimeout = make(chan interface{}), make(chan interface{})
-	logger.infoActivity(fmt.Sprintf("%s: %d", serverStartMsg, portNumber))
+	logger.Info(fmt.Sprintf("%s: %d", serverStartMsg, portNumber))
 
 	server.addToWaitGroup()
 	go func() {
@@ -73,7 +74,7 @@ func (server *Server) Start() (err error) {
 			connection, err := server.listener.Accept()
 			if err != nil {
 				if _, ok := <-server.quit; !ok {
-					logger.warning(serverNotAcceptNewConnectionsMsg)
+					logger.Warn(serverNotAcceptNewConnectionsMsg)
 				}
 				return
 			}
@@ -84,7 +85,7 @@ func (server *Server) Start() (err error) {
 				server.removeFromWaitGroup()
 			}()
 
-			logger.infoActivity(sessionStartMsg)
+			logger.Info(sessionStartMsg)
 		}
 	}()
 
@@ -102,14 +103,14 @@ func (server *Server) Stop() (err error) {
 			server.wg.Wait()
 			server.quitTimeout <- true
 			server.stop()
-			server.logger.infoActivity(serverStopMsg)
+			server.logger.Info(serverStopMsg)
 		}()
 
 		select {
 		case <-server.quitTimeout:
 		case <-time.After(time.Duration(server.configuration.shutdownTimeout) * time.Second):
 			server.stop()
-			server.logger.infoActivity(serverForceStopMsg)
+			server.logger.Info(serverForceStopMsg)
 		}
 
 		return

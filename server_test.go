@@ -3,6 +3,7 @@ package smtpmock
 import (
 	"errors"
 	"fmt"
+	"log/slog"
 	"net"
 	"strings"
 	"testing"
@@ -18,7 +19,7 @@ func TestNewServer(t *testing.T) {
 
 		assert.Same(t, configuration, server.configuration)
 		assert.Equal(t, new(messages), server.messages)
-		assert.Equal(t, newLogger(configuration.logToStdout, configuration.logServerActivity), server.logger)
+		assert.Equal(t, slog.Default(), server.logger)
 		assert.Nil(t, server.listener)
 		assert.NotNil(t, server.wg)
 		assert.Nil(t, server.quit)
@@ -68,12 +69,11 @@ func TestServerStart(t *testing.T) {
 
 	t.Run("when listener error happens during starting the server doesn't start current server", func(t *testing.T) {
 		configuration := createConfiguration()
-		server, logger := newServer(configuration), new(loggerMock)
+		server, logger := newServer(configuration), slog.Default()
 		listener, _ := net.Listen(networkProtocol, emptyString)
 		portNumber := listener.Addr().(*net.TCPAddr).Port
 		errorMessage := fmt.Sprintf("%s: %d", serverErrorMsg, portNumber)
 		configuration.portNumber, server.logger = portNumber, logger
-		logger.On("error", errorMessage).Once().Return(nil)
 
 		assert.EqualError(t, server.Start(), errorMessage)
 		assert.False(t, server.isStarted())
@@ -84,7 +84,7 @@ func TestServerStart(t *testing.T) {
 
 func TestServerStop(t *testing.T) {
 	t.Run("when server active stops current server, graceful shutdown case", func(t *testing.T) {
-		logger, listener, waitGroup, quitChannel := new(loggerMock), new(listenerMock), new(waitGroupMock), make(chan interface{})
+		logger, listener, waitGroup, quitChannel := slog.Default(), new(listenerMock), new(waitGroupMock), make(chan interface{})
 		server := &Server{
 			configuration: createConfiguration(),
 			logger:        logger,
@@ -96,7 +96,6 @@ func TestServerStop(t *testing.T) {
 		}
 		listener.On("Close").Once().Return(nil)
 		waitGroup.On("Wait").Once().Return(nil)
-		logger.On("infoActivity", serverStopMsg).Once().Return(nil)
 
 		assert.NoError(t, server.Stop())
 		assert.False(t, server.isStarted())
@@ -105,7 +104,7 @@ func TestServerStop(t *testing.T) {
 	})
 
 	t.Run("when server active stops current server, force shutdown case", func(t *testing.T) {
-		logger, listener, waitGroup, quitChannel := new(loggerMock), new(listenerMock), new(waitGroupMock), make(chan interface{})
+		logger, listener, waitGroup, quitChannel := slog.Default(), new(listenerMock), new(waitGroupMock), make(chan interface{})
 		server := &Server{
 			configuration: createConfiguration(),
 			logger:        logger,
@@ -116,7 +115,6 @@ func TestServerStop(t *testing.T) {
 		}
 		listener.On("Close").Once().Return(nil)
 		waitGroup.On("Wait").Once().Return(nil)
-		logger.On("infoActivity", serverForceStopMsg).Once().Return(nil)
 
 		assert.NoError(t, server.Stop())
 		assert.False(t, server.isStarted())

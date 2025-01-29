@@ -4,7 +4,7 @@ import (
 	"bufio"
 	"bytes"
 	"errors"
-	"fmt"
+	"log/slog"
 	"strings"
 	"testing"
 	"time"
@@ -68,10 +68,9 @@ func TestSessionSetTimeout(t *testing.T) {
 	})
 
 	t.Run("when connection error", func(t *testing.T) {
-		errorMessage, connection, logger := "some connection error", netConnectionMock{}, new(loggerMock)
+		errorMessage, connection, logger := "some connection error", netConnectionMock{}, slog.Default()
 		err := errors.New(errorMessage)
 		connection.On("SetDeadline", timeNow().Add(time.Duration(timeout)*time.Second)).Once().Return(err)
-		logger.On("error", errorMessage).Once().Return(nil)
 		session := &session{connection: connection, logger: logger}
 		session.setTimeout(timeout)
 
@@ -90,11 +89,10 @@ func TestSessionDiscardBufin(t *testing.T) {
 	})
 
 	t.Run("discardes the bufin remnants with error", func(t *testing.T) {
-		errorMessage, bufin, logger := "bufin discard error", new(bufioReaderMock), new(loggerMock)
+		errorMessage, bufin, logger := "bufin discard error", new(bufioReaderMock), slog.Default()
 		session, err := &session{bufin: bufin, logger: logger}, errors.New(errorMessage)
 		bufin.On("Buffered").Once().Return(42)
 		bufin.On("Discard", 42).Once().Return(42, err)
-		logger.On("error", errorMessage).Once().Return(nil)
 		session.discardBufin()
 
 		assert.Error(t, session.err)
@@ -105,7 +103,7 @@ func TestSessionDiscardBufin(t *testing.T) {
 func TestNewSession(t *testing.T) {
 	t.Run("creates new SMTP session", func(t *testing.T) {
 		connectionAddress := "127.0.0.1:25"
-		connection, address, logger := netConnectionMock{}, netAddressMock{}, new(loggerMock)
+		connection, address, logger := netConnectionMock{}, netAddressMock{}, slog.Default()
 		address.On("String").Once().Return(connectionAddress)
 		connection.On("RemoteAddr").Once().Return(address)
 		session := newSession(connection, logger)
@@ -123,9 +121,8 @@ func TestSessionReadRequest(t *testing.T) {
 		capturedStringContext := "Some string context"
 		stringContext := capturedStringContext + "\r\n other string"
 		binaryData := strings.NewReader(stringContext)
-		bufin, logger := bufio.NewReader(binaryData), new(loggerMock)
+		bufin, logger := bufio.NewReader(binaryData), slog.Default()
 		session := &session{bufin: bufin, logger: logger}
-		logger.On("infoActivity", sessionRequestMsg+capturedStringContext).Once().Return(nil)
 		request, err := session.readRequest()
 
 		assert.Equal(t, capturedStringContext, request)
@@ -135,10 +132,9 @@ func TestSessionReadRequest(t *testing.T) {
 
 	t.Run("extracts string from bufin with error", func(t *testing.T) {
 		var delim uint8 = '\n'
-		errorMessage, bufin, logger := "read error", new(bufioReaderMock), new(loggerMock)
+		errorMessage, bufin, logger := "read error", new(bufioReaderMock), slog.Default()
 		err := errors.New(errorMessage)
 		bufin.On("ReadString", delim).Once().Return(emptyString, err)
-		logger.On("error", errorMessage).Once().Return(nil)
 		session := &session{bufin: bufin, logger: logger}
 		request, err := session.readRequest()
 
@@ -151,9 +147,8 @@ func TestSessionReadRequest(t *testing.T) {
 func TestSessionReadBytes(t *testing.T) {
 	t.Run("extracts line in bytes from bufin without error", func(t *testing.T) {
 		str := "stringContext\n"
-		bufin, logger := bufio.NewReader(strings.NewReader(str)), new(loggerMock)
+		bufin, logger := bufio.NewReader(strings.NewReader(str)), slog.Default()
 		session := &session{bufin: bufin, logger: logger}
-		logger.On("infoActivity", sessionRequestMsg+sessionBinaryDataMsg).Once().Return(nil)
 		request, err := session.readBytes()
 
 		assert.Equal(t, []uint8(str), request)
@@ -163,10 +158,9 @@ func TestSessionReadBytes(t *testing.T) {
 
 	t.Run("extracts line in bytes from bufin with error", func(t *testing.T) {
 		var delim uint8 = '\n'
-		errorMessage, bufin, logger := "read error", new(bufioReaderMock), new(loggerMock)
+		errorMessage, bufin, logger := "read error", new(bufioReaderMock), slog.Default()
 		err := errors.New(errorMessage)
 		bufin.On("ReadBytes", delim).Once().Return([]byte{}, err)
-		logger.On("error", errorMessage).Once().Return(nil)
 		session := &session{bufin: bufin, logger: logger}
 		request, err := session.readBytes()
 
@@ -183,8 +177,7 @@ func TestSessionResponseDelay(t *testing.T) {
 
 	t.Run("when custom session response delay", func(t *testing.T) {
 		timeSleep = func(delay int) int { return delay }
-		delay, logger := 42, new(loggerMock)
-		logger.On("infoActivity", fmt.Sprintf("%s: %d sec", sessionResponseDelayMsg, delay)).Once().Return(nil)
+		delay, logger := 42, slog.Default()
 		session := &session{logger: logger}
 
 		assert.Equal(t, delay, session.responseDelay(delay))
@@ -195,8 +188,7 @@ func TestSessionWriteResponse(t *testing.T) {
 	t.Run("writes server response to bufout without response delay and error", func(t *testing.T) {
 		response := "some response"
 		binaryData := bytes.NewBufferString("")
-		bufout, logger := bufio.NewWriter(binaryData), new(loggerMock)
-		logger.On("infoActivity", sessionResponseMsg+response).Once().Return(nil)
+		bufout, logger := bufio.NewWriter(binaryData), slog.Default()
 		session := &session{bufout: bufout, logger: logger}
 		session.writeResponse(response, defaultSessionResponseDelay)
 
@@ -208,9 +200,7 @@ func TestSessionWriteResponse(t *testing.T) {
 		timeSleep = func(delay int) int { return delay }
 		response, delay := "some response", 42
 		binaryData := bytes.NewBufferString("")
-		bufout, logger := bufio.NewWriter(binaryData), new(loggerMock)
-		logger.On("infoActivity", sessionResponseMsg+response).Once().Return(nil)
-		logger.On("infoActivity", fmt.Sprintf("%s: %d sec", sessionResponseDelayMsg, delay)).Once().Return(nil)
+		bufout, logger := bufio.NewWriter(binaryData), slog.Default()
 		session := &session{bufout: bufout, logger: logger}
 		session.writeResponse(response, delay)
 
@@ -219,12 +209,10 @@ func TestSessionWriteResponse(t *testing.T) {
 	})
 
 	t.Run("writes server response to bufout with error", func(t *testing.T) {
-		response, errorMessage, bufout, logger := "some response", "write error", new(bufioWriterMock), new(loggerMock)
+		response, errorMessage, bufout, logger := "some response", "write error", new(bufioWriterMock), slog.Default()
 		err := errors.New(errorMessage)
 		bufout.On("WriteString", response+"\r\n").Once().Return(0, err)
 		bufout.On("Flush").Once().Return(err)
-		logger.On("warning", errorMessage).Once().Return(nil)
-		logger.On("infoActivity", sessionResponseMsg+response).Once().Return(nil)
 		session := &session{bufout: bufout, logger: logger}
 		session.writeResponse(response, defaultSessionResponseDelay)
 
@@ -234,9 +222,8 @@ func TestSessionWriteResponse(t *testing.T) {
 
 func TestSessionFinish(t *testing.T) {
 	t.Run("closes session connection without error", func(t *testing.T) {
-		connection, logger := netConnectionMock{}, new(loggerMock)
+		connection, logger := netConnectionMock{}, slog.Default()
 		connection.On("Close").Once().Return(nil)
-		logger.On("infoActivity", sessionEndMsg).Once().Return(nil)
 		session := &session{connection: connection, logger: logger}
 		session.finish()
 
@@ -245,10 +232,8 @@ func TestSessionFinish(t *testing.T) {
 
 	t.Run("closes session connection with error", func(t *testing.T) {
 		errorMessage := "connection error"
-		connection, logger, err := netConnectionMock{}, new(loggerMock), errors.New(errorMessage)
+		connection, logger, err := netConnectionMock{}, slog.Default(), errors.New(errorMessage)
 		connection.On("Close").Once().Return(err)
-		logger.On("warning", errorMessage).Once().Return(nil)
-		logger.On("infoActivity", sessionEndMsg).Once().Return(nil)
 		session := &session{connection: connection, logger: logger}
 		session.finish()
 

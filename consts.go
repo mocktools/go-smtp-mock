@@ -1,7 +1,5 @@
 package smtpmock
 
-import "log"
-
 const (
 	// SMTP mock default messages
 	defaultGreetingMsg                   = "220 Welcome"
@@ -20,12 +18,6 @@ const (
 	defaultInvalidCmdDataSequenceMsg     = "503 Bad sequence of commands. DATA should be used after RCPT TO"
 	defaultNotRegistredRcpttoEmailMsg    = "550 User not found"
 	defaultMsgSizeIsTooBigMsg            = "552 Message exceeded max size of"
-
-	// Logger
-	infoLogLevel    = "INFO"
-	warningLogLevel = "WARNING"
-	errorLogLevel   = "ERROR"
-	logFlag         = log.Ldate | log.Lmicroseconds
 
 	// Session
 	sessionStartMsg         = "SMTP session started"

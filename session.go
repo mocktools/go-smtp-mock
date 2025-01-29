@@ -3,6 +3,7 @@ package smtpmock
 import (
 	"bufio"
 	"fmt"
+	"log/slog"
 	"net"
 	"strings"
 	"time"
@@ -51,11 +52,11 @@ type session struct {
 	bufin      bufin
 	bufout     bufout
 	err        error
-	logger     logger
+	logger     *slog.Logger
 }
 
 // SMTP session builder. Creates new session
-func newSession(connection net.Conn, logger logger) *session {
+func newSession(connection net.Conn, logger *slog.Logger) *session {
 	return &session{
 		connection: connection,
 		address:    connection.RemoteAddr().String(),
@@ -90,7 +91,7 @@ func (session *session) setTimeout(timeout int) {
 
 	if err != nil {
 		session.err = err
-		session.logger.error(err.Error())
+		session.logger.Error(err.Error())
 	}
 }
 
@@ -101,7 +102,7 @@ func (session *session) discardBufin() {
 
 	if err != nil {
 		session.err = err
-		session.logger.error(err.Error())
+		session.logger.Error(err.Error())
 	}
 }
 
@@ -111,12 +112,12 @@ func (session *session) readRequest() (string, error) {
 	request, err := session.bufin.ReadString('\n')
 	if err == nil {
 		trimmedRequest := strings.TrimSpace(request)
-		session.logger.infoActivity(sessionRequestMsg + trimmedRequest)
+		session.logger.Info(sessionRequestMsg + trimmedRequest)
 		return trimmedRequest, err
 	}
 
 	session.err = err
-	session.logger.error(err.Error())
+	session.logger.Error(err.Error())
 	return emptyString, err
 }
 
@@ -126,12 +127,12 @@ func (session *session) readBytes() ([]byte, error) {
 	var request []byte
 	request, err := session.bufin.ReadBytes('\n')
 	if err == nil {
-		session.logger.infoActivity(sessionRequestMsg + sessionBinaryDataMsg)
+		session.logger.Info(sessionRequestMsg + sessionBinaryDataMsg)
 		return request, err
 	}
 
 	session.err = err
-	session.logger.error(err.Error())
+	session.logger.Error(err.Error())
 	return request, err
 }
 
@@ -142,7 +143,7 @@ func (session *session) responseDelay(delay int) int {
 		return delay
 	}
 
-	session.logger.infoActivity(fmt.Sprintf("%s: %d sec", sessionResponseDelayMsg, delay))
+	session.logger.Info(fmt.Sprintf("%s: %d sec", sessionResponseDelayMsg, delay))
 	return timeSleep(delay)
 }
 
@@ -152,17 +153,17 @@ func (session *session) writeResponse(response string, responseDelay int) {
 	session.responseDelay(responseDelay)
 	bufout := session.bufout
 	if _, err := bufout.WriteString(response + "\r\n"); err != nil {
-		session.logger.warning(err.Error())
+		session.logger.Warn(err.Error())
 	}
 	bufout.Flush()
-	session.logger.infoActivity(sessionResponseMsg + response)
+	session.logger.Info(sessionResponseMsg + response)
 }
 
 // Finishes SMTP session. When error case happened triggers logger with warning level
 func (session *session) finish() {
 	if err := session.connection.Close(); err != nil {
-		session.logger.warning(err.Error())
+		session.logger.Warn(err.Error())
 	}
 
-	session.logger.infoActivity(sessionEndMsg)
+	session.logger.Info(sessionEndMsg)
 }

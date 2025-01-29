@@ -109,27 +109,6 @@ func (buf bufioWriterMock) Flush() error {
 	return args.Error(0)
 }
 
-// logger mock
-type loggerMock struct {
-	mock.Mock
-}
-
-func (logger *loggerMock) infoActivity(message string) {
-	logger.Called(message)
-}
-
-func (logger *loggerMock) info(message string) {
-	logger.Called(message)
-}
-
-func (logger *loggerMock) warning(message string) {
-	logger.Called(message)
-}
-
-func (logger *loggerMock) error(message string) {
-	logger.Called(message)
-}
-
 // session mock
 type sessionMock struct {
 	mock.Mock
