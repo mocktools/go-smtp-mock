@@ -25,6 +25,21 @@ func TestNewServer(t *testing.T) {
 		assert.False(t, server.isStarted())
 		assert.Equal(t, 0, server.PortNumber())
 	})
+
+	t.Run("creates new server with custom logger", func(t *testing.T) {
+		configuration := createConfiguration()
+		logger := new(loggerMock)
+		server := newServer(configuration).WithLogger(logger)
+
+		assert.Same(t, configuration, server.configuration)
+		assert.Equal(t, new(messages), server.messages)
+		assert.Equal(t, logger, server.logger)
+		assert.Nil(t, server.listener)
+		assert.NotNil(t, server.wg)
+		assert.Nil(t, server.quit)
+		assert.False(t, server.isStarted())
+		assert.Equal(t, 0, server.PortNumber())
+	})
 }
 
 func TestServerStart(t *testing.T) {

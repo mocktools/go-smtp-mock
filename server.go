@@ -40,6 +40,13 @@ func newServer(configuration *configuration) *Server {
 	}
 }
 
+// WithLogger installs the provided logger implementation to the server.
+// This allows for custom logging behavior, such as writing to a file or using a different logging library.
+func (server *Server) WithLogger(logger Logger) *Server {
+	server.logger = logger
+	return server
+}
+
 // server methods
 
 // Start binds and runs SMTP mock server on specified port or random free port. Returns error for
