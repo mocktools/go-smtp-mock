@@ -41,12 +41,12 @@ func TestEventLoggerInfoActivity(t *testing.T) {
 		var buf bytes.Buffer
 		logger := newLogger(true, true)
 		logger.stdout = &buf
-		logger.infoActivity(logMessage) // initializes and memoizes INFO logger during first function calling
+		logger.InfoActivity(logMessage) // initializes and memoizes INFO logger during first function calling
 
 		assert.Regexp(t, loggerMessageRegex(infoLogLevel, logMessage), buf.String())
 		assert.NotNil(t, logger.eventInfo)
 		memoizedInfoLogger := logger.eventInfo
-		logger.infoActivity(logMessage)
+		logger.InfoActivity(logMessage)
 		assert.Same(t, memoizedInfoLogger, logger.eventInfo)
 	})
 
@@ -54,7 +54,7 @@ func TestEventLoggerInfoActivity(t *testing.T) {
 		var buf bytes.Buffer
 		logger := newLogger(false, true)
 		logger.stdout = &buf
-		logger.infoActivity(logMessage)
+		logger.InfoActivity(logMessage)
 
 		assert.Nil(t, logger.eventInfo)
 		assert.Empty(t, buf.String())
@@ -64,7 +64,7 @@ func TestEventLoggerInfoActivity(t *testing.T) {
 		var buf bytes.Buffer
 		logger := newLogger(true, false)
 		logger.stdout = &buf
-		logger.infoActivity(logMessage)
+		logger.InfoActivity(logMessage)
 
 		assert.Nil(t, logger.eventInfo)
 		assert.Empty(t, buf.String())
@@ -78,12 +78,12 @@ func TestEventLoggerInfo(t *testing.T) {
 		var buf bytes.Buffer
 		logger := newLogger(true, false)
 		logger.stdout = &buf
-		logger.info(logMessage) // initializes and memoizes INFO logger during first function calling
+		logger.Info(logMessage) // initializes and memoizes INFO logger during first function calling
 
 		assert.Regexp(t, loggerMessageRegex(infoLogLevel, logMessage), buf.String())
 		assert.NotNil(t, logger.eventInfo)
 		memoizedInfoLogger := logger.eventInfo
-		logger.info(logMessage)
+		logger.Info(logMessage)
 		assert.Same(t, memoizedInfoLogger, logger.eventInfo)
 	})
 
@@ -91,7 +91,7 @@ func TestEventLoggerInfo(t *testing.T) {
 		var buf bytes.Buffer
 		logger := newLogger(false, false)
 		logger.stdout = &buf
-		logger.info(logMessage)
+		logger.Info(logMessage)
 
 		assert.Nil(t, logger.eventInfo)
 		assert.Empty(t, buf.String())
@@ -105,12 +105,12 @@ func TestEventLoggerWarning(t *testing.T) {
 		var buf bytes.Buffer
 		logger := newLogger(true, false)
 		logger.stdout = &buf
-		logger.warning(logMessage) // initializes and memoizes WARNING logger during first function calling
+		logger.Warning(logMessage) // initializes and memoizes WARNING logger during first function calling
 
 		assert.Regexp(t, loggerMessageRegex(warningLogLevel, logMessage), buf.String())
 		assert.NotNil(t, logger.eventWarning)
 		memoizedWarningLogger := logger.eventWarning
-		logger.warning(logMessage)
+		logger.Warning(logMessage)
 		assert.Same(t, memoizedWarningLogger, logger.eventWarning)
 	})
 
@@ -118,7 +118,7 @@ func TestEventLoggerWarning(t *testing.T) {
 		var buf bytes.Buffer
 		logger := newLogger(false, false)
 		logger.stdout = &buf
-		logger.warning(logMessage)
+		logger.Warning(logMessage)
 
 		assert.Nil(t, logger.eventWarning)
 		assert.Empty(t, buf.String())
@@ -132,12 +132,12 @@ func TestEventLoggerError(t *testing.T) {
 		var buf bytes.Buffer
 		logger := newLogger(true, false)
 		logger.stderr = &buf
-		logger.error(logMessage) // initializes and memoizes ERROR logger during first function calling
+		logger.Error(logMessage) // initializes and memoizes ERROR logger during first function calling
 
 		assert.Regexp(t, loggerMessageRegex(errorLogLevel, logMessage), buf.String())
 		assert.NotNil(t, logger.eventError)
 		memoizedErrorLogger := logger.eventError
-		logger.error(logMessage)
+		logger.Error(logMessage)
 		assert.Same(t, memoizedErrorLogger, logger.eventError)
 	})
 
@@ -145,7 +145,7 @@ func TestEventLoggerError(t *testing.T) {
 		var buf bytes.Buffer
 		logger := newLogger(false, false)
 		logger.stderr = &buf
-		logger.error(logMessage)
+		logger.Error(logMessage)
 
 		assert.Nil(t, logger.eventError)
 		assert.Empty(t, buf.String())
