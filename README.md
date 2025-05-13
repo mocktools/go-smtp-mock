@@ -280,6 +280,7 @@ smtpmock.ConfigurationAttr{
 package main
 
 import (
+  "bytes"
   "fmt"
   "net"
   "net/smtp"
@@ -287,11 +288,43 @@ import (
   smtpmock "github.com/mocktools/go-smtp-mock/v2"
 )
 
+// User-defined loggers can be defined by implementing the Logger interface.
+// For example, this custom logger writes to byte buffers instead of os.Stdout/Stderr.
+type customLogger struct {
+  out *bytes.Buffer
+  err *bytes.Buffer
+}
+
+func (l *customLogger) InfoActivity(m string) {
+  l.out.WriteString(m)
+}
+
+func (l *customLogger) Info(m string) {
+  l.out.WriteString(m)
+}
+
+func (l *customLogger) Warning(m string) {
+  l.out.WriteString(m)
+}
+
+func (l *customLogger) Error(m string) {
+  l.err.WriteString(m)
+}
+
 func main() {
   // You can pass empty smtpmock.ConfigurationAttr{}. It means that smtpmock will use default settings
   server := smtpmock.New(smtpmock.ConfigurationAttr{
     LogToStdout:       true,
     LogServerActivity: true,
+  })
+
+  // The default logger for the server can be substituted with a custom logging implementation.
+  // This can be useful in tests where the server logs need to be programatically examined.
+  outBuf := &bytes.Buffer{}
+  errBuf := &bytes.Buffer{}
+  server.WithLogger(&customLogger{
+    out: outBuf,
+    err: errBuf,
   })
 
   // To start server use Start() method
@@ -339,7 +372,7 @@ func main() {
 }
 ```
 
-Code from example above will produce next output to stdout:
+Code from example above will produce the following output to the configured logger:
 
 ```code
 INFO: 2021/11/30 22:07:30.554827 SMTP mock server started on port: 2525
