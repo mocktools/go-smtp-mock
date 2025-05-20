@@ -7,11 +7,11 @@ import (
 )
 
 // Logger interface
-type logger interface {
-	infoActivity(string)
-	info(string)
-	warning(string)
-	error(string)
+type Logger interface {
+	InfoActivity(string)
+	Info(string)
+	Warning(string)
+	Error(string)
 }
 
 // Custom logger that supports 3 different log levels (info, warning, error)
@@ -37,7 +37,7 @@ func newLogger(logToStdout, logServerActivity bool) *eventLogger {
 
 // Provides INFO log level for server activities. Writes to stdout for case when
 // logger.logToStdout and logger.logServerActivity are enabled, suppressed otherwise
-func (logger *eventLogger) infoActivity(message string) {
+func (logger *eventLogger) InfoActivity(message string) {
 	if logger.logToStdout && logger.logServerActivity {
 		if logger.eventInfo == nil {
 			logger.eventInfo = log.New(logger.stdout, infoLogLevel+": ", logger.flag)
@@ -49,7 +49,7 @@ func (logger *eventLogger) infoActivity(message string) {
 
 // Provides INFO log level. Writes to stdout for case when logger.logToStdout is enabled,
 // suppressed otherwise
-func (logger *eventLogger) info(message string) {
+func (logger *eventLogger) Info(message string) {
 	if logger.logToStdout {
 		if logger.eventInfo == nil {
 			logger.eventInfo = log.New(logger.stdout, infoLogLevel+": ", logger.flag)
@@ -61,7 +61,7 @@ func (logger *eventLogger) info(message string) {
 
 // Provides WARNING log level. Writes to stdout for case when logger.logToStdout is enabled,
 // suppressed otherwise
-func (logger *eventLogger) warning(message string) {
+func (logger *eventLogger) Warning(message string) {
 	if logger.logToStdout {
 		if logger.eventWarning == nil {
 			logger.eventWarning = log.New(logger.stdout, warningLogLevel+": ", logger.flag)
@@ -73,7 +73,7 @@ func (logger *eventLogger) warning(message string) {
 
 // Provides ERROR log level. Writes to stdout for case when logger.logToStdout is enabled,
 // suppressed otherwise
-func (logger *eventLogger) error(message string) {
+func (logger *eventLogger) Error(message string) {
 	if logger.logToStdout {
 		if logger.eventError == nil {
 			logger.eventError = log.New(logger.stderr, errorLogLevel+": ", logger.flag)
