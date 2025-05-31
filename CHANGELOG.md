@@ -2,6 +2,12 @@
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/), and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.5.0] - 2025-05-31
+
+### Added
+
+- Added [ability to use a custom logger](https://github.com/mocktools/go-smtp-mock/issues/171), `WithLogger()` method. Thanks [@Hsn723](https://github.com/Hsn723) for PR
+
 ## [2.4.0] - 2024-11-21
 
 ### Added
