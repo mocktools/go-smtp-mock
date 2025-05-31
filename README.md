@@ -78,6 +78,7 @@ import smtpmock "github.com/mocktools/go-smtp-mock/v2"
 - [Inside of Golang ecosystem](#inside-of-golang-ecosystem)
   - [Configuring](#configuring)
   - [Manipulation with server](#manipulation-with-server)
+  - [Using a custom logger](#using-a-custom-logger)
 - [Inside of Ruby ecosystem](#inside-of-ruby-ecosystem)
   - [Example of usage](#example-of-usage)
 - [Inside of any ecosystem](#inside-of-any-ecosystem)
@@ -375,20 +376,20 @@ type customLogger struct {
   err *bytes.Buffer
 }
 
-func (l *customLogger) InfoActivity(m string) {
-  l.out.WriteString(m)
+func (logger *customLogger) InfoActivity(message string) {
+  logger.out.WriteString(message)
 }
 
-func (l *customLogger) Info(m string) {
-  l.out.WriteString(m)
+func (logger *customLogger) Info(message string) {
+  logger.out.WriteString(message)
 }
 
-func (l *customLogger) Warning(m string) {
-  l.out.WriteString(m)
+func (logger *customLogger) Warning(message string) {
+  logger.out.WriteString(message)
 }
 
-func (l *customLogger) Error(m string) {
-  l.err.WriteString(m)
+func (logger *customLogger) Error(message string) {
+  logger.err.WriteString(message)
 }
 
 func main() {
