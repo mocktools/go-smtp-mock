@@ -20,7 +20,7 @@ type waitGroup interface {
 type Server struct {
 	configuration *configuration
 	messages      *messages
-	logger        logger
+	logger        Logger
 	listener      net.Listener
 	wg            waitGroup
 	quit          chan interface{}
@@ -40,6 +40,13 @@ func newServer(configuration *configuration) *Server {
 	}
 }
 
+// WithLogger installs the provided logger implementation to the server.
+// This allows for custom logging behavior, such as writing to a file or using a different logging library.
+func (server *Server) WithLogger(logger Logger) *Server {
+	server.logger = logger
+	return server
+}
+
 // server methods
 
 // Start binds and runs SMTP mock server on specified port or random free port. Returns error for
@@ -55,7 +62,7 @@ func (server *Server) Start() (err error) {
 	listener, err := net.Listen(networkProtocol, serverWithPortNumber(configuration.hostAddress, portNumber))
 	if err != nil {
 		errorMessage := fmt.Sprintf("%s: %d", serverErrorMsg, portNumber)
-		logger.error(errorMessage)
+		logger.Error(errorMessage)
 		return errors.New(errorMessage)
 	}
 
@@ -64,7 +71,7 @@ func (server *Server) Start() (err error) {
 	server.setPortNumber(portNumber)
 	server.start()
 	server.quit, server.quitTimeout = make(chan interface{}), make(chan interface{})
-	logger.infoActivity(fmt.Sprintf("%s: %d", serverStartMsg, portNumber))
+	logger.InfoActivity(fmt.Sprintf("%s: %d", serverStartMsg, portNumber))
 
 	server.addToWaitGroup()
 	go func() {
@@ -73,7 +80,7 @@ func (server *Server) Start() (err error) {
 			connection, err := server.listener.Accept()
 			if err != nil {
 				if _, ok := <-server.quit; !ok {
-					logger.warning(serverNotAcceptNewConnectionsMsg)
+					logger.Warning(serverNotAcceptNewConnectionsMsg)
 				}
 				return
 			}
@@ -84,7 +91,7 @@ func (server *Server) Start() (err error) {
 				server.removeFromWaitGroup()
 			}()
 
-			logger.infoActivity(sessionStartMsg)
+			logger.InfoActivity(sessionStartMsg)
 		}
 	}()
 
@@ -102,14 +109,14 @@ func (server *Server) Stop() (err error) {
 			server.wg.Wait()
 			server.quitTimeout <- true
 			server.stop()
-			server.logger.infoActivity(serverStopMsg)
+			server.logger.InfoActivity(serverStopMsg)
 		}()
 
 		select {
 		case <-server.quitTimeout:
 		case <-time.After(time.Duration(server.configuration.shutdownTimeout) * time.Second):
 			server.stop()
-			server.logger.infoActivity(serverForceStopMsg)
+			server.logger.InfoActivity(serverForceStopMsg)
 		}
 
 		return

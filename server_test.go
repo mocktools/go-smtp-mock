@@ -25,6 +25,21 @@ func TestNewServer(t *testing.T) {
 		assert.False(t, server.isStarted())
 		assert.Equal(t, 0, server.PortNumber())
 	})
+
+	t.Run("creates new server with custom logger", func(t *testing.T) {
+		configuration := createConfiguration()
+		logger := new(loggerMock)
+		server := newServer(configuration).WithLogger(logger)
+
+		assert.Same(t, configuration, server.configuration)
+		assert.Equal(t, new(messages), server.messages)
+		assert.Equal(t, logger, server.logger)
+		assert.Nil(t, server.listener)
+		assert.NotNil(t, server.wg)
+		assert.Nil(t, server.quit)
+		assert.False(t, server.isStarted())
+		assert.Equal(t, 0, server.PortNumber())
+	})
 }
 
 func TestServerStart(t *testing.T) {
@@ -73,7 +88,7 @@ func TestServerStart(t *testing.T) {
 		portNumber := listener.Addr().(*net.TCPAddr).Port
 		errorMessage := fmt.Sprintf("%s: %d", serverErrorMsg, portNumber)
 		configuration.portNumber, server.logger = portNumber, logger
-		logger.On("error", errorMessage).Once().Return(nil)
+		logger.On("Error", errorMessage).Once().Return(nil)
 
 		assert.EqualError(t, server.Start(), errorMessage)
 		assert.False(t, server.isStarted())
@@ -96,7 +111,7 @@ func TestServerStop(t *testing.T) {
 		}
 		listener.On("Close").Once().Return(nil)
 		waitGroup.On("Wait").Once().Return(nil)
-		logger.On("infoActivity", serverStopMsg).Once().Return(nil)
+		logger.On("InfoActivity", serverStopMsg).Once().Return(nil)
 
 		assert.NoError(t, server.Stop())
 		assert.False(t, server.isStarted())
@@ -116,7 +131,7 @@ func TestServerStop(t *testing.T) {
 		}
 		listener.On("Close").Once().Return(nil)
 		waitGroup.On("Wait").Once().Return(nil)
-		logger.On("infoActivity", serverForceStopMsg).Once().Return(nil)
+		logger.On("InfoActivity", serverForceStopMsg).Once().Return(nil)
 
 		assert.NoError(t, server.Stop())
 		assert.False(t, server.isStarted())

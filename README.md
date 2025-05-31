@@ -78,6 +78,7 @@ import smtpmock "github.com/mocktools/go-smtp-mock/v2"
 - [Inside of Golang ecosystem](#inside-of-golang-ecosystem)
   - [Configuring](#configuring)
   - [Manipulation with server](#manipulation-with-server)
+  - [Using a custom logger](#using-a-custom-logger)
 - [Inside of Ruby ecosystem](#inside-of-ruby-ecosystem)
   - [Example of usage](#example-of-usage)
 - [Inside of any ecosystem](#inside-of-any-ecosystem)
@@ -339,7 +340,7 @@ func main() {
 }
 ```
 
-Code from example above will produce next output to stdout:
+Code from example above will produce the following output to the configured logger:
 
 ```code
 INFO: 2021/11/30 22:07:30.554827 SMTP mock server started on port: 2525
@@ -352,6 +353,73 @@ INFO: 2021/11/30 22:07:30.555722 SMTP response: 221 Closing connection
 INFO: 2021/11/30 22:07:30.555732 SMTP session finished
 WARNING: 2021/11/30 22:07:30.555801 SMTP mock server is in the shutdown mode and won't accept new connections
 INFO: 2021/11/30 22:07:30.555808 SMTP mock server was stopped successfully
+```
+
+#### Using a custom logger
+
+```go
+package main
+
+import (
+  "bytes"
+  "fmt"
+  "net"
+  "net/smtp"
+
+  smtpmock "github.com/mocktools/go-smtp-mock/v2"
+)
+
+// User-defined loggers can be defined by implementing the Logger interface.
+// For example, this custom logger writes to byte buffers instead of os.Stdout/Stderr.
+type customLogger struct {
+  out *bytes.Buffer
+  err *bytes.Buffer
+}
+
+func (logger *customLogger) InfoActivity(message string) {
+  logger.out.WriteString(message)
+}
+
+func (logger *customLogger) Info(message string) {
+  logger.out.WriteString(message)
+}
+
+func (logger *customLogger) Warning(message string) {
+  logger.out.WriteString(message)
+}
+
+func (logger *customLogger) Error(message string) {
+  logger.err.WriteString(message)
+}
+
+func main() {
+  // You can pass empty smtpmock.ConfigurationAttr{}. It means that smtpmock will use default settings
+  server := smtpmock.New(smtpmock.ConfigurationAttr{
+    LogToStdout:       true,
+    LogServerActivity: true,
+  })
+
+  // The default logger for the server can be substituted with a custom logging implementation.
+  // This can be useful in tests where the server logs need to be programatically examined.
+  outBuf := &bytes.Buffer{}
+  errBuf := &bytes.Buffer{}
+  server.WithLogger(&customLogger{
+    out: outBuf,
+    err: errBuf,
+  })
+
+  // To start server use Start() method
+  if err := server.Start(); err != nil {
+    fmt.Println(err)
+  }
+
+  // To stop the server use Stop() method. Please note, smtpmock uses graceful shutdown.
+  // It means that smtpmock will end all sessions after client responses or by session
+  // timeouts immediately.
+  if err := server.Stop(); err != nil {
+    fmt.Println(err)
+  }
+}
 ```
 
 ### Inside of Ruby ecosystem

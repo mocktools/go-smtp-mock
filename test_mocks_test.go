@@ -114,19 +114,19 @@ type loggerMock struct {
 	mock.Mock
 }
 
-func (logger *loggerMock) infoActivity(message string) {
+func (logger *loggerMock) InfoActivity(message string) {
 	logger.Called(message)
 }
 
-func (logger *loggerMock) info(message string) {
+func (logger *loggerMock) Info(message string) {
 	logger.Called(message)
 }
 
-func (logger *loggerMock) warning(message string) {
+func (logger *loggerMock) Warning(message string) {
 	logger.Called(message)
 }
 
-func (logger *loggerMock) error(message string) {
+func (logger *loggerMock) Error(message string) {
 	logger.Called(message)
 }
 
