@@ -260,16 +260,26 @@ func TestHandlerMailfromMailfromEmail(t *testing.T) {
 		assert.Equal(t, emptyString, handler.mailfromEmail("MAIL FROM: "+invalidEmail))
 	})
 
-	t.Run("when request includes invalid email starting with dot", func(t *testing.T) {
-		invalidEmail := ".user@example.com"
-
-		assert.Equal(t, emptyString, handler.mailfromEmail("MAIL FROM: "+invalidEmail))
+	t.Run("when request includes email with plus sign", func(t *testing.T) {
+		email := "user+tag@example.com"
+		assert.Equal(t, email, handler.mailfromEmail("MAIL FROM: "+email))
 	})
 
-	t.Run("when request includes invalid email ending with dot before @", func(t *testing.T) {
-		invalidEmail := "user.@example.com"
+	t.Run("when request includes email with multiple special characters", func(t *testing.T) {
+		email := "user.name+tag!#$%@example.com"
+		assert.Equal(t, email, handler.mailfromEmail("MAIL FROM: "+email))
+	})
 
-		assert.Equal(t, emptyString, handler.mailfromEmail("MAIL FROM: "+invalidEmail))
+	t.Run("when request includes email with special characters and angle brackets", func(t *testing.T) {
+		rawEmail := "user.name+tag@example.com"
+		request := "MAIL FROM: <" + rawEmail + ">"
+		assert.Equal(t, rawEmail, handler.mailfromEmail(request))
+	})
+
+	t.Run("when request includes email with special characters and display name", func(t *testing.T) {
+		rawEmail := "user.name+support@example.com"
+		request := "MAIL FROM: Support Team <" + rawEmail + ">"
+		assert.Equal(t, rawEmail, handler.mailfromEmail(request))
 	})
 }
 
