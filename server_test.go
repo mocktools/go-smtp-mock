@@ -167,7 +167,7 @@ func TestServerMessages(t *testing.T) {
 		server.messages.RLock()
 		assert.Empty(t, server.messages.items)
 		assert.Empty(t, server.Messages())
-		assert.NotSame(t, server.messages.items, server.Messages())
+		assert.NotEqual(t, server.messages.items, server.Messages())
 		server.messages.RUnlock()
 
 		message := new(Message)
@@ -176,7 +176,7 @@ func TestServerMessages(t *testing.T) {
 		server.messages.RLock()
 		assert.Equal(t, []*Message{message}, server.messages.items)
 		assert.Equal(t, []Message{*message}, server.Messages())
-		assert.NotSame(t, server.messages.items, server.Messages())
+		assert.NotEqual(t, server.messages.items, server.Messages())
 		server.messages.RUnlock()
 	})
 }
