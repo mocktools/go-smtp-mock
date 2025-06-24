@@ -20,6 +20,7 @@
   - [Inside of Golang ecosystem](#inside-of-golang-ecosystem)
     - [Configuring](#configuring)
     - [Manipulation with server](#manipulation-with-server)
+    - [Using a custom logger](#using-a-custom-logger)
   - [Inside of Ruby ecosystem](#inside-of-ruby-ecosystem)
     - [Example of usage](#example-of-usage)
   - [Inside of any ecosystem](#inside-of-any-ecosystem)
