@@ -263,6 +263,40 @@ func BenchmarkWaitForMessagesWithArrival(b *testing.B) {
 	}
 }
 
+// --- Regex benchmarks ---
+
+// BenchmarkRegexMatchCommand benchmarks the isInvalidCmd check that runs on every SMTP command.
+func BenchmarkRegexMatchCommand(b *testing.B) {
+	server := New(ConfigurationAttr{})
+	commands := []string{"HELO example.com", "MAIL FROM:<user@test.com>", "RCPT TO:<user@test.com>", "DATA", "RSET", "NOOP", "QUIT"}
+
+	b.ResetTimer()
+	for b.Loop() {
+		for _, cmd := range commands {
+			server.isInvalidCmd(cmd)
+		}
+	}
+}
+
+// BenchmarkRegexValidateHelo benchmarks HELO command argument validation.
+func BenchmarkRegexValidateHelo(b *testing.B) {
+	request := "EHLO mail.example.com"
+	b.ResetTimer()
+	for b.Loop() {
+		validHeloComplexCmdRegex.MatchString(request)
+	}
+}
+
+// BenchmarkRegexValidateMailfrom benchmarks MAIL FROM argument validation and capture.
+func BenchmarkRegexValidateMailfrom(b *testing.B) {
+	request := "MAIL FROM:<sender@example.com>"
+	b.ResetTimer()
+	for b.Loop() {
+		validMailfromComplexCmdRegex.MatchString(request)
+		regexCaptureGroupCompiled(request, validMailfromComplexCmdRegex, 2)
+	}
+}
+
 // --- Helper ---
 
 func messageCountName(n int) string {

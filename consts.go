@@ -1,6 +1,9 @@
 package smtpmock
 
-import "log"
+import (
+	"log"
+	"regexp"
+)
 
 const (
 	// SMTP mock default messages
@@ -71,4 +74,16 @@ const (
 
 	// Helpers
 	emptyString = ""
+)
+
+// Pre-compiled regex patterns
+var (
+	availableCmdsRegex          = regexp.MustCompile(availableCmdsRegexPattern)
+	validHeloComplexCmdRegex    = regexp.MustCompile(validHeloComplexCmdRegexPattern)
+	validMailfromComplexCmdRegex = regexp.MustCompile(validMailfromComplexCmdRegexPattern)
+	validRcpttoComplexCmdRegex  = regexp.MustCompile(validRcpttoComplexCmdRegexPattern)
+	validDataCmdRegex           = regexp.MustCompile(validDataCmdRegexPattern)
+	validRsetCmdRegex           = regexp.MustCompile(validRsetCmdRegexPattern)
+	validNoopCmdRegex           = regexp.MustCompile(validNoopCmdRegexPattern)
+	validQuitCmdRegex           = regexp.MustCompile(validQuitCmdRegexPattern)
 )

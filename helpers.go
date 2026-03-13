@@ -31,6 +31,14 @@ func regexCaptureGroup(str string, regexPattern string, captureGroup int) (captu
 	return capturedString
 }
 
+// Returns string by pre-compiled regex capture group index.
+// For cases when regex not matched or capture group not found returns empty string
+func regexCaptureGroupCompiled(str string, regex *regexp.Regexp, captureGroup int) (capturedString string) {
+	defer func() { _ = recover() }()
+	capturedString = regex.FindStringSubmatch(str)[captureGroup]
+	return capturedString
+}
+
 // Returns true if the given string is present in slice, otherwise returns false
 func isIncluded(slice []string, target string) bool {
 	if len(slice) > 0 {
