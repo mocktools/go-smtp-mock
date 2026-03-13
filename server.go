@@ -164,10 +164,7 @@ func (server *Server) PortNumber() int {
 func (server *Server) fetchMessages(count int, timeout time.Duration, withPurge bool) ([]Message, error) {
 	deadline := time.Now().Add(timeout)
 	for {
-		messages := server.Messages()
-		messageCount := len(messages)
-
-		if messageCount >= count {
+		if messages := server.messages.copyIfAtLeast(count); messages != nil {
 			if withPurge {
 				server.messages.clear()
 			}
@@ -175,7 +172,8 @@ func (server *Server) fetchMessages(count int, timeout time.Duration, withPurge 
 		}
 
 		if time.Now().After(deadline) {
-			return messages, fmt.Errorf("timeout waiting for %d messages, got %d", count, messageCount)
+			messages := server.Messages()
+			return messages, fmt.Errorf("timeout waiting for %d messages, got %d", count, len(messages))
 		}
 
 		time.Sleep(1 * time.Millisecond)
