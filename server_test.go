@@ -9,6 +9,7 @@ import (
 	"time"
 
 	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/mock"
 )
 
 func TestNewServer(t *testing.T) {
@@ -628,5 +629,171 @@ func TestServerHandleSession(t *testing.T) {
 		session.On("finish").Once().Return(nil)
 
 		server.handleSession(session)
+	})
+
+	t.Run("message is available before QUIT response is written", func(t *testing.T) {
+		session, configuration := &sessionMock{}, createConfiguration()
+		server := newServer(configuration)
+
+		session.On("writeResponse", configuration.msgGreeting, defaultSessionResponseDelay).Once().Return(nil)
+
+		session.On("setTimeout", defaultSessionTimeout).Once().Return(nil)
+		session.On("readRequest").Once().Return("helo example.com", nil)
+		session.On("clearError").Once().Return(nil)
+		session.On("writeResponse", configuration.msgHeloReceived, configuration.responseDelayHelo).Once().Return(nil)
+		session.On("isErrorFound").Once().Return(false)
+
+		session.On("setTimeout", defaultSessionTimeout).Once().Return(nil)
+		session.On("readRequest").Once().Return("mail from: sender@example.com", nil)
+		session.On("clearError").Once().Return(nil)
+		session.On("writeResponse", configuration.msgMailfromReceived, configuration.responseDelayMailfrom).Once().Return(nil)
+		session.On("isErrorFound").Once().Return(false)
+
+		session.On("setTimeout", defaultSessionTimeout).Once().Return(nil)
+		session.On("readRequest").Once().Return("rcpt to: receiver@example.com", nil)
+		session.On("clearError").Once().Return(nil)
+		session.On("writeResponse", configuration.msgRcpttoReceived, configuration.responseDelayRcptto).Once().Return(nil)
+		session.On("isErrorFound").Once().Return(false)
+
+		session.On("setTimeout", defaultSessionTimeout).Once().Return(nil)
+		session.On("readRequest").Once().Return("data", nil)
+		session.On("clearError").Once().Return(nil)
+		session.On("writeResponse", configuration.msgDataReceived, configuration.responseDelayData).Once().Return(nil)
+		session.On("isErrorFound").Once().Return(false)
+
+		session.On("readBytes").Once().Return([]uint8(".message body"), nil)
+		session.On("readBytes").Once().Return([]uint8(".\r\n"), nil)
+		session.On("writeResponse", configuration.msgMsgReceived, configuration.responseDelayMessage).Once().Return(nil)
+
+		session.On("setTimeout", defaultSessionTimeout).Once().Return(nil)
+		session.On("readRequest").Once().Return("quit", nil)
+
+		// Verify message is already in server.Messages() BEFORE the QUIT response
+		// is written. This is the core assertion for the race condition fix: the
+		// client can only observe the 221 response after writeResponse returns,
+		// so the message must be available by that point.
+		session.On("writeResponse", configuration.msgQuitCmd, configuration.responseDelayQuit).Run(func(args mock.Arguments) {
+			assert.Equal(t, 1, len(server.Messages()), "message must be available before QUIT response is written")
+			messages := server.Messages()
+			assert.True(t, messages[0].QuitSent())
+			assert.True(t, messages[0].IsConsistent())
+		}).Once().Return(nil)
+
+		session.On("finish").Once().Return(nil)
+
+		server.handleSession(session)
+		assert.Equal(t, 1, len(server.Messages()))
+	})
+
+	t.Run("message is available before QUIT response with multiple messages", func(t *testing.T) {
+		session, configuration := &sessionMock{}, createConfiguration()
+		configuration.multipleMessageReceiving = true
+		server := newServer(configuration)
+
+		session.On("writeResponse", configuration.msgGreeting, defaultSessionResponseDelay).Once().Return(nil)
+
+		session.On("setTimeout", defaultSessionTimeout).Once().Return(nil)
+		session.On("readRequest").Once().Return("helo example.com", nil)
+		session.On("clearError").Once().Return(nil)
+		session.On("writeResponse", configuration.msgHeloReceived, configuration.responseDelayHelo).Once().Return(nil)
+		session.On("isErrorFound").Once().Return(false)
+
+		// First message
+		session.On("setTimeout", defaultSessionTimeout).Once().Return(nil)
+		session.On("readRequest").Once().Return("mail from: sender@example.com", nil)
+		session.On("clearError").Once().Return(nil)
+		session.On("writeResponse", configuration.msgMailfromReceived, configuration.responseDelayMailfrom).Once().Return(nil)
+		session.On("isErrorFound").Once().Return(false)
+
+		session.On("setTimeout", defaultSessionTimeout).Once().Return(nil)
+		session.On("readRequest").Once().Return("rcpt to: receiver@example.com", nil)
+		session.On("clearError").Once().Return(nil)
+		session.On("writeResponse", configuration.msgRcpttoReceived, configuration.responseDelayRcptto).Once().Return(nil)
+		session.On("isErrorFound").Once().Return(false)
+
+		session.On("setTimeout", defaultSessionTimeout).Once().Return(nil)
+		session.On("readRequest").Once().Return("data", nil)
+		session.On("clearError").Once().Return(nil)
+		session.On("writeResponse", configuration.msgDataReceived, configuration.responseDelayData).Once().Return(nil)
+		session.On("isErrorFound").Once().Return(false)
+
+		session.On("readBytes").Once().Return([]uint8(".first message"), nil)
+		session.On("readBytes").Once().Return([]uint8(".\r\n"), nil)
+		session.On("writeResponse", configuration.msgMsgReceived, configuration.responseDelayMessage).Once().Return(nil)
+
+		// RSET and second message
+		session.On("setTimeout", defaultSessionTimeout).Once().Return(nil)
+		session.On("readRequest").Once().Return("rset", nil)
+		session.On("clearError").Once().Return(nil)
+		session.On("writeResponse", configuration.msgRsetReceived, configuration.responseDelayRset).Once().Return(nil)
+		session.On("isErrorFound").Once().Return(false)
+
+		session.On("setTimeout", defaultSessionTimeout).Once().Return(nil)
+		session.On("readRequest").Once().Return("mail from: sender@example.com", nil)
+		session.On("clearError").Once().Return(nil)
+		session.On("writeResponse", configuration.msgMailfromReceived, configuration.responseDelayMailfrom).Once().Return(nil)
+		session.On("isErrorFound").Once().Return(false)
+
+		session.On("setTimeout", defaultSessionTimeout).Once().Return(nil)
+		session.On("readRequest").Once().Return("rcpt to: receiver@example.com", nil)
+		session.On("clearError").Once().Return(nil)
+		session.On("writeResponse", configuration.msgRcpttoReceived, configuration.responseDelayRcptto).Once().Return(nil)
+		session.On("isErrorFound").Once().Return(false)
+
+		session.On("setTimeout", defaultSessionTimeout).Once().Return(nil)
+		session.On("readRequest").Once().Return("data", nil)
+		session.On("clearError").Once().Return(nil)
+		session.On("writeResponse", configuration.msgDataReceived, configuration.responseDelayData).Once().Return(nil)
+		session.On("isErrorFound").Once().Return(false)
+
+		session.On("readBytes").Once().Return([]uint8(".second message"), nil)
+		session.On("readBytes").Once().Return([]uint8(".\r\n"), nil)
+		session.On("writeResponse", configuration.msgMsgReceived, configuration.responseDelayMessage).Once().Return(nil)
+
+		session.On("setTimeout", defaultSessionTimeout).Once().Return(nil)
+		session.On("readRequest").Once().Return("quit", nil)
+
+		// Both messages must be available before QUIT response is written
+		session.On("writeResponse", configuration.msgQuitCmd, configuration.responseDelayQuit).Run(func(args mock.Arguments) {
+			assert.Equal(t, 2, len(server.Messages()), "all messages must be available before QUIT response is written")
+		}).Once().Return(nil)
+
+		session.On("finish").Once().Return(nil)
+
+		server.handleSession(session)
+		assert.Equal(t, 2, len(server.Messages()))
+	})
+
+	t.Run("read error still appends message via defer", func(t *testing.T) {
+		session, configuration := &sessionMock{}, createConfiguration()
+		server := newServer(configuration)
+
+		session.On("writeResponse", configuration.msgGreeting, defaultSessionResponseDelay).Once().Return(nil)
+
+		session.On("setTimeout", defaultSessionTimeout).Once().Return(nil)
+		session.On("readRequest").Once().Return("helo example.com", nil)
+		session.On("clearError").Once().Return(nil)
+		session.On("writeResponse", configuration.msgHeloReceived, configuration.responseDelayHelo).Once().Return(nil)
+		session.On("isErrorFound").Once().Return(false)
+
+		session.On("setTimeout", defaultSessionTimeout).Once().Return(nil)
+		session.On("readRequest").Once().Return(emptyString, errors.New("connection reset"))
+		session.On("finish").Once().Return(nil)
+
+		server.handleSession(session)
+		assert.Equal(t, 1, len(server.Messages()), "message should be appended via defer on read error")
+	})
+
+	t.Run("server quit still appends message via defer", func(t *testing.T) {
+		session, configuration := &sessionMock{}, createConfiguration()
+		server := newServer(configuration)
+		server.quit = make(chan interface{})
+		close(server.quit)
+
+		session.On("writeResponse", configuration.msgGreeting, defaultSessionResponseDelay).Once().Return(nil)
+		session.On("finish").Once().Return(nil)
+
+		server.handleSession(session)
+		assert.Equal(t, 1, len(server.Messages()), "message should be appended via defer on server quit")
 	})
 }
