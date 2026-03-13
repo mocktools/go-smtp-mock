@@ -259,8 +259,11 @@ func (server *Server) isAbleToEndSession(message *Message, session sessionInterf
 func (server *Server) handleSession(session sessionInterface) {
 	defer session.finish()
 	message, configuration := new(Message), server.configuration
+	messageAppended := false
 	defer func() {
-		server.messages.append(message)
+		if !messageAppended {
+			server.messages.append(message)
+		}
 	}()
 	session.writeResponse(configuration.msgGreeting, defaultSessionResponseDelay)
 
@@ -298,7 +301,15 @@ func (server *Server) handleSession(session sessionInterface) {
 			case "NOOP":
 				newHandlerNoop(session, message, configuration).run(request)
 			case "QUIT":
-				newHandlerQuit(session, message, configuration).run(request)
+				// Append message before writing the QUIT response to eliminate the
+				// race condition where the client receives "221" and calls Messages()
+				// before the deferred append has executed.
+				if matchRegex(request, validQuitCmdRegexPattern) {
+					message.quitSent = true
+					server.messages.append(message)
+					messageAppended = true
+					session.writeResponse(configuration.msgQuitCmd, configuration.responseDelayQuit)
+				}
 			}
 
 			if server.isAbleToEndSession(message, session) {
