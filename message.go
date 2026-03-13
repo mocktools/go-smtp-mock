@@ -160,9 +160,9 @@ func (messages *messages) copy() []Message {
 
 // Copy messages without a lock
 func (messages *messages) copyInternal() []Message {
-	copiedMessages := []Message{}
+	copiedMessages := make([]Message, len(messages.items))
 	for index := range messages.items {
-		copiedMessages = append(copiedMessages, *messages.items[index])
+		copiedMessages[index] = *messages.items[index]
 	}
 
 	return copiedMessages
