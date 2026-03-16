@@ -31,7 +31,7 @@ func (handler *handlerRset) run(request string) {
 func (handler *handlerRset) clearMessage() {
 	messageWithData, configuration := handler.message, handler.configuration
 
-	if !(configuration.multipleMessageReceiving && messageWithData.IsConsistent()) {
+	if !(configuration.multipleMessageReceiving && messageWithData.IsConsistent()) { //nolint:staticcheck
 		clearedMessage := &Message{
 			heloRequest:  messageWithData.heloRequest,
 			heloResponse: messageWithData.heloResponse,

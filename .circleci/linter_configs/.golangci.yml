@@ -1,15 +1,39 @@
 ---
 
+version: "2"
+
 linters:
   enable:
     - gocyclo
     - misspell
     - revive
 
-linters-settings:
-  gocyclo:
-    min-complexity: 15
+  settings:
+    gocyclo:
+      min-complexity: 15
 
-  govet:
-    disable:
-      - copylocks
+    govet:
+      disable:
+        - copylocks
+
+  exclusions:
+    generated: lax
+
+    presets:
+      - comments
+      - common-false-positives
+      - legacy
+      - std-error-handling
+
+    paths:
+      - third_party$
+      - builtin$
+      - examples$
+
+formatters:
+  exclusions:
+    generated: lax
+    paths:
+      - third_party$
+      - builtin$
+      - examples$

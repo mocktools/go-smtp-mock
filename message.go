@@ -160,7 +160,7 @@ func (messages *messages) copy() []Message {
 
 // Returns a copy of messages only if at least min messages exist.
 // Otherwise returns nil without copying.
-func (messages *messages) copyIfAtLeast(min int) []Message {
+func (messages *messages) copyIfAtLeast(min int) []Message { //nolint:revive
 	messages.RLock()
 	defer messages.RUnlock()
 	if len(messages.items) >= min {

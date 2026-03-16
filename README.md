@@ -527,7 +527,7 @@ Available not configuration `smtpmock` options:
 
 ### Implemented SMTP commands
 
-| id | Command | Sequenceable |  Available args | Example of usage |
+| id | Command | Sequenceable | Available args | Example of usage |
 | --- | --- | --- | --- | --- |
 | `1` | `HELO` | no | `domain name`, `localhost`, `ip address`, `[ip address]` | `HELO example.com` |
 | `1` | `EHLO` | no | `domain name`, `localhost`, `ip address`, `[ip address]` | `EHLO example.com` |
