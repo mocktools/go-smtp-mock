@@ -53,7 +53,7 @@ func (server *Server) WithLogger(logger Logger) *Server {
 // case when server is active. Server port number will be assigned after successful start only
 func (server *Server) Start() (err error) {
 	if server.isStarted() {
-		return errors.New(serverStartErrorMsg)
+		return errors.New(serverStartErrorMsg) //nolint:staticcheck
 	}
 
 	configuration, logger := server.configuration, server.logger
@@ -122,7 +122,7 @@ func (server *Server) Stop() (err error) {
 		return
 	}
 
-	return errors.New(serverStopErrorMsg)
+	return errors.New(serverStopErrorMsg) //nolint:staticcheck
 }
 
 // Public interface to get access to server messages.
@@ -164,10 +164,7 @@ func (server *Server) PortNumber() int {
 func (server *Server) fetchMessages(count int, timeout time.Duration, withPurge bool) ([]Message, error) {
 	deadline := time.Now().Add(timeout)
 	for {
-		messages := server.Messages()
-		messageCount := len(messages)
-
-		if messageCount >= count {
+		if messages := server.messages.copyIfAtLeast(count); messages != nil {
 			if withPurge {
 				server.messages.clear()
 			}
@@ -175,7 +172,8 @@ func (server *Server) fetchMessages(count int, timeout time.Duration, withPurge 
 		}
 
 		if time.Now().After(deadline) {
-			return messages, fmt.Errorf("timeout waiting for %d messages, got %d", count, messageCount)
+			messages := server.Messages()
+			return messages, fmt.Errorf("timeout waiting for %d messages, got %d", count, len(messages))
 		}
 
 		time.Sleep(1 * time.Millisecond)

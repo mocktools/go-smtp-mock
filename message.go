@@ -158,11 +158,22 @@ func (messages *messages) copy() []Message {
 	return messages.copyInternal()
 }
 
+// Returns a copy of messages only if at least min messages exist.
+// Otherwise returns nil without copying.
+func (messages *messages) copyIfAtLeast(min int) []Message { //nolint:revive
+	messages.RLock()
+	defer messages.RUnlock()
+	if len(messages.items) >= min {
+		return messages.copyInternal()
+	}
+	return nil
+}
+
 // Copy messages without a lock
 func (messages *messages) copyInternal() []Message {
-	copiedMessages := []Message{}
+	copiedMessages := make([]Message, len(messages.items))
 	for index := range messages.items {
-		copiedMessages = append(copiedMessages, *messages.items[index])
+		copiedMessages[index] = *messages.items[index]
 	}
 
 	return copiedMessages
