@@ -53,7 +53,7 @@ func (server *Server) WithLogger(logger Logger) *Server {
 // case when server is active. Server port number will be assigned after successful start only
 func (server *Server) Start() (err error) {
 	if server.isStarted() {
-		return errors.New(serverStartErrorMsg)
+		return errors.New(serverStartErrorMsg) //nolint:staticcheck
 	}
 
 	configuration, logger := server.configuration, server.logger
@@ -122,7 +122,7 @@ func (server *Server) Stop() (err error) {
 		return
 	}
 
-	return errors.New(serverStopErrorMsg)
+	return errors.New(serverStopErrorMsg) //nolint:staticcheck
 }
 
 // Public interface to get access to server messages.

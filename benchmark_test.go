@@ -135,7 +135,7 @@ func newBenchServer(b *testing.B) (*Server, string, int) {
 	if err := server.Start(); err != nil {
 		b.Fatal(err)
 	}
-	b.Cleanup(func() { server.Stop() })
+	b.Cleanup(func() { server.Stop() }) //nolint:errcheck
 	return server, server.configuration.hostAddress, server.PortNumber()
 }
 
@@ -145,7 +145,7 @@ func BenchmarkSMTPSessionMinimal(b *testing.B) {
 
 	b.ResetTimer()
 	for b.Loop() {
-		runMinimalSMTPSession(host, port)
+		runMinimalSMTPSession(host, port) //nolint:errcheck
 	}
 }
 
@@ -156,7 +156,7 @@ func BenchmarkSMTPSessionFull(b *testing.B) {
 
 	b.ResetTimer()
 	for b.Loop() {
-		runFullSMTPBenchSession(host, port)
+		runFullSMTPBenchSession(host, port) //nolint:errcheck
 	}
 }
 
@@ -167,7 +167,7 @@ func BenchmarkSMTPSessionConcurrent(b *testing.B) {
 	b.ResetTimer()
 	b.RunParallel(func(pb *testing.PB) {
 		for pb.Next() {
-			runFullSMTPBenchSession(host, port)
+			runFullSMTPBenchSession(host, port) //nolint:errcheck
 		}
 	})
 }
@@ -235,7 +235,7 @@ func BenchmarkWaitForMessages(b *testing.B) {
 
 	b.ResetTimer()
 	for b.Loop() {
-		server.WaitForMessages(5, time.Second)
+		server.WaitForMessages(5, time.Second) //nolint:errcheck
 	}
 }
 
@@ -258,7 +258,7 @@ func BenchmarkWaitForMessagesWithArrival(b *testing.B) {
 			}
 		}()
 
-		server.WaitForMessages(3, time.Second)
+		server.WaitForMessages(3, time.Second) //nolint:errcheck
 		wg.Wait()
 	}
 }

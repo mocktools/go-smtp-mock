@@ -68,7 +68,7 @@ func (handler *handlerData) writeResult(isSuccessful bool, request, response str
 // when DATA command sequence is invalid, otherwise returns false
 func (handler *handlerData) isInvalidCmdSequence(request string) bool {
 	message := handler.message
-	if !(message.helo && message.mailfrom && message.rcptto) {
+	if !(message.helo && message.mailfrom && message.rcptto) { //nolint:staticcheck
 		return handler.writeResult(false, request, handler.configuration.msgInvalidCmdDataSequence)
 	}
 
