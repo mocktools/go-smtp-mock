@@ -9,6 +9,7 @@ import (
 	"time"
 
 	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/mock"
 )
 
 func TestNewServer(t *testing.T) {
@@ -470,7 +471,9 @@ func TestServerHandleSession(t *testing.T) {
 
 		session.On("setTimeout", defaultSessionTimeout).Once().Return(nil)
 		session.On("readRequest").Once().Return("quit", nil)
-		session.On("writeResponse", configuration.msgQuitCmd, configuration.responseDelayQuit).Once().Return(nil)
+		session.On("writeResponse", configuration.msgQuitCmd, configuration.responseDelayQuit).Once().Return(nil).Run(func(_ mock.Arguments) {
+			assert.Equal(t, 1, len(server.Messages()), "message must be available before QUIT response is written")
+		})
 		session.On("isErrorFound").Once().Return(false)
 
 		session.On("finish").Once().Return(nil)
@@ -556,7 +559,9 @@ func TestServerHandleSession(t *testing.T) {
 
 		session.On("setTimeout", defaultSessionTimeout).Once().Return(nil)
 		session.On("readRequest").Once().Return("quit", nil)
-		session.On("writeResponse", configuration.msgQuitCmd, configuration.responseDelayQuit).Once().Return(nil)
+		session.On("writeResponse", configuration.msgQuitCmd, configuration.responseDelayQuit).Once().Return(nil).Run(func(_ mock.Arguments) {
+			assert.Equal(t, 2, len(server.Messages()), "both messages must be available before QUIT response is written")
+		})
 		session.On("isErrorFound").Once().Return(false)
 
 		session.On("finish").Once().Return(nil)
@@ -606,7 +611,7 @@ func TestServerHandleSession(t *testing.T) {
 		server.handleSession(session)
 	})
 
-	t.Run("when server quit channel was closed", func(*testing.T) {
+	t.Run("when server quit channel was closed", func(t *testing.T) {
 		session, configuration := &sessionMock{}, newConfiguration(ConfigurationAttr{IsCmdFailFast: true})
 		server := newServer(configuration)
 		server.quit = make(chan interface{})
@@ -616,9 +621,10 @@ func TestServerHandleSession(t *testing.T) {
 		session.On("finish").Once().Return(nil)
 
 		server.handleSession(session)
+		assert.Equal(t, 1, len(server.Messages()), "message must be appended via defer on server shutdown")
 	})
 
-	t.Run("when read request session error", func(*testing.T) {
+	t.Run("when read request session error", func(t *testing.T) {
 		session, configuration := &sessionMock{}, newConfiguration(ConfigurationAttr{IsCmdFailFast: true})
 		server := newServer(configuration)
 
@@ -628,5 +634,6 @@ func TestServerHandleSession(t *testing.T) {
 		session.On("finish").Once().Return(nil)
 
 		server.handleSession(session)
+		assert.Equal(t, 1, len(server.Messages()), "message must be appended via defer on read error")
 	})
 }
