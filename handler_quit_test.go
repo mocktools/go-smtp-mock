@@ -20,20 +20,24 @@ func TestNewHandlerQuit(t *testing.T) {
 func TestHandlerQuitRun(t *testing.T) {
 	t.Run("when successful QUIT request", func(t *testing.T) {
 		request, session, message, configuration := "QUIT", new(sessionMock), new(Message), createConfiguration()
+		messages := new(messages)
 		receivedMessage := configuration.msgQuitCmd
 		handler := newHandlerQuit(session, message, configuration)
 		session.On("writeResponse", receivedMessage, configuration.responseDelayQuit).Once().Return(nil)
-		handler.run(request)
+		handler.run(request, messages)
 
 		assert.True(t, message.quitSent)
+		assert.Equal(t, 1, len(messages.copy()))
 	})
 
 	t.Run("when failure QUIT request", func(t *testing.T) {
 		request, session, message, configuration := "QUIT ", new(sessionMock), new(Message), createConfiguration()
+		messages := new(messages)
 		handler := newHandlerQuit(session, message, configuration)
-		handler.run(request)
+		handler.run(request, messages)
 
 		assert.False(t, message.quitSent)
+		assert.Equal(t, 0, len(messages.copy()))
 	})
 }
 

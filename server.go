@@ -258,7 +258,9 @@ func (server *Server) handleSession(session sessionInterface) {
 	defer session.finish()
 	message, configuration := new(Message), server.configuration
 	defer func() {
-		server.messages.append(message)
+		if !message.quitSent {
+			server.messages.append(message)
+		}
 	}()
 	session.writeResponse(configuration.msgGreeting, defaultSessionResponseDelay)
 
@@ -296,7 +298,7 @@ func (server *Server) handleSession(session sessionInterface) {
 			case "NOOP":
 				newHandlerNoop(session, message, configuration).run(request)
 			case "QUIT":
-				newHandlerQuit(session, message, configuration).run(request)
+				newHandlerQuit(session, message, configuration).run(request, server.messages)
 			}
 
 			if server.isAbleToEndSession(message, session) {
