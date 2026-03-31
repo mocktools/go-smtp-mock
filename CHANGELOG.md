@@ -2,6 +2,12 @@
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/), and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.5.3] - 2026-03-31
+
+### Fixed
+
+- Fixed [race condition where `Messages()` could return incomplete results immediately after client received `QUIT` response](https://github.com/mocktools/go-smtp-mock/pull/217). Thanks [@fank](https://github.com/fank) for PR
+
 ## [2.5.2] - 2026-03-17
 
 ### Added
