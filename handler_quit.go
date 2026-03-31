@@ -12,13 +12,16 @@ func newHandlerQuit(session sessionInterface, message *Message, configuration *c
 
 // QUIT handler methods
 
-// Main QUIT handler runner
-func (handler *handlerQuit) run(request string) {
+// Main QUIT handler runner. Appends the message to serverMessages before
+// writing the QUIT response so that Messages() returns consistent results
+// as soon as the client receives "221".
+func (handler *handlerQuit) run(request string, serverMessages *messages) {
 	if handler.isInvalidRequest(request) {
 		return
 	}
 
 	handler.message.quitSent = true
+	serverMessages.append(handler.message)
 	configuration := handler.configuration
 	handler.session.writeResponse(configuration.msgQuitCmd, configuration.responseDelayQuit)
 }
