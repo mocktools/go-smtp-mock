@@ -45,6 +45,10 @@ jobs:
           command: go test -race ./...
 
       - run:
+          name: Running benchmarks
+          command: go test -bench=. -benchmem -benchtime=3x -timeout=60s ./...
+
+      - run:
           name: Creating coverage reports
           command: |
             mkdir -p /tmp/artifacts

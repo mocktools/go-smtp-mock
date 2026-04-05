@@ -1,11 +1,13 @@
 package smtpmock
 
 import (
+	"fmt"
 	"io"
 	"net"
 	"net/smtp"
 	"regexp"
 	"strings"
+	"testing"
 	"time"
 )
 
@@ -135,4 +137,73 @@ func runSuccessfulSMTPSession(hostAddress string, portNumber int, fullFlow bool,
 	}
 
 	return nil
+}
+
+// Runs minimal SMTP session (HELO + QUIT)
+func runMinimalSMTPSession(hostAddress string, portNumber int) error {
+	connection, err := net.DialTimeout(networkProtocol, serverWithPortNumber(hostAddress, portNumber), 2*time.Second)
+	if err != nil {
+		return err
+	}
+	client, err := smtp.NewClient(connection, hostAddress)
+	if err != nil {
+		return err
+	}
+	if err := client.Hello("bench.test"); err != nil {
+		return err
+	}
+	return client.Quit()
+}
+
+// Runs full SMTP session for benchmarking
+func runFullSMTPBenchSession(hostAddress string, portNumber int) error {
+	connection, err := net.DialTimeout(networkProtocol, serverWithPortNumber(hostAddress, portNumber), 2*time.Second)
+	if err != nil {
+		return err
+	}
+	client, err := smtp.NewClient(connection, hostAddress)
+	if err != nil {
+		return err
+	}
+	if err := client.Hello("bench.test"); err != nil {
+		return err
+	}
+
+	sender, receiver := "sender@bench.test", "receiver@bench.test"
+	if err := client.Mail(sender); err != nil {
+		return err
+	}
+	if err := client.Rcpt(receiver); err != nil {
+		return err
+	}
+	wc, err := client.Data()
+	if err != nil {
+		return err
+	}
+	if _, err := wc.Write(messageBody(sender, receiver)); err != nil {
+		return err
+	}
+	if err := wc.Close(); err != nil {
+		return err
+	}
+	return client.Quit()
+}
+
+// Creates and starts server for benchmarking
+func newBenchServer(b *testing.B) (*Server, string, int) {
+	b.Helper()
+	server := New(ConfigurationAttr{})
+	if err := server.Start(); err != nil {
+		b.Fatal(err)
+	}
+	b.Cleanup(func() { server.Stop() }) //nolint:errcheck
+	return server, server.configuration.hostAddress, server.PortNumber()
+}
+
+// Returns sub-benchmark name for message count
+func messageCountName(n int) string {
+	if n == 0 {
+		return "empty"
+	}
+	return fmt.Sprintf("%dmsgs", n)
 }
