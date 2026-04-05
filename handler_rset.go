@@ -66,7 +66,7 @@ func (handler *handlerRset) isInvalidCmdSequence(request string) bool {
 // Invalid RSET command argument predicate. Returns true and writes result for case when
 // RSET command argument is invalid, otherwise returns false
 func (handler *handlerRset) isInvalidCmdArg(request string) bool {
-	if !matchRegex(request, validRsetCmdRegexPattern) {
+	if !validRsetCmdRegex.MatchString(request) {
 		return handler.writeResult(false, request, handler.configuration.msgInvalidCmdRsetArg)
 	}
 

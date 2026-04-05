@@ -228,7 +228,7 @@ func (server *Server) newMessageWithHeloContext(otherMessage *Message) *Message 
 
 // Invalid SMTP command predicate. Returns true when command is invalid, otherwise returns false
 func (server *Server) isInvalidCmd(request string) bool {
-	return !matchRegex(request, availableCmdsRegexPattern)
+	return !availableCmdsRegex.MatchString(request)
 }
 
 // Recognizes command implemented commands. Captures the first word divided by spaces,

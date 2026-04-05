@@ -78,7 +78,7 @@ func (handler *handlerData) isInvalidCmdSequence(request string) bool {
 // Invalid DATA command predicate. Returns true and writes result for case
 // when DATA command is invalid, otherwise returns false
 func (handler *handlerData) isInvalidCmd(request string) bool {
-	if !matchRegex(request, validDataCmdRegexPattern) {
+	if !validDataCmdRegex.MatchString(request) {
 		return handler.writeResult(false, request, handler.configuration.msgInvalidCmd)
 	}
 
