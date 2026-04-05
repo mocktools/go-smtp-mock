@@ -78,12 +78,12 @@ const (
 
 // Pre-compiled regex patterns
 var (
-	availableCmdsRegex          = regexp.MustCompile(availableCmdsRegexPattern)
-	validHeloComplexCmdRegex    = regexp.MustCompile(validHeloComplexCmdRegexPattern)
+	availableCmdsRegex           = regexp.MustCompile(availableCmdsRegexPattern)
+	validHeloComplexCmdRegex     = regexp.MustCompile(validHeloComplexCmdRegexPattern)
 	validMailfromComplexCmdRegex = regexp.MustCompile(validMailfromComplexCmdRegexPattern)
-	validRcpttoComplexCmdRegex  = regexp.MustCompile(validRcpttoComplexCmdRegexPattern)
-	validDataCmdRegex           = regexp.MustCompile(validDataCmdRegexPattern)
-	validRsetCmdRegex           = regexp.MustCompile(validRsetCmdRegexPattern)
-	validNoopCmdRegex           = regexp.MustCompile(validNoopCmdRegexPattern)
-	validQuitCmdRegex           = regexp.MustCompile(validQuitCmdRegexPattern)
+	validRcpttoComplexCmdRegex   = regexp.MustCompile(validRcpttoComplexCmdRegexPattern)
+	validDataCmdRegex            = regexp.MustCompile(validDataCmdRegexPattern)
+	validRsetCmdRegex            = regexp.MustCompile(validRsetCmdRegexPattern)
+	validNoopCmdRegex            = regexp.MustCompile(validNoopCmdRegexPattern)
+	validQuitCmdRegex            = regexp.MustCompile(validQuitCmdRegexPattern)
 )
