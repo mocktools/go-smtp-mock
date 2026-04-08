@@ -25,5 +25,5 @@ func (handler *handlerNoop) run(request string) {
 
 // Invalid NOOP command predicate. Returns true when request is invalid, otherwise returns false
 func (handler *handlerNoop) isInvalidRequest(request string) bool {
-	return !matchRegex(request, validNoopCmdRegexPattern)
+	return !validNoopCmdRegex.MatchString(request)
 }
